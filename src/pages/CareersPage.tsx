@@ -1,4 +1,4 @@
-import VideoBackground from '../components/VideoBackground'
+import VideoBackground from '../components/backgrounds/VideoBackground'
 
 export default function CareersPage() {
   return (
