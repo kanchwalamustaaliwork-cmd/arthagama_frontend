@@ -83,14 +83,14 @@ function App() {
 
   return (
     <>
-      <AnimatePresence mode="wait">
+      {/* <AnimatePresence mode="wait">
         {isLoading && (
           <LoadingScreen
             key="loading"
             onComplete={() => setIsLoading(false)}
           />
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
 
       <AnimatePresence mode="wait">
         {!isLoading && (
