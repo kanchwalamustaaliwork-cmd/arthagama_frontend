@@ -88,7 +88,7 @@ export default function HeroSection() {
                * -------------------------------------------------------- */}
               <div className="name-reveal mb-6">
                 <TiltImage
-                  src="public/assets/arthagama_name.png"
+                  src="assets/arthagama_name.png"
                   alt="Arthagama"
                   className="mx-auto w-full max-w-[280px] sm:max-w-[360px] lg:max-w-[440px]"
                 />
@@ -134,13 +134,6 @@ export default function HeroSection() {
                   — understanding probabilities.
                 </span>
               </p>
-              <div className="flex items-center gap-4">
-                <span className="h-px w-10 bg-[hsl(var(--mint)/0.3)]" />
-                <span className="text-xs tracking-widest text-[hsl(var(--mint)/0.5)]">
-                  ARTHAGAMA &nbsp;·&nbsp; FOUNDED 2026
-                </span>
-                <span className="h-px w-10 bg-[hsl(var(--mint)/0.3)]" />
-              </div>
             </div>
           </div>
         </div>
@@ -160,25 +153,12 @@ export default function HeroSection() {
                     <Icon className="h-4 w-4" />
                   </a>
                 ))}
-
-                <ArrowRight className="h-4 w-4 text-[hsl(var(--mint-soft)/0.6)]" />
               </div>
             </div>
           </div>
 
-          {/* Company snapshot card */}
-          <div className="liquid-glass blur-in mt-20 w-64 rounded-3xl p-5">
-            <h3 className="mb-1.5 text-sm font-medium text-[hsl(var(--mint-soft))]">
-              Partnership &nbsp;·&nbsp; 2–10 employees
-            </h3>
-            <p className="text-xs leading-relaxed text-[hsl(var(--mint)/0.6)]">
-              A Mumbai-based algorithmic trading firm researching, building, and
-              deploying systematic strategies since 2026.
-            </p>
-          </div>
-
           {/* Bottom feature section */}
-          <div className="liquid-glass-strong blur-in mt-auto rounded-[2.5rem] p-5">
+          {/* <div className="liquid-glass-strong blur-in mt-auto rounded-[2.5rem] p-5">
             <div className="mb-3 grid grid-cols-2 gap-3">
               <div className="liquid-glass rounded-3xl p-4">
                 <div className="mb-6 flex h-8 w-8 items-center justify-center rounded-full bg-[hsl(var(--mint-soft)/0.1)]">
@@ -220,7 +200,7 @@ export default function HeroSection() {
                 +
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
