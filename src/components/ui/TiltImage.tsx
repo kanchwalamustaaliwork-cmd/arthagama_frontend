@@ -55,8 +55,8 @@ export default function TiltImage({
 
     // A soft directional highlight that follows the cursor, selling the
     // "glossy, dimensional surface" feel without any extra image assets.
-    const glowX = useTransform(smoothX, [-0.5, 0.5], ['20%', '80%'])
-    const glowY = useTransform(smoothY, [-0.5, 0.5], ['20%', '80%'])
+    // const glowX = useTransform(smoothX, [-0.5, 0.5], ['20%', '80%'])
+    // const glowY = useTransform(smoothY, [-0.5, 0.5], ['20%', '80%'])
     // const glowBackground = useTransform(
     //     [glowX, glowY],
     //     ([gx, gy]: string[]) =>

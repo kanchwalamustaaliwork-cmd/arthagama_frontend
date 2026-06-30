@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { href, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import gsap from 'gsap'
 
-const MARQUEE_TEXT = 'BUILDING THE FUTURE • '
 
 const QUICK_LINKS = [
   { label: 'Home', to: '/' },
