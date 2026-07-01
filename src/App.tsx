@@ -7,6 +7,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 import LoadingScreen from './components/LoadingScreen'
 import Navbar from './components/Navbar'
+import GlobalBackground from './components/backgrounds/GlobalBackground'
 
 import HomePage from './pages/HomePage'
 import AboutPage from './pages/AboutPage'
@@ -71,6 +72,7 @@ function AppContent() {
 
   return (
     <>
+      <GlobalBackground />
       <Navbar />
       <AnimatedRoutes />
     </>

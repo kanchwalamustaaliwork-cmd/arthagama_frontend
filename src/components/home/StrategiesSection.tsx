@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { motion, type Transition } from 'framer-motion'
+import { motion } from 'framer-motion'
+import StrategyCard from '../ui/StrategyCard'
+import { viewMotion } from '../../constans/animation'
 
-interface Strategy {
+export interface Strategy {
   name: string
   description: string
 }
@@ -33,93 +35,71 @@ const STRATEGIES: Strategy[] = [
   },
 ]
 
-const easing: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
-const viewTransition: Transition = { duration: 1, ease: easing }
-const viewMotion = {
-  initial: { opacity: 0, y: 30 },
-  whileInView: { opacity: 1, y: 0 },
-  transition: viewTransition,
-  viewport: { once: true as const, margin: '-100px' },
-}
-
 export default function StrategiesSection() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   return (
-    <section id="strategies" className="bg-[#244147] py-16 sm:py-20 md:py-24">
-      <div className="max-w-[1200px] mx-auto px-5 sm:px-6 md:px-10 lg:px-16">
-        {/* Header */}
-        <motion.div
-          className="flex flex-col mb-10 sm:mb-12 md:mb-16"
-          {...viewMotion}
-        >
+    <section id="strategies" className="relative py-16 sm:py-20 md:py-24 overflow-hidden">
+      {/* Dark teal backing panel — video shows through, mint cards float on top for contrast */}
+      <div className="section-backing absolute inset-x-4 inset-y-6 -z-10 rounded-3xl sm:inset-x-6" />
+
+      <div className="relative z-10 max-w-[1200px] mx-auto px-5 sm:px-6 md:px-10 lg:px-16">
+        {/* Header — slide up reveal */}
+        <motion.div className="flex flex-col mb-10 sm:mb-12 md:mb-16" {...viewMotion}>
           <div className="flex items-center gap-3 mb-4">
             <div className="w-8 h-px bg-[#B8CEC2]/40" />
-            <span className="text-[11px] sm:text-xs text-[#B8CEC2]/70 uppercase tracking-[0.3em]">
+            <span className="text-[11px] sm:text-xs text-[#B8CEC2]/80 uppercase tracking-[0.3em]">
               Trading Models
             </span>
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-body font-light text-[#B8CEC2]">
-            Strategies <em className="font-display italic text-[#B8CEC2]">Deployed</em>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-body font-light text-[#EAF1EC]">
+            Strategies <em className="font-display italic text-[#EAF1EC]">Deployed</em>
           </h2>
-          <p className="text-sm text-[#B8CEC2]/60 mt-3 max-w-sm">
+          <p className="text-sm text-[#DCE7E1]/85 mt-3 max-w-sm">
             Research-driven systematic modules running continuously across global markets.
           </p>
         </motion.div>
 
-        {/* Strategies Grid */}
+        {/* Strategies Grid — stagger reveal via per-card delay */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           {STRATEGIES.map((strategy, i) => (
-            <motion.div
+            <StrategyCard
               key={i}
-              className="relative bg-[#B8CEC2]/[0.06] border border-[#B8CEC2]/15 rounded-3xl p-6 sm:p-8 flex flex-col gap-4 overflow-hidden group cursor-pointer transition-colors duration-300 hover:border-[#B8CEC2]/35"
-              {...viewMotion}
-              transition={{
-                ...viewMotion.transition,
-                delay: i * 0.08,
-              }}
-              onMouseEnter={() => setHoveredIndex(i)}
-              onMouseLeave={() => setHoveredIndex(null)}
-            >
-              {/* Halftone / Dot background effect on card hover */}
-              <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-[0.06] mix-blend-overlay pointer-events-none transition-opacity duration-500"
-                style={{
-                  backgroundImage: 'radial-gradient(circle, #B8CEC2 1px, transparent 1px)',
-                  backgroundSize: '4px 4px',
-                }}
-              />
-
-              {/* Number indicator */}
-              <div className="flex items-center justify-between">
-                <span className="font-display italic text-xl text-[#B8CEC2]/30 group-hover:text-[#B8CEC2]/80 transition-colors duration-300">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                {/* Visual Accent Circle */}
-                <div className="w-2 h-2 rounded-full bg-[#B8CEC2]/30 group-hover:bg-[#B8CEC2] transition-all duration-300" />
-              </div>
-
-              {/* Strategy Name */}
-              <h3 className="text-lg font-body font-medium text-[#B8CEC2] mt-2">
-                {strategy.name}
-              </h3>
-
-              {/* Description */}
-              <p className="text-sm text-[#B8CEC2]/60 leading-relaxed font-body">
-                {strategy.description}
-              </p>
-
-              {/* Hover bottom line accent */}
-              <div
-                className="absolute bottom-0 left-0 right-0 h-[2px] bg-transparent transition-all duration-300"
-                style={{
-                  background: hoveredIndex === i ? '#B8CEC2' : 'transparent',
-                }}
-              />
-            </motion.div>
+              strategy={strategy}
+              index={i}
+              isHovered={hoveredIndex === i}
+              onEnter={() => setHoveredIndex(i)}
+              onLeave={() => setHoveredIndex(null)}
+            />
           ))}
         </div>
       </div>
+
+      <style>{`
+        /* Dark teal wash behind the whole grid, lets global video read through */
+        .section-backing {
+          background: rgba(18, 33, 36, 0.62);
+          backdrop-filter: blur(28px) saturate(1.1);
+          -webkit-backdrop-filter: blur(28px) saturate(1.1);
+          box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.2),
+            inset 0 1px 1px rgba(184, 206, 194, 0.15);
+          border: 1px solid rgba(184, 206, 194, 0.1);
+        }
+
+        /* Near-opaque mint glass card — dark teal text sits on top */
+        .strategy-card-mint {
+          background: rgba(184, 206, 194, 0.85);
+          backdrop-filter: blur(14px) saturate(1.1);
+          -webkit-backdrop-filter: blur(14px) saturate(1.1);
+          border: 1px solid rgba(184, 206, 194, 0.95);
+          box-shadow: 0 2px 16px rgba(18, 33, 36, 0.25);
+          transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .strategy-card-mint:hover {
+          background: rgba(198, 218, 208, 0.94);
+          border-color: rgba(255, 255, 255, 0.6);
+        }
+      `}</style>
     </section>
   )
 }
