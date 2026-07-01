@@ -30,16 +30,35 @@ export default function DesktopPillNav({ navLinks, isActive }: { navLinks: { lab
      * x / width track the active tab's geometry. Wrapping them in springs
      * gives free interruptible retargeting — framer-motion smoothly
      * redirects an in-flight spring toward a new target with no snap.
+     *
+     * FIX: when none of navLinks matches the current route (e.g. on
+     * /login or /signup), findIndex returns -1 and there's no element to
+     * measure. Previously this caused an early return that left `box` (and
+     * therefore the blob position) stuck on whatever tab was last active.
+     * We now explicitly detect this case and collapse + fade the blob out
+     * instead of leaving a stale highlight behind.
      * ------------------------------------------------------------------- */
     const [box, setBox] = useState({ left: 0, width: 0 })
+    const [hasActiveTab, setHasActiveTab] = useState(true)
 
     const measure = useCallback(() => {
         const activeIdx = navLinks?.findIndex((l) => isActive(l.to))
-        const el = linkRefs.current[activeIdx]
         const container = containerRef.current
-        if (!el || !container) return
+        if (!container) return
+
+        if (activeIdx === -1) {
+            // No nav link matches current route (e.g. /login, /signup) —
+            // fade the blob out rather than leaving it on the old tab.
+            setHasActiveTab(false)
+            return
+        }
+
+        const el = linkRefs.current[activeIdx]
+        if (!el) return
+
         const elRect = el.getBoundingClientRect()
         const containerRect = container.getBoundingClientRect()
+        setHasActiveTab(true)
         setBox({ left: elRect.left - containerRect.left, width: elRect.width })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.pathname])
@@ -62,6 +81,7 @@ export default function DesktopPillNav({ navLinks, isActive }: { navLinks: { lab
     const springConfig = { stiffness: 420, damping: 26, mass: 1 }
     const x = useSpring(box.left, springConfig)
     const width = useSpring(box.width, springConfig)
+    const opacity = useSpring(hasActiveTab ? 1 : 0, { stiffness: 300, damping: 30 })
 
     // Velocity drives the "surface tension" stretch/squeeze — the blob
     // elongates along the direction of travel and thins vertically,
@@ -71,10 +91,13 @@ export default function DesktopPillNav({ navLinks, isActive }: { navLinks: { lab
     const squeezeY = useTransform(xVelocity, [-2200, 0, 2200], [0.72, 1, 0.72], { clamp: true })
 
     useEffect(() => {
-        x.set(box.left)
-        width.set(box.width)
+        if (hasActiveTab) {
+            x.set(box.left)
+            width.set(box.width)
+        }
+        opacity.set(hasActiveTab ? 1 : 0)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [box])
+    }, [box, hasActiveTab])
 
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 md:pt-6 px-3 sm:px-4">
@@ -111,6 +134,7 @@ export default function DesktopPillNav({ navLinks, isActive }: { navLinks: { lab
                             width,
                             scaleX: stretchX,
                             scaleY: squeezeY,
+                            opacity,
                             originX: 0.5,
                             originY: 0.5,
                             background:

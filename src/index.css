@@ -12,6 +12,13 @@
   --muted: 0 0% 53%;
   --stroke: 0 0% 12%;
   --accent: 0 0% 96%;
+
+  /* Dark Teal and Mint theme variables */
+  --teal: 193 33% 21%;
+  --teal-deep: 193 38% 13%;
+  --teal-soft: 193 28% 28%;
+  --mint: 135 14% 78%;
+  --mint-soft: 135 14% 88%;
 }
 
 /* ─── Base ─── */

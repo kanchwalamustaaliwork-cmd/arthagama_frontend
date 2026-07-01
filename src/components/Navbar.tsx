@@ -36,7 +36,7 @@ export default function Navbar() {
        * takes over entirely so the floating pill never has to fight
        * for space on phones.
        * ========================================================== */}
-      <div className="hidden md:block">
+      <div className="hidden min-[769px]:block">
         <DesktopPillNav navLinks={NAV_LINKS} isActive={isActive} />
       </div>
 
@@ -44,7 +44,7 @@ export default function Navbar() {
        * MOBILE — floating hamburger, top-right, with a cloth-wrap
        * open/close panel. Only rendered below `md`.
        * ========================================================== */}
-      <div className="md:hidden">
+      <div className="min-[769px]:hidden">
         <MobileMenu navLinks={NAV_LINKS} isActive={isActive} />
       </div>
     </div>

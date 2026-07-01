@@ -143,36 +143,13 @@ export default function BrokerIntegrationsSection() {
               trade routing across multiple platforms simultaneously.
             </p>
 
-            <motion.div
-              className="flex flex-wrap gap-6 sm:gap-8 mb-10"
-              variants={cascadeContainer}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: '-100px' }}
-            >
-              <motion.div className="flex flex-col gap-1" variants={cascadeItem}>
-                <span className="text-2xl font-display italic text-[#EAF1EC]">9+</span>
-                <span className="text-xs text-[#DCE7E1]/75 uppercase tracking-[0.15em]">Brokers</span>
-              </motion.div>
-              <div className="w-px bg-[#B8CEC2]/25" />
-              <motion.div className="flex flex-col gap-1" variants={cascadeItem}>
-                <span className="text-2xl font-display italic text-[#EAF1EC]">&lt;5ms</span>
-                <span className="text-xs text-[#DCE7E1]/75 uppercase tracking-[0.15em]">Latency</span>
-              </motion.div>
-              <div className="w-px bg-[#B8CEC2]/25" />
-              <motion.div className="flex flex-col gap-1" variants={cascadeItem}>
-                <span className="text-2xl font-display italic text-[#EAF1EC]">24/7</span>
-                <span className="text-xs text-[#DCE7E1]/75 uppercase tracking-[0.15em]">Uptime</span>
-              </motion.div>
-            </motion.div>
-
-            <a
+            {/* <a
               href="#contact"
               className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[#DCE7E1]/80 hover:text-white transition-colors duration-200 group"
             >
               <span>View all integrations</span>
               <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
-            </a>
+            </a> */}
           </motion.div>
 
           <motion.div

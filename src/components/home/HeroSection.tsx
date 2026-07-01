@@ -33,6 +33,15 @@ export default function HeroSection() {
           <div className="liquid-glass-strong absolute inset-4 rounded-3xl lg:inset-6" />
 
           <div className="relative z-10 flex h-full min-h-screen flex-col justify-center px-6 py-8 lg:px-12 lg:py-10">
+            {/* ---- Logo, top center ---- */}
+            <div className="blur-in mb-8 flex justify-start">
+              <TiltImage
+                src="assets/arthagama_logo.png"
+                alt="Arthagama Logo"
+                className="w-20 sm:w-24 lg:w-28"
+              />
+            </div>
+
             <div className="blur-in mb-6 flex items-center gap-3">
               <div className="w-8 h-px bg-[hsl(var(--mint)/0.4)]" />
               <span className="text-[11px] uppercase tracking-[0.3em] text-[hsl(var(--mint)/0.6)]">
@@ -78,8 +87,8 @@ export default function HeroSection() {
             />
           </div>
 
-          <p className="blur-in max-w-lg text-sm uppercase tracking-[0.3em] text-[hsl(var(--mint)/0.6)] sm:text-base lg:text-lg">
-            Artha &nbsp;·&nbsp; Wealth &nbsp;&nbsp;+&nbsp;&nbsp; Āgama &nbsp;·&nbsp; Inflow
+          <p className="blur-in whitespace-nowrap text-[9px] tracking-[0.08em] uppercase text-[hsl(var(--mint)/0.6)] xs:text-[10px] sm:text-xs md:text-sm">
+            Artha · Wealth + Āgama · Inflow
           </p>
         </div>
       </div>
