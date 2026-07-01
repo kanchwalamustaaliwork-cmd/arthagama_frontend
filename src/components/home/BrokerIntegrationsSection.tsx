@@ -98,21 +98,6 @@ const COL_3 = [...BROKERS.slice(6, 9), ...BROKERS.slice(3, 6)]
 
 const SPEEDS = { col1: 12, col2: 22, col3: 17 }
 
-
-const cascadeContainer = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.2 } },
-}
-const cascadeItem = {
-  hidden: { opacity: 0, scale: 0.8, y: 12 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: { type: 'spring' as const, stiffness: 260, damping: 18 },
-  },
-}
-
 export default function BrokerIntegrationsSection() {
   return (
     <section id="integrations" className="relative py-16 sm:py-20 md:py-24 overflow-hidden">
