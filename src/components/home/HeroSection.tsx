@@ -1,11 +1,7 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import {
-  Sparkles,
   ArrowUpRight,
-  LineChart,
-  ShieldCheck,
-  ArrowRight,
 } from 'lucide-react'
 import { FaFacebook, FaInstagram, FaXTwitter } from 'react-icons/fa6'
 import TiltImage from '../ui/TiltImage'
