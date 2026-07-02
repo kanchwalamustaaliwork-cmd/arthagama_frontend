@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { easing } from '../constans/animation'
 
 const NAME_SRC = '/assets/arthagama_name.png'
-const easing: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 
 interface LoadingScreenProps {
   onComplete: () => void

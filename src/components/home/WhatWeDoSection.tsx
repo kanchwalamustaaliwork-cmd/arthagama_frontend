@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 import { motion, type Transition } from 'framer-motion'
-
-const easing: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
+import { easing } from '../../constans/animation'
 
 // ─── Shared motion presets ───────────────────────────────────────────────────
 const sectionTransition: Transition = { duration: 1, ease: easing }
