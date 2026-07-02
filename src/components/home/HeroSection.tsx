@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
-import { FaFacebook, FaInstagram, FaXTwitter } from 'react-icons/fa6'
+import { FaFacebook, FaInstagram, FaXTwitter, FaLinkedin } from 'react-icons/fa6'
 import TiltImage from '../ui/TiltImage'
 
 export default function HeroSection() {
@@ -63,7 +63,7 @@ export default function HeroSection() {
 
             <div className="blur-in flex items-center gap-3">
               <div className="liquid-glass flex items-center gap-4 rounded-full px-5 py-2.5">
-                {[FaXTwitter, FaInstagram, FaFacebook].map((Icon, i) => (
+                {[FaLinkedin, FaXTwitter, FaInstagram, FaFacebook].map((Icon, i) => (
                   <a
                     key={i}
                     href="#"

@@ -1,12 +1,13 @@
+import AboutHero from '../components/about/AboutHero'
+import AboutIntro from '../components/about/AboutIntro'
+import TeamSection from '../components/about/TeamSection'
 
 export default function AboutPage() {
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-bg">
-      <div className="relative z-10 text-center px-6">
-        <h1 className="text-6xl md:text-8xl lg:text-9xl font-display italic leading-[0.9] tracking-tight text-text-primary">
-          About Us
-        </h1>
-      </div>
+    <div className="relative min-h-screen w-full">
+      <AboutHero />
+      <AboutIntro />
+      <TeamSection />
     </div>
   )
 }
