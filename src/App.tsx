@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import Lenis from 'lenis'
 import gsap from 'gsap'
@@ -17,6 +17,7 @@ gsap.registerPlugin(ScrollTrigger)
 // ─── Main App ────────────────────────────────────────────────────────────────
 function AppContent() {
   const lenisRef = useRef<Lenis | null>(null)
+  const { pathname } = useLocation()
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -38,6 +39,21 @@ function AppContent() {
       gsap.ticker.remove(rafCallback)
     }
   }, [])
+
+  useEffect(() => {
+    // Reset scroll to top on route change.
+    // We delay the scroll by 350ms to match the exit animation duration (0.35s)
+    // in AnimatedRoutes.tsx, avoiding jarring jumps while the old page exits.
+    const timer = setTimeout(() => {
+      if (lenisRef.current) {
+        lenisRef.current.scrollTo(0, { immediate: true })
+      } else {
+        window.scrollTo(0, 0)
+      }
+    }, 350)
+
+    return () => clearTimeout(timer)
+  }, [pathname])
 
   return (
     <>
