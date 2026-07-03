@@ -1,11 +1,15 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { FaEnvelope, FaLock, FaArrowLeft } from 'react-icons/fa6'
 import TiltImage from '../components/ui/TiltImage'
+import { useAuth } from '../auth/AuthContext'
 
 export default function LoginPage() {
+  const { login } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -69,25 +73,8 @@ export default function LoginPage() {
        * navigate('/')
        * ──────────────────────────────────────────────────────────────────────── */
 
-      // Simulate network request latency (1.5 seconds)
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      // Mock Credentials Check:
-      // Accepts any email, but validates against admin@arthagama.com/password123 for testing.
-      if (email.toLowerCase() === 'admin@arthagama.com' && password === 'password123') {
-        navigate('/')
-      } else if (email.toLowerCase() === 'admin@arthagama.com') {
-        throw new Error('Incorrect password. (Hint: use password123)')
-      } else {
-        // To make debugging and UX testing smooth, we'll allow other accounts but log them in.
-        // We'll throw an error ONLY if the password is "wrong" to demonstrate validation.
-        if (password === 'error123') {
-          throw new Error('Simulated backend error: Server rejected credentials.')
-        }
-
-        // Log in other emails by default to make manual testing easy
-        navigate('/')
-      }
+      await login(email, password)
+      navigate(from, { replace: true })
 
     } catch (err: any) {
       setErrors(prev => ({

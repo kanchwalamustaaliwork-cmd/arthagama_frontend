@@ -10,6 +10,7 @@ import Navbar from './components/Navbar'
 import GlobalBackground from './components/backgrounds/GlobalBackground'
 import AnimatedRoutes from './routes/AnimatedRoutes'
 import FooterSection from './components/FooterSection'
+import { AuthProvider } from './auth/AuthContext'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -71,29 +72,31 @@ function App() {
 
   return (
     <>
-      <AnimatePresence mode="wait">
-        {isLoading && (
-          <LoadingScreen
-            key="loading"
-            onComplete={() => setIsLoading(false)}
-          />
-        )}
-      </AnimatePresence>
+      <AuthProvider>
+        <AnimatePresence mode="wait">
+          {isLoading && (
+            <LoadingScreen
+              key="loading"
+              onComplete={() => setIsLoading(false)}
+            />
+          )}
+        </AnimatePresence>
 
-      <AnimatePresence mode="wait">
-        {!isLoading && (
-          <motion.div
-            key="app"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { duration: 0.6 } }}
-            exit={{ opacity: 0, transition: { duration: 0.4 } }}
-          >
-            <BrowserRouter>
-              <AppContent />
-            </BrowserRouter>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        <AnimatePresence mode="wait">
+          {!isLoading && (
+            <motion.div
+              key="app"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1, transition: { duration: 0.6 } }}
+              exit={{ opacity: 0, transition: { duration: 0.4 } }}
+            >
+              <BrowserRouter>
+                <AppContent />
+              </BrowserRouter>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </AuthProvider>
     </>
   )
 }

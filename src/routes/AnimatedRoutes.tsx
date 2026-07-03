@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
+import ProtectedRoute from './ProtectedRoute'
 
 // Lazy imports — each becomes its own JS chunk, fetched only when visited
 const HomePage = lazy(() => import('../pages/HomePage'))
@@ -12,6 +13,11 @@ const SignUpPage = lazy(() => import('../pages/SignUpPage'))
 const ServicePage = lazy(() => import('../pages/ServicePage'))
 const PrivacyPolicyPage = lazy(() => import('../pages/PrivacyPolicy'))
 const TermsConditionsPage = lazy(() => import('../pages/TermsAndCondition'))
+
+const CustomStrategyBuilderPage = lazy(() => import('../pages/services/CustomStrategyBuilderPage'))
+const BacktestPage = lazy(() => import('../pages/services/BacktestPage'))
+const ResearchReportPage = lazy(() => import('../pages/services/ResearchReportPage'))
+const TradeWithUsPage = lazy(() => import('../pages/services/TradeWithUsPage'))
 
 export default function AnimatedRoutes() {
     const location = useLocation()
@@ -36,6 +42,16 @@ export default function AnimatedRoutes() {
                         <Route path="/services" element={<ServicePage />} />
                         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                         <Route path="/terms-conditions" element={<TermsConditionsPage />} />
+
+                        {/* Protected service detail routes */}
+                        <Route
+                            path="/services/custom-strategy-builder"
+                            element={<ProtectedRoute><CustomStrategyBuilderPage /></ProtectedRoute>}
+                        />
+                        <Route path="/services/backtest" element={<ProtectedRoute><BacktestPage /></ProtectedRoute>} />
+                        <Route path="/services/research-report" element={<ProtectedRoute><ResearchReportPage /></ProtectedRoute>} />
+                        <Route path="/services/trade-with-us" element={<ProtectedRoute><TradeWithUsPage /></ProtectedRoute>} />
+
                     </Routes>
                 </Suspense>
             </motion.div>
