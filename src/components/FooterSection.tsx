@@ -82,20 +82,6 @@ export default function FooterSection() {
         className="footer-backing relative pt-14 sm:pt-16 md:pt-20 pb-8 md:pb-12 overflow-hidden
                md:rounded-[2rem] lg:rounded-[2.5rem]"
       >
-        {/* Marquee brand strip */}
-        <div className="relative mb-12 sm:mb-16 overflow-hidden border-y border-[#B8CEC2]/12 py-3">
-          <div ref={marqueeRef} className="flex w-max whitespace-nowrap">
-            {Array.from({ length: 20 }).map((_, i) => (
-              <span
-                key={i}
-                className="mx-6 font-display italic text-lg sm:text-xl text-[#B8CEC2]/25"
-              >
-                Arthagama &nbsp;✦
-              </span>
-            ))}
-          </div>
-        </div>
-
         {/* Main Footer Content */}
         <div className="max-w-[1200px] mx-auto px-5 sm:px-6 md:px-10 lg:px-16">
           {/* CTA */}
@@ -132,7 +118,7 @@ export default function FooterSection() {
               />
               <motion.a
                 ref={emailBtnRef}
-                href="mailto:hello@arthagama.com"
+                href="mailto:info@arthagama.com"
                 onMouseMove={handleMagneticMove}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.97 }}
