@@ -17,7 +17,7 @@ const DEPT_OPTIONS: { label: string; value: Department | 'all' }[] = [
     { label: 'Operations', value: 'operations' },
 ]
 
-function Chip<T extends string>({
+function Chip({
     label,
     active,
     onClick,
