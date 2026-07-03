@@ -24,10 +24,10 @@ export const TEAM: TeamMember[] = [
             'Leads the overall vision of the company, driving strategy development, research initiatives, and long-term business growth.',
     },
     {
-        id: 'harish-shah',
-        name: 'Harish Shah',
+        id: 'hv-shah',
+        name: 'H V Shah',
         designation: 'Founder',
-        photo: 'https://i.pravatar.cc/500?img=47',
+        photo: 'https://i.pravatar.cc/500?img=8',
         linkedin: 'https://linkedin.com/in/',
         intro:
             'Harish Shah co-leads the organization with a strong focus on strategic planning and operational excellence.',
@@ -35,6 +35,19 @@ export const TEAM: TeamMember[] = [
             'Business operations, investment strategy, leadership',
         role:
             'Oversees company operations, strategic initiatives, and ensures sustainable growth across all business functions.',
+    },
+    {
+        id: 'dhruv-mehra',
+        name: 'Dhruv Mehra',
+        designation: 'Co-Founder',
+        photo: 'https://i.pravatar.cc/500?img=13',
+        linkedin: 'https://linkedin.com/in/',
+        intro:
+            'Dhruv Mehra co-founded Arthagama with a vision to build a technology-driven quantitative trading firm focused on disciplined research, innovation, and long-term value creation.',
+        specialization:
+            'Technology strategy, quantitative research, product development',
+        role:
+            'Leads technology initiatives, collaborates on quantitative strategy development, and drives the design and execution of scalable trading infrastructure.',
     },
     {
         id: 'om-aditya-pandey',
@@ -53,7 +66,7 @@ export const TEAM: TeamMember[] = [
         id: 'hussain-chill',
         name: 'Hussain Chill',
         designation: 'Co-Founder',
-        photo: 'https://i.pravatar.cc/500?img=45',
+        photo: 'https://i.pravatar.cc/500?img=3',
         linkedin: 'https://linkedin.com/in/',
         intro:
             'Hussain Chill plays a key role in shaping Arthagama\'s business direction and technology initiatives.',
@@ -66,7 +79,7 @@ export const TEAM: TeamMember[] = [
         id: 'samayk',
         name: 'Samayk',
         designation: 'Co-Founder',
-        photo: 'https://i.pravatar.cc/500?img=51',
+        photo: 'https://i.pravatar.cc/500?img=56',
         linkedin: 'https://linkedin.com/in/',
         intro:
             'Samayk focuses on expanding Arthagama\'s vision through innovation, collaboration, and technology-driven solutions.',
@@ -79,7 +92,7 @@ export const TEAM: TeamMember[] = [
         id: 'mohit-tiwari',
         name: 'Mohit Tiwari',
         designation: 'Software Engineer',
-        photo: 'https://i.pravatar.cc/500?img=32',
+        photo: 'https://i.pravatar.cc/500?img=22',
         linkedin: 'https://linkedin.com/in/',
         intro:
             'Mohit develops reliable software systems that power Arthagama\'s trading platform and internal tools.',
@@ -92,7 +105,7 @@ export const TEAM: TeamMember[] = [
         id: 'mustaali-kanchwala',
         name: 'Mustaali Kanchwala',
         designation: 'Software Engineer Intern',
-        photo: 'https://i.pravatar.cc/500?img=15',
+        photo: 'https://i.pravatar.cc/500?img=57',
         linkedin: 'https://linkedin.com/in/',
         intro:
             'Mustaali contributes to frontend and backend development while gaining hands-on experience building modern fintech applications.',

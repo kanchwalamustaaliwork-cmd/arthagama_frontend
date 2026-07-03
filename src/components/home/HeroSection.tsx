@@ -34,7 +34,7 @@ export default function HeroSection() {
 
           <div className="relative z-10 flex h-full min-h-screen flex-col justify-center px-6 py-8 lg:px-12 lg:py-10">
             {/* ---- Logo, top center ---- */}
-            <div className="blur-in mb-8 flex justify-start">
+            <div className="blur-in ml-10 mb-8 flex justify-start">
               <TiltImage
                 src="assets/arthagama_logo.png"
                 alt="Arthagama Logo"
@@ -43,7 +43,6 @@ export default function HeroSection() {
             </div>
 
             <div className="blur-in mb-6 flex items-center gap-3">
-              <div className="w-8 h-px bg-[hsl(var(--mint)/0.4)]" />
               <span className="text-[11px] uppercase tracking-[0.3em] text-[hsl(var(--mint)/0.6)]">
                 Algorithmic Trading
               </span>
