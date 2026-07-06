@@ -5,25 +5,7 @@ import Link from 'next/link'
 import gsap from 'gsap'
 import { motion } from 'framer-motion'
 import { easing, viewMotion } from '../constans/animation'
-
-const QUICK_LINKS = [
-  { label: 'Services', to: '/services' },
-  { label: 'Careers', to: '/careers' },
-  { label: 'Contact', to: '/contact' },
-  { label: 'Privacy Policy', to: '/privacy-policy' },
-  { label: 'Terms And Condition', to: '/terms-conditions' },
-]
-
-const ACCOUNT_LINKS = [
-  { label: 'Log In', to: '/login' },
-  { label: 'Become a Memeber', to: '/signup' },
-]
-
-const SOCIALS = [
-  { label: 'Twitter', href: '#' },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/company/arthagama/' },
-  { label: 'Instagram', href: '#' },
-]
+import { QUICK_LINKS, ACCOUNT_LINKS, IMPORTANT_LINKS, SOCIALS } from '../data/footer-links'
 
 const cascadeContainer = {
   hidden: {},
@@ -42,7 +24,7 @@ const cascadeItem = {
 export default function FooterSection() {
   const marqueeRef = useRef<HTMLDivElement>(null)
   const [emailHovered, setEmailHovered] = useState(false)
-  const emailBtnRef = useRef<HTMLAnchorElement>(null)
+  const emailBtnRef = useRef<HTMLDivElement>(null)
 
   // GSAP Marquee — scrolling brand strip above the CTA
   useEffect(() => {
@@ -59,7 +41,7 @@ export default function FooterSection() {
   }, [])
 
   // Magnetic hover for the email button
-  const handleMagneticMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleMagneticMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = emailBtnRef.current
     if (!el) return
     const rect = el.getBoundingClientRect()
@@ -89,9 +71,6 @@ export default function FooterSection() {
               href={"/contact"}
               scroll={false}
             >
-              <p className="text-[11px] sm:text-xs text-[#B8CEC2]/75 uppercase tracking-[0.3em] mb-5 sm:mb-6">
-                Get in touch
-              </p>
               <motion.h2
                 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display italic text-[#EAF1EC] mb-7 sm:mb-8 leading-[0.95] sm:leading-[0.9]"
                 initial={{ opacity: 0, y: 40, filter: 'blur(8px)' }}
@@ -101,39 +80,38 @@ export default function FooterSection() {
               >
                 Let's work together
               </motion.h2>
-            </Link>
 
-            {/* Email Button — mint pill, dark teal text, magnetic hover + glow */}
-            <div
-              className="inline-block relative"
-              onMouseEnter={() => setEmailHovered(true)}
-              onMouseLeave={() => {
-                setEmailHovered(false)
-                handleMagneticLeave()
-              }}
-            >
-              <span
-                className="absolute inset-[-2px] rounded-full bg-[#B8CEC2] blur-[16px] transition-opacity duration-300 pointer-events-none"
-                style={{ opacity: emailHovered ? 0.55 : 0 }}
-              />
-              <motion.a
-                ref={emailBtnRef}
-                href="mailto:info@arthagama.com"
-                onMouseMove={handleMagneticMove}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.97 }}
-                className="email-pill-mint relative z-10 flex items-center gap-3 text-xs sm:text-sm font-medium text-[#1B3236] rounded-full px-6 sm:px-8 py-3.5 sm:py-4"
+              {/* Email Button — mint pill, dark teal text, magnetic hover + glow */}
+              <div
+                className="inline-block relative"
+                onMouseEnter={() => setEmailHovered(true)}
+                onMouseLeave={() => {
+                  setEmailHovered(false)
+                  handleMagneticLeave()
+                }}
               >
-                <span>info@arthagama.com</span>
-                <motion.span
-                  className="text-[#244147]/70"
-                  animate={{ x: emailHovered ? 3 : 0, y: emailHovered ? -3 : 0 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+                <span
+                  className="absolute inset-[-2px] rounded-full bg-[#B8CEC2] blur-[16px] transition-opacity duration-300 pointer-events-none"
+                  style={{ opacity: emailHovered ? 0.55 : 0 }}
+                />
+                <motion.div
+                  ref={emailBtnRef}
+                  onMouseMove={handleMagneticMove}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="email-pill-mint relative z-10 flex items-center gap-3 text-xs sm:text-sm font-medium text-[#1B3236] rounded-full px-6 sm:px-8 py-3.5 sm:py-4"
                 >
-                  ↗
-                </motion.span>
-              </motion.a>
-            </div>
+                  <span>Contact us</span>
+                  <motion.span
+                    className="text-[#244147]/70"
+                    animate={{ x: emailHovered ? 3 : 0, y: emailHovered ? -3 : 0 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+                  >
+                    ↗
+                  </motion.span>
+                </motion.div>
+              </div>
+            </Link>
           </motion.div>
 
           {/* Quick Links Grid — cascade reveal */}
@@ -213,9 +191,31 @@ export default function FooterSection() {
             </motion.div>
           </motion.div>
 
+          {/* ===================== Horizontal Important Links ===================== */}
+          <motion.div
+            className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 mb-8 sm:mb-10"
+            variants={cascadeContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+          >
+            {IMPORTANT_LINKS.map((link) => (
+              <motion.div key={link.label} variants={cascadeItem}>
+                <Link
+                  href={link.to}
+                  scroll={false}
+                  className="text-[9px] sm:text-[10px] text-[#DCE7E1]/80 hover:text-[#EAF1EC] transition-colors duration-200 uppercase tracking-[0.15em] inline-flex items-center gap-1.5 group"
+                >
+                  <span className="w-0 group-hover:w-2 h-px bg-[#EAF1EC] transition-all duration-200" />
+                  {link.label}
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+
           {/* Bottom Bar */}
           <motion.div
-            className="flex flex-col sm:flex-row items-center justify-between gap-4"
+            className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-[#B8CEC2]/15"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.8, ease: easing, delay: 0.2 }}
@@ -225,15 +225,19 @@ export default function FooterSection() {
               © 2026 Arthagama. All rights reserved.
             </p>
             <div className="flex items-center gap-6">
-              {SOCIALS.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.2em] hover:text-[#EAF1EC] transition-colors duration-200"
-                >
-                  {s.label}
-                </a>
-              ))}
+              {SOCIALS.map((s) => {
+                const Icon = s.icon
+                return (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    aria-label={s.label}
+                    className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.2em] hover:text-[#EAF1EC] transition-colors duration-200"
+                  >
+                    <Icon className="h-4 w-4" />
+                  </a>
+                )
+              })}
             </div>
           </motion.div>
         </div>

@@ -28,22 +28,22 @@ export default function HeroSection() {
 
   return (
     <section ref={sectionRef} id="home" className="relative min-h-screen w-full overflow-hidden">
+      {/* ---------------- Desktop logo: centered top, spans both panels, clears navbar ---------------- */}
+      <div className="blur-in absolute left-1/2 top-20 z-20 hidden -translate-x-1/2 lg:top-24 lg:flex">
+        <TiltImage
+          src="/assets/arthagama_logo.png"
+          alt="Arthagama Logo"
+          className="w-20 sm:w-24 lg:w-28"
+        />
+      </div>
+
       {/* ---------------- Foreground ---------------- */}
-      <div className="relative z-10 flex min-h-screen w-full flex-col lg:flex-row">
+      <div className="relative z-10 flex min-h-screen w-full flex-col-reverse lg:flex-row">
         {/* ===================== LEFT PANEL — themed intro text ===================== */}
         <div className="relative w-full lg:w-[48%]">
           <div className="liquid-glass-strong absolute inset-4 rounded-3xl lg:inset-6" />
 
           <div className="relative z-10 flex h-full min-h-screen flex-col justify-center px-6 py-8 lg:px-12 lg:py-10">
-            {/* ---- Logo, top center ---- */}
-            <div className="blur-in ml-10 mb-8 flex justify-start">
-              <TiltImage
-                src="/assets/arthagama_logo.png"
-                alt="Arthagama Logo"
-                className="w-20 sm:w-24 lg:w-28"
-              />
-            </div>
-
             <div className="blur-in mb-6 flex items-center gap-3">
               <span className="text-[11px] uppercase tracking-[0.3em] text-[hsl(var(--mint)/0.6)]">
                 Algorithmic Trading
@@ -80,6 +80,15 @@ export default function HeroSection() {
 
         {/* ===================== RIGHT PANEL — name + tagline, enlarged ===================== */}
         <div className="relative flex w-full flex-1 flex-col items-center justify-center px-6 py-12 text-center lg:w-[52%] lg:px-12">
+          {/* Mobile-only logo, top center of the name image */}
+          <div className="blur-in mb-6 flex justify-center lg:hidden">
+            <TiltImage
+              src="/assets/arthagama_logo.png"
+              alt="Arthagama Logo"
+              className="w-20 sm:w-24"
+            />
+          </div>
+
           <div className="name-reveal mb-8">
             <TiltImage
               src="/assets/arthagama_name.png"
@@ -89,7 +98,7 @@ export default function HeroSection() {
           </div>
 
           <p className="blur-in whitespace-nowrap text-[9px] tracking-[0.08em] uppercase text-[hsl(var(--mint)/0.6)] xs:text-[10px] sm:text-xs md:text-sm">
-            Artha · Wealth + Āgama · Inflow
+            ArthĀ · Wealth + Āgama · Inflow
           </p>
         </div>
       </div>
@@ -159,6 +168,6 @@ export default function HeroSection() {
           pointer-events: none;
         }
       `}</style>
-    </section >
+    </section>
   )
 }
