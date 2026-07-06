@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import type { TeamMember } from '../../data/team'
-import { FaXTwitter, FaLinkedin } from 'react-icons/fa6'
-
+import { FaLinkedin } from 'react-icons/fa6'
+import { X } from 'lucide-react'
 
 interface EmployeeProfileProps {
     member: TeamMember
@@ -36,7 +36,7 @@ export default function EmployeeProfile({ member, onClose }: EmployeeProfileProp
                     onClick={onClose}
                     className="absolute right-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-[#122124]/40 text-[#EAF1EC] backdrop-blur-sm transition-colors hover:bg-[#122124]/60"
                 >
-                    <FaXTwitter className="h-4 w-4" />
+                    <X className="h-4 w-4" />
                 </button>
 
                 <motion.div layoutId={`photo-${member.id}`} className="relative h-64 w-full overflow-hidden sm:h-auto sm:w-[42%]">
