@@ -1,5 +1,7 @@
+"use client"
+
 import { useEffect, useRef, useState, useCallback, type ReactNode } from 'react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import { motion, useSpring, useScroll, type Transition } from 'framer-motion'
 
 export interface LegalSection {
@@ -266,7 +268,7 @@ export default function LegalPageLayout({
                                             hello@arthagama.com
                                         </a>
                                         , or see our{' '}
-                                        <Link to="/contact" className="underline hover:text-[#1B3236]">
+                                        <Link href="/contact" scroll={false} className="underline hover:text-[#1B3236]">
                                             contact page
                                         </Link>
                                         .

@@ -1,12 +1,14 @@
+"use client"
+
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 
 /* ── Logo ────────────────────────────────────────────────────────────────── */
 export default function NavLogo() {
     const [hovered, setHovered] = useState(false)
 
     return (
-        <Link to="/" aria-label="Home" className="relative z-10">
+        <Link href="/" scroll={false} aria-label="Home" className="relative z-10">
             <div
                 className="w-10 h-10 rounded-full p-[2px] transition-transform duration-300 hover:scale-110"
                 style={{

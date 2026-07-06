@@ -1,5 +1,8 @@
+"use client"
+
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import {
     motion,
     useSpring,
@@ -17,7 +20,7 @@ export default function DesktopPillNav({ navLinks, isActive }: { navLinks: { lab
     const [scrolled, setScrolled] = useState(false)
     const containerRef = useRef<HTMLDivElement>(null)
     const linkRefs = useRef<(HTMLAnchorElement | null)[]>([])
-    const location = useLocation()
+    const pathname = usePathname()
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 100)
@@ -30,13 +33,6 @@ export default function DesktopPillNav({ navLinks, isActive }: { navLinks: { lab
      * x / width track the active tab's geometry. Wrapping them in springs
      * gives free interruptible retargeting — framer-motion smoothly
      * redirects an in-flight spring toward a new target with no snap.
-     *
-     * FIX: when none of navLinks matches the current route (e.g. on
-     * /login or /signup), findIndex returns -1 and there's no element to
-     * measure. Previously this caused an early return that left `box` (and
-     * therefore the blob position) stuck on whatever tab was last active.
-     * We now explicitly detect this case and collapse + fade the blob out
-     * instead of leaving a stale highlight behind.
      * ------------------------------------------------------------------- */
     const [box, setBox] = useState({ left: 0, width: 0 })
     const [hasActiveTab, setHasActiveTab] = useState(true)
@@ -61,7 +57,7 @@ export default function DesktopPillNav({ navLinks, isActive }: { navLinks: { lab
         setHasActiveTab(true)
         setBox({ left: elRect.left - containerRect.left, width: elRect.width })
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [location.pathname])
+    }, [pathname])
 
     useEffect(() => {
         measure()
@@ -157,7 +153,8 @@ export default function DesktopPillNav({ navLinks, isActive }: { navLinks: { lab
                         ref={(el) => {
                             linkRefs.current[i] = el
                         }}
-                        to={link.to}
+                        href={link.to}
+                        scroll={false}
                         className={`relative z-10 text-xs sm:text-sm rounded-full px-3 sm:px-4 py-1.5 sm:py-2 transition-colors duration-200 whitespace-nowrap ${isActive(link.to)
                             ? 'text-[hsl(var(--teal-deep))] font-medium'
                             : 'text-[hsl(var(--mint)/0.75)] hover:text-[hsl(var(--mint-soft))]'

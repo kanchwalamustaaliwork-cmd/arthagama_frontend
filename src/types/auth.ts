@@ -14,4 +14,6 @@ export interface AuthContextValue {
     isInitializing: boolean
     login: (email: string, password: string) => Promise<void>
     logout: () => void
+    pendingRedirect: string | null
+    setPendingRedirect: (path: string | null) => void
 }

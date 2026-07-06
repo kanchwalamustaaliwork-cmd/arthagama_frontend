@@ -1,10 +1,13 @@
-import { Link } from 'react-router-dom'
+"use client"
+
+import Link from 'next/link'
 
 /* ── Login Button ────────────────────────────────────────────────────────── */
 export default function LoginButton() {
     return (
         <Link
-            to="/login"
+            href="/login"
+            scroll={false}
             className="relative z-10 text-xs sm:text-sm rounded-full px-3 sm:px-4 py-1.5 sm:py-2 transition-all duration-200 whitespace-nowrap"
             style={{
                 border: '1px solid hsl(var(--mint) / 0.3)',

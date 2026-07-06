@@ -1,5 +1,8 @@
+"use client"
+
 import { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import {
     motion,
     AnimatePresence,
@@ -10,12 +13,12 @@ import {
  * ──────────────────────────────────────────────────────────────────────── */
 export default function MobileMenu({ navLinks, isActive }: { navLinks: { label: string; to: string }[]; isActive: (to: string) => boolean }) {
     const [open, setOpen] = useState(false)
-    const location = useLocation()
+    const pathname = usePathname()
 
     // Close automatically whenever the route changes (link tapped)
     useEffect(() => {
         setOpen(false)
-    }, [location.pathname])
+    }, [pathname])
 
     // Lock body scroll while the cloth panel is unfurled
     useEffect(() => {
@@ -78,15 +81,15 @@ export default function MobileMenu({ navLinks, isActive }: { navLinks: { label: 
                         />
 
                         {/* ----------------------------------------------------------
-             * Cloth-wrap panel
-             * Anchored at its top edge (like fabric pinned at a rod),
-             * it unfurls downward with a springy, slightly wavy motion
-             * (scaleY + rotateX + a subtle skew flutter) rather than a
-             * flat linear slide, then settles with a soft overshoot —
-             * mimicking cloth dropping and catching air resistance.
-             * All animated properties are transform/opacity only, so
-             * the motion stays GPU-accelerated.
-             * -------------------------------------------------------- */}
+                         * Cloth-wrap panel
+                         * Anchored at its top edge (like fabric pinned at a rod),
+                         * it unfurls downward with a springy, slightly wavy motion
+                         * (scaleY + rotateX + a subtle skew flutter) rather than a
+                         * flat linear slide, then settles with a soft overshoot —
+                         * mimicking cloth dropping and catching air resistance.
+                         * All animated properties are transform/opacity only, so
+                         * the motion stays GPU-accelerated.
+                         * -------------------------------------------------------- */}
                         <motion.div
                             key="panel"
                             className="fixed top-[4.25rem] right-4 left-4 z-[55] rounded-3xl backdrop-blur-md overflow-hidden origin-top"
@@ -118,7 +121,7 @@ export default function MobileMenu({ navLinks, isActive }: { navLinks: { label: 
                         >
                             <div className="px-3 py-4">
                                 {/* Links — alternate left/right entrance, one-by-one with a
-                    millisecond stagger handled by each item's own `delay`. */}
+                                    millisecond stagger handled by each item's own `delay`. */}
                                 <ul className="flex flex-col gap-1">
                                     {navLinks.map((link, i) => (
                                         <motion.li
@@ -137,7 +140,8 @@ export default function MobileMenu({ navLinks, isActive }: { navLinks: { label: 
                                             exit={{ opacity: 0, x: i % 2 === 0 ? -16 : 16, transition: { duration: 0.15 } }}
                                         >
                                             <Link
-                                                to={link.to}
+                                                href={link.to}
+                                                scroll={false}
                                                 className={`block min-h-[44px] flex items-center rounded-2xl px-4 text-base transition-colors duration-200 ${isActive(link.to)
                                                     ? 'text-[hsl(var(--teal-deep))] font-medium'
                                                     : 'text-[hsl(var(--mint)/0.85)] hover:text-[hsl(var(--mint-soft))]'
@@ -180,7 +184,8 @@ export default function MobileMenu({ navLinks, isActive }: { navLinks: { label: 
                                         exit={{ opacity: 0, x: -16, transition: { duration: 0.15 } }}
                                     >
                                         <Link
-                                            to="/login"
+                                            href="/login"
+                                            scroll={false}
                                             className="flex items-center justify-center min-h-[44px] w-full rounded-2xl text-base transition-colors duration-200"
                                             style={{
                                                 border: '1px solid hsl(var(--mint) / 0.3)',
@@ -206,7 +211,8 @@ export default function MobileMenu({ navLinks, isActive }: { navLinks: { label: 
                                         exit={{ opacity: 0, x: 16, transition: { duration: 0.15 } }}
                                     >
                                         <Link
-                                            to="/signup"
+                                            href="/signup"
+                                            scroll={false}
                                             className="flex items-center justify-center gap-1 min-h-[44px] w-full rounded-2xl text-base transition-colors duration-200"
                                             style={{
                                                 background: 'hsl(var(--mint))',

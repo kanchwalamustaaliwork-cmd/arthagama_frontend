@@ -1,4 +1,6 @@
-import { useLocation } from 'react-router-dom'
+"use client"
+
+import { usePathname } from 'next/navigation'
 import MobileMenu from './ui/MobileMenu'
 import DesktopPillNav from './ui/DesktopPillNav'
 
@@ -21,11 +23,11 @@ const THEME_VARS = {
 } as React.CSSProperties
 
 export default function Navbar() {
-  const location = useLocation()
+  const pathname = usePathname()
 
   const isActive = (to: string) => {
-    if (to === '/') return location.pathname === '/'
-    return location.pathname.startsWith(to.split('#')[0]) && to.split('#')[0] !== '/'
+    if (to === '/') return pathname === '/'
+    return pathname.startsWith(to.split('#')[0]) && to.split('#')[0] !== '/'
   }
 
   return (
@@ -50,4 +52,3 @@ export default function Navbar() {
     </div>
   )
 }
-

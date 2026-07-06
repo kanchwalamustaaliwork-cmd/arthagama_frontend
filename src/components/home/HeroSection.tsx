@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { FaFacebook, FaInstagram, FaXTwitter, FaLinkedin } from 'react-icons/fa6'
@@ -36,7 +38,7 @@ export default function HeroSection() {
             {/* ---- Logo, top center ---- */}
             <div className="blur-in ml-10 mb-8 flex justify-start">
               <TiltImage
-                src="assets/arthagama_logo.png"
+                src="/assets/arthagama_logo.png"
                 alt="Arthagama Logo"
                 className="w-20 sm:w-24 lg:w-28"
               />
@@ -80,7 +82,7 @@ export default function HeroSection() {
         <div className="relative flex w-full flex-1 flex-col items-center justify-center px-6 py-12 text-center lg:w-[52%] lg:px-12">
           <div className="name-reveal mb-8">
             <TiltImage
-              src="assets/arthagama_name.png"
+              src="/assets/arthagama_name.png"
               alt="Arthagama"
               className="mx-auto w-full max-w-[380px] sm:max-w-[520px] lg:max-w-[640px]"
             />

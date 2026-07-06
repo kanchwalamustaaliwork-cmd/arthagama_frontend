@@ -1,3 +1,5 @@
+'use client'
+
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { login as loginRequest, logout as logoutRequest } from './authService'
 import type { AuthContextValue, AuthUser } from '../types/auth'
@@ -10,6 +12,7 @@ const TOKEN_KEY = 'arthagama_auth_token'
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<AuthUser | null>(null)
     const [isInitializing, setIsInitializing] = useState(true)
+    const [pendingRedirect, setPendingRedirect] = useState<string | null>(null)
 
     // Restore session on load — swap for a "validate token" API call once
     // real JWT auth exists (verify the stored token instead of trusting it).
@@ -40,7 +43,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated: !!user, isInitializing, login, logout }}>
+        <AuthContext.Provider value={{
+            user,
+            isAuthenticated: !!user,
+            isInitializing,
+            login,
+            logout,
+            pendingRedirect,
+            setPendingRedirect,
+        }}>
             {children}
         </AuthContext.Provider>
     )

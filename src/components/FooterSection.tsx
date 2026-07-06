@@ -1,17 +1,17 @@
+"use client"
+
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import gsap from 'gsap'
 import { motion } from 'framer-motion'
 import { easing, viewMotion } from '../constans/animation'
 
 const QUICK_LINKS = [
-  // { label: 'Home', to: '/' },
-  // { label: 'About Us', to: '/about' },
   { label: 'Services', to: '/services' },
   { label: 'Careers', to: '/careers' },
   { label: 'Contact', to: '/contact' },
   { label: 'Privacy Policy', to: '/privacy-policy' },
-  { label: 'Terms And Condition', to: '/terms-and-conditions' },
+  { label: 'Terms And Condition', to: '/terms-conditions' },
 ]
 
 const ACCOUNT_LINKS = [
@@ -24,7 +24,6 @@ const SOCIALS = [
   { label: 'LinkedIn', href: 'https://www.linkedin.com/company/arthagama/' },
   { label: 'Instagram', href: '#' },
 ]
-
 
 const cascadeContainer = {
   hidden: {},
@@ -87,7 +86,8 @@ export default function FooterSection() {
           {/* CTA */}
           <motion.div className="text-center mb-14 sm:mb-16 md:mb-20" {...viewMotion}>
             <Link
-              to={"/contact"}
+              href={"/contact"}
+              scroll={false}
             >
               <p className="text-[11px] sm:text-xs text-[#B8CEC2]/75 uppercase tracking-[0.3em] mb-5 sm:mb-6">
                 Get in touch
@@ -151,7 +151,8 @@ export default function FooterSection() {
                 {QUICK_LINKS.map((link) => (
                   <li key={link.label}>
                     <Link
-                      to={link.to}
+                      href={link.to}
+                      scroll={false}
                       className="text-sm text-[#DCE7E1]/80 hover:text-[#EAF1EC] transition-colors duration-200 inline-flex items-center gap-1.5 group"
                     >
                       <span className="w-0 group-hover:w-2 h-px bg-[#EAF1EC] transition-all duration-200" />
@@ -169,7 +170,8 @@ export default function FooterSection() {
                 {ACCOUNT_LINKS.map((link) => (
                   <li key={link.label}>
                     <Link
-                      to={link.to}
+                      href={link.to}
+                      scroll={false}
                       className="text-sm text-[#DCE7E1]/80 hover:text-[#EAF1EC] transition-colors duration-200 inline-flex items-center gap-1.5 group"
                     >
                       <span className="w-0 group-hover:w-2 h-px bg-[#EAF1EC] transition-all duration-200" />

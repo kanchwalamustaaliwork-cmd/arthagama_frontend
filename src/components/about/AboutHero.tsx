@@ -1,3 +1,5 @@
+"use client"
+
 import { motion } from 'framer-motion'
 import TiltImage from '../ui/TiltImage'
 import { easing } from '../../constans/animation'
@@ -34,7 +36,7 @@ export default function AboutHero() {
                         transition={{ duration: 1.3, ease: easing, delay: 0.15 }}
                     >
                         <TiltImage
-                            src="assets/arthagama_name.png"
+                            src="/assets/arthagama_name.png"
                             alt="Arthagama"
                             className="mx-auto w-full max-w-[280px] sm:max-w-[420px] lg:max-w-[520px]"
                         />

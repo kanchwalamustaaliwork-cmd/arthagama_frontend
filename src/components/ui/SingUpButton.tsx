@@ -1,5 +1,7 @@
+"use client"
+
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 
 /* ── Sign Up Button ──────────────────────────────────────────────────────── */
 export default function SignUpButton() {
@@ -20,7 +22,8 @@ export default function SignUpButton() {
                 }}
             />
             <Link
-                to="/signup"
+                href="/signup"
+                scroll={false}
                 className="relative z-10 flex items-center gap-1 text-xs sm:text-sm rounded-full px-3 sm:px-4 py-1.5 sm:py-2 backdrop-blur-md transition-all duration-200 whitespace-nowrap"
                 style={{
                     background: 'hsl(var(--teal) / 0.7)',

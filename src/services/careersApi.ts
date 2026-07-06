@@ -6,8 +6,7 @@ import { STATIC_JOBS } from '../data/jobs'
 // with actual `fetch(...)` calls. Everything that consumes these functions
 // (useJobs hook, ApplicationForm) already handles loading/error states, so
 // no calling code needs to change.
-//
-// const API_BASE = import.meta.env.VITE_CAREERS_API_URL
+// const API_BASE = process.env.NEXT_PUBLIC_CAREERS_API_URL
 
 const SIMULATED_DELAY_MS = 500
 

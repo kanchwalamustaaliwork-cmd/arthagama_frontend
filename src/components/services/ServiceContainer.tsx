@@ -1,10 +1,10 @@
-import { Link } from 'react-router-dom'
+"use client"
+
+import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import type { ServiceContainerProps } from '../../types/services'
 import { easing } from '../../constans/animation'
-
-
 
 export default function ServiceContainer({ service, reverse, index }: ServiceContainerProps) {
     return (
@@ -35,7 +35,8 @@ export default function ServiceContainer({ service, reverse, index }: ServiceCon
                     ))}
                 </ul>
                 <Link
-                    to={`/services/${service.slug}`}
+                    href={`/services/${service.slug}`}
+                    scroll={false}
                     className="cta-btn group relative inline-flex items-center gap-2 overflow-hidden rounded-full px-6 py-3 text-xs font-medium text-[#1B3236]"
                 >
                     {/* Shine Sweep on hover */}

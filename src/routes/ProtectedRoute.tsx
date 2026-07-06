@@ -1,17 +1,26 @@
-import type { ReactNode } from 'react'
-import { Navigate, useLocation } from 'react-router-dom'
+"use client"
+
+import { useEffect, type ReactNode } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
 import { useAuth } from '../auth/AuthContext'
 
 export default function ProtectedRoute({ children }: { children: ReactNode }) {
-    const { isAuthenticated, isInitializing } = useAuth()
-    const location = useLocation()
+    const { isAuthenticated, isInitializing, setPendingRedirect } = useAuth()
+    const router = useRouter()
+    const pathname = usePathname()
 
-    // Avoid a flash-redirect to /login before the stored session has been checked
+    useEffect(() => {
+        if (!isInitializing && !isAuthenticated) {
+            setPendingRedirect(pathname)
+            router.replace('/login')
+        }
+    }, [isInitializing, isAuthenticated, pathname, router, setPendingRedirect])
+
+    // While session check is in progress, render nothing (prevents flash + premature redirect)
     if (isInitializing) return null
-
-    if (!isAuthenticated) {
-        return <Navigate to="/login" state={{ from: location }} replace />
-    }
-
+    
+    // While redirect is pending (effect not yet fired), also render nothing
+    if (!isAuthenticated) return null
+    
     return <>{children}</>
 }
