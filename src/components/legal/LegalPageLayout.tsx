@@ -4,23 +4,9 @@ import { useEffect, useRef, useState, useCallback, type ReactNode } from 'react'
 import Link from 'next/link'
 import { motion, useSpring, useScroll, type Transition } from 'framer-motion'
 import { formatBrandText, BRAND_ON_DARK, BRAND_ON_LIGHT } from '@/src/utils/brand'
+import { easing, viewTransition } from '../../constans/animation'
+import { LegalPageLayoutProps } from '@/src/types/legal'
 
-export interface LegalSection {
-    id: string
-    heading: string
-    paragraphs: (string | ReactNode)[]
-}
-
-interface LegalPageLayoutProps {
-    eyebrow: string
-    title: string
-    lastUpdated: string
-    intro: string
-    sections: LegalSection[]
-}
-
-const easing: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
-const viewTransition: Transition = { duration: 0.8, ease: easing }
 
 // Hero: mask reveal, word by word — the one "spent" animation budget item
 const maskContainer = {
@@ -143,18 +129,6 @@ export default function LegalPageLayout({
             <div className="relative z-10 mx-auto max-w-[1200px] px-5 sm:px-6 md:px-10 lg:px-16">
                 {/* ── Hero ─────────────────────────────────────────────────────── */}
                 <div className="mb-14 sm:mb-16 md:mb-20 max-w-3xl">
-                    <motion.div
-                        className="mb-5 flex items-center gap-3"
-                        initial={{ opacity: 0, y: 14 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, ease: easing }}
-                    >
-                        <div className="w-8 h-px bg-[#B8CEC2]/40" />
-                        <span className="text-[11px] uppercase tracking-[0.3em] text-[#B8CEC2]/75">
-                            {eyebrow}
-                        </span>
-                    </motion.div>
-
                     <MaskRevealHeading text={title} />
 
                     <motion.div
@@ -191,8 +165,8 @@ export default function LegalPageLayout({
                                     }}
                                     href={`#${section.id}`}
                                     className={`relative z-10 rounded-xl px-4 py-2.5 text-sm leading-snug transition-colors duration-300 ${activeId === section.id
-                                            ? 'text-[#1B3236] font-medium'
-                                            : 'text-[#B8CEC2]/65 hover:text-[#EAF1EC]'
+                                        ? 'text-[#1B3236] font-medium'
+                                        : 'text-[#B8CEC2]/65 hover:text-[#EAF1EC]'
                                         }`}
                                 >
                                     {section.heading}
@@ -209,8 +183,8 @@ export default function LegalPageLayout({
                                     key={section.id}
                                     href={`#${section.id}`}
                                     className={`whitespace-nowrap text-xs rounded-full px-3.5 py-2 border transition-colors duration-300 ${activeId === section.id
-                                            ? 'bg-[#B8CEC2] text-[#1B3236] border-[#B8CEC2] font-medium'
-                                            : 'border-[#B8CEC2]/25 text-[#B8CEC2]/70'
+                                        ? 'bg-[#B8CEC2] text-[#1B3236] border-[#B8CEC2] font-medium'
+                                        : 'border-[#B8CEC2]/25 text-[#B8CEC2]/70'
                                         }`}
                                 >
                                     {section.heading}
@@ -266,7 +240,7 @@ export default function LegalPageLayout({
                                     <p className="text-xs text-[#244147]/60 leading-relaxed">
                                         Questions about this document? Reach us at{' '}
                                         <a href="mailto:hello@arthagama.com" className="underline hover:text-[#1B3236]">
-                                            hello@arthagama.com
+                                            info@arthagama.com
                                         </a>
                                         , or see our{' '}
                                         <Link href="/contact" scroll={false} className="underline hover:text-[#1B3236]">
