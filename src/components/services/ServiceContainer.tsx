@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import type { ServiceContainerProps } from '../../types/services'
 import { easing } from '../../constans/animation'
+import ServiceVisual from './visuals/ServiceVisual'
 
 export default function ServiceContainer({ service, reverse, index }: ServiceContainerProps) {
     return (
@@ -46,7 +47,6 @@ export default function ServiceContainer({ service, reverse, index }: ServiceCon
                 </Link>
             </motion.div>
 
-            {/* Scale Fade + Hover Elevation on the image */}
             <motion.div
                 className={reverse ? 'md:order-1' : 'md:order-2'}
                 initial={{ opacity: 0, x: reverse ? -60 : 60, scale: 0.94 }}
@@ -55,15 +55,8 @@ export default function ServiceContainer({ service, reverse, index }: ServiceCon
                 viewport={{ once: true, margin: '-100px' }}
                 whileHover={{ y: -6 }}
             >
-                <div className="service-image-frame relative overflow-hidden rounded-3xl">
-                    <img
-                        src={service.image}
-                        alt={service.title}
-                        className="h-64 w-full object-cover sm:h-80 md:h-[380px]"
-                        loading="lazy"
-                        decoding="async"
-                    />
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#122124]/50 via-transparent to-transparent" />
+                <div className="service-glass-frame relative max-h-[330px] overflow-hidden rounded-3xl sm:h-[330px]">
+                    <ServiceVisual type={service.visual} />
                 </div>
             </motion.div>
 
@@ -76,9 +69,34 @@ export default function ServiceContainer({ service, reverse, index }: ServiceCon
           transition: transform 0.6s ease;
         }
         .cta-btn:hover .shine-sweep { transform: translateX(120%); }
-        .service-image-frame {
-          border: 1px solid rgba(184, 206, 194, 0.2);
-          box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.5);
+
+        .service-glass-frame {
+          background: rgba(36, 65, 71, 0.18);
+          background-blend-mode: luminosity;
+          backdrop-filter: blur(30px);
+          -webkit-backdrop-filter: blur(30px);
+          box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.5),
+            inset 0 1px 1px rgba(184, 206, 194, 0.2);
+        }
+        .service-glass-frame::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          padding: 1.4px;
+          border-radius: inherit;
+          background: linear-gradient(
+            180deg,
+            rgba(184, 206, 194, 0.5) 0%,
+            rgba(184, 206, 194, 0.2) 20%,
+            transparent 40%,
+            transparent 60%,
+            rgba(184, 206, 194, 0.2) 80%,
+            rgba(184, 206, 194, 0.5) 100%
+          );
+          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+          -webkit-mask-composite: xor;
+          mask-composite: exclude;
+          pointer-events: none;
         }
       `}</style>
         </div>

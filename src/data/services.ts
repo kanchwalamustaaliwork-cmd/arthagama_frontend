@@ -1,3 +1,4 @@
+// data/services.ts
 import type { ServiceSummary } from '../types/services'
 
 export const SERVICES: ServiceSummary[] = [
@@ -11,7 +12,7 @@ export const SERVICES: ServiceSummary[] = [
             'Built by our quant research team',
             'Fully backtested before deployment',
         ],
-        image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop',
+        visual: 'terminal',
         ctaLabel: 'View Details',
     },
     {
@@ -20,7 +21,7 @@ export const SERVICES: ServiceSummary[] = [
         shortDescription:
             'Run your strategy against years of historical market data to understand its behavior before risking live capital.',
         highlights: ['Multi-year historical data', 'Slippage & cost-aware modeling', 'Detailed performance breakdown'],
-        image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=1200&auto=format&fit=crop',
+        visual: 'backtest',
         ctaLabel: 'View Details',
     },
     {
@@ -29,7 +30,7 @@ export const SERVICES: ServiceSummary[] = [
         shortDescription:
             'In-depth, data-driven research on market regimes, factor performance, and strategy viability — delivered on a regular cadence.',
         highlights: ['Published monthly', 'Written by our research desk', 'Actionable, not just academic'],
-        image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=1200&auto=format&fit=crop',
+        visual: 'research',
         ctaLabel: 'View Details',
     },
     {
@@ -38,7 +39,20 @@ export const SERVICES: ServiceSummary[] = [
         shortDescription:
             'Let our systematic strategies trade on your behalf through a fully automated, broker-integrated execution pipeline.',
         highlights: ['Fully automated execution', 'Transparent live reporting', 'Broker-integrated, sub-5ms routing'],
-        image: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?q=80&w=1200&auto=format&fit=crop',
+        visual: 'execution',
+        ctaLabel: 'View Details',
+    },
+    {
+        slug: 'compare-stocks',
+        title: 'Compare Stocks',
+        shortDescription:
+            'Put any two stocks side by side across returns, volatility, and correlation to see how they actually behave relative to each other.',
+        highlights: [
+            'Head-to-head performance metrics',
+            'Volatility & correlation analysis',
+            'Real-time relative strength view',
+        ],
+        visual: 'compare',
         ctaLabel: 'View Details',
     },
 ]
