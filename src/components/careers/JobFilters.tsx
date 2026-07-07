@@ -1,45 +1,8 @@
-import { motion } from 'framer-motion'
+import Chip from './Chip'
 import { Search } from 'lucide-react'
-import type { JobType, Department, JobFiltersProps } from '../../types/careers'
+import type { JobFiltersProps } from '../../types/careers'
+import { TYPE_OPTIONS, DEPT_OPTIONS } from '../../data/jobs'
 
-
-const TYPE_OPTIONS: { label: string; value: JobType | 'all' }[] = [
-    { label: 'All Roles', value: 'all' },
-    { label: 'Full-time', value: 'full-time' },
-    { label: 'Internship', value: 'internship' },
-]
-
-const DEPT_OPTIONS: { label: string; value: Department | 'all' }[] = [
-    { label: 'All Departments', value: 'all' },
-    { label: 'Engineering', value: 'engineering' },
-    { label: 'Finance', value: 'finance' },
-    { label: 'Research', value: 'research' },
-    { label: 'Operations', value: 'operations' },
-]
-
-function Chip({
-    label,
-    active,
-    onClick,
-}: {
-    label: string
-    active: boolean
-    onClick: () => void
-}) {
-    return (
-        <motion.button
-            onClick={onClick}
-            // Scale + Fade on selection change
-            animate={{ scale: active ? 1.04 : 1 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 350, damping: 20 }}
-            className={`chip whitespace-nowrap rounded-full px-4 py-2 text-xs font-medium transition-colors duration-300 ${active ? 'chip-active' : 'chip-inactive'
-                }`}
-        >
-            {label}
-        </motion.button>
-    )
-}
 
 export default function JobFilters({
     query,

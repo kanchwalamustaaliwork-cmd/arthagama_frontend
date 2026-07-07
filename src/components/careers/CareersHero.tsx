@@ -16,10 +16,11 @@ export default function CareersHero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, ease: easing, delay: 0.15 }}
-              className="gradient-text-anim mx-auto max-w-3xl font-body text-4xl font-light leading-[1.1] sm:text-5xl md:text-6xl"
+              className="gradient-text-anim mx-auto max-w-4xl pb-2 font-body text-4xl font-light leading-[1.2] sm:text-5xl md:text-6xl"
             >
-              Build the future of{' '}
-              <span className="block sm:inline">algorithmic trading</span>
+              Don't just find a <span className="font-semibold">job</span>.
+              <br />
+              Build what moves the markets.
             </motion.h1>
 
             <motion.p

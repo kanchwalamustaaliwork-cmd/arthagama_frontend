@@ -1,82 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
+import { useScroll, useTransform } from 'framer-motion'
 import { CULTURE_POINTS } from '../../data/jobs'
-import type { Point } from '../../types/careers'
 import { BRAND_ON_DARK } from '@/src/utils/brand'
+import StackCard from './StackCard'
 
-
-const MAX_PEEK_DEPTH = 3 // how many stacked layers peek out behind the front card
-const EXIT_Y = -150 // px the front card travels as it leaves
-const EXIT_ROTATE = -5 // deg the front card rotates as it leaves
-
-/**
- * Pure function: given a continuous "scroll position" (v) and a card's own
- * index, return that card's visual state.
- *
- *  v < index          -> card is still waiting in the stack (peeking behind)
- *  index <= v < i + 1  -> card is the active, front card and is mid-exit
- *  v >= index + 1      -> card has fully left
- */
-function cardState(v: number, index: number) {
-    if (v >= index + 1) {
-        return { y: EXIT_Y, opacity: 0, scale: 0.92, rotate: EXIT_ROTATE }
-    }
-    if (v >= index) {
-        const f = v - index
-        return {
-            y: f * EXIT_Y,
-            opacity: 1 - f,
-            scale: 1 - f * 0.08,
-            rotate: f * EXIT_ROTATE,
-        }
-    }
-    const depth = Math.min(index - v, MAX_PEEK_DEPTH)
-    return {
-        y: depth * 14,
-        opacity: depth >= MAX_PEEK_DEPTH ? 0 : 1,
-        scale: 1 - depth * 0.045,
-        rotate: 0,
-    }
-}
-
-function StackCard({
-    point,
-    index,
-    total,
-    isActive,
-    currentFloat,
-}: {
-    point: Point
-    index: number
-    total: number
-    isActive: boolean
-    currentFloat: MotionValue<number>
-}) {
-    const y = useTransform(currentFloat, (v) => cardState(v, index).y)
-    const opacity = useTransform(currentFloat, (v) => cardState(v, index).opacity)
-    const scale = useTransform(currentFloat, (v) => cardState(v, index).scale)
-    const rotate = useTransform(currentFloat, (v) => cardState(v, index).rotate)
-
-    return (
-        <motion.div
-            style={{ y, opacity, scale, rotate, zIndex: total - index }}
-            className="culture-card absolute inset-0 rounded-3xl p-10 sm:p-14"
-            aria-hidden={!isActive}
-        >
-            <span className="text-sm font-medium tracking-wide text-[#244147]/50">
-                {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
-            </span>
-
-            <h3 className="mt-4 text-2xl font-semibold text-[#1B3236] sm:text-3xl md:text-4xl">
-                {point.title}
-            </h3>
-
-            <p className="mt-5 text-base leading-7 text-[#244147]/75 sm:text-lg md:text-xl">
-                {point.body}
-            </p>
-        </motion.div>
-    )
-}
 
 /**
  * Scroll-pinned stack of cards.

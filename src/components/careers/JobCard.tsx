@@ -2,14 +2,8 @@ import { motion } from 'framer-motion'
 import { ArrowUpRight, Briefcase, MapPin } from 'lucide-react'
 import type { JobListing } from '../../types/careers'
 import { easing } from '../../constans/animation'
+import { DEPT_LABEL } from '../../data/jobs'
 
-
-const DEPT_LABEL: Record<JobListing['department'], string> = {
-    engineering: 'Engineering',
-    finance: 'Finance',
-    research: 'Research',
-    operations: 'Operations',
-}
 
 export default function JobCard({
     job,

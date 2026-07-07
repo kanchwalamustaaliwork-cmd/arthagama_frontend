@@ -1,5 +1,6 @@
 import type { JobListing } from '../types/careers'
 import type { Point } from '../types/careers'
+import type { JobType, Department } from '../types/careers'
 
 export const CULTURE_POINTS: Point[] = [
     {
@@ -143,3 +144,24 @@ export const STATIC_JOBS: JobListing[] = [
         ],
     },
 ]
+
+export const TYPE_OPTIONS: { label: string; value: JobType | 'all' }[] = [
+    { label: 'All Roles', value: 'all' },
+    { label: 'Full-time', value: 'full-time' },
+    { label: 'Internship', value: 'internship' },
+]
+
+export const DEPT_OPTIONS: { label: string; value: Department | 'all' }[] = [
+    { label: 'All Departments', value: 'all' },
+    { label: 'Engineering', value: 'engineering' },
+    { label: 'Finance', value: 'finance' },
+    { label: 'Research', value: 'research' },
+    { label: 'Operations', value: 'operations' },
+]
+
+export const DEPT_LABEL: Record<JobListing['department'], string> = {
+    engineering: 'Engineering',
+    finance: 'Finance',
+    research: 'Research',
+    operations: 'Operations',
+}
