@@ -1,11 +1,13 @@
 "use client"
 
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import Link from 'next/link'
 import gsap from 'gsap'
 import { motion } from 'framer-motion'
 import { easing, viewMotion } from '../constans/animation'
 import { QUICK_LINKS, ACCOUNT_LINKS, IMPORTANT_LINKS, SOCIALS } from '../data/footer-links'
+import TiltImage from './ui/TiltImage'
+import { BRAND_ON_DARK } from '@/src/utils/brand'
 
 const cascadeContainer = {
   hidden: {},
@@ -22,23 +24,8 @@ const cascadeItem = {
 }
 
 export default function FooterSection() {
-  const marqueeRef = useRef<HTMLDivElement>(null)
   const [emailHovered, setEmailHovered] = useState(false)
   const emailBtnRef = useRef<HTMLDivElement>(null)
-
-  // GSAP Marquee — scrolling brand strip above the CTA
-  useEffect(() => {
-    if (!marqueeRef.current) return
-    const ctx = gsap.context(() => {
-      gsap.to(marqueeRef.current, {
-        xPercent: -50,
-        duration: 28,
-        ease: 'none',
-        repeat: -1,
-      })
-    })
-    return () => ctx.revert()
-  }, [])
 
   // Magnetic hover for the email button
   const handleMagneticMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -71,6 +58,21 @@ export default function FooterSection() {
               href={"/contact"}
               scroll={false}
             >
+
+              <motion.div
+                className="flex justify-center mb-6"
+                initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
+                whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                transition={{ duration: 1, ease: easing }}
+                viewport={{ once: true, margin: '-100px' }}
+              >
+                <TiltImage
+                  src="/assets/arthagama_logo.png"
+                  alt="ARTHAGAMA Logo"
+                  className="w-16 sm:w-20 md:w-24"
+                />
+              </motion.div>
+
               <motion.h2
                 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display italic text-[#EAF1EC] mb-7 sm:mb-8 leading-[0.95] sm:leading-[0.9]"
                 initial={{ opacity: 0, y: 40, filter: 'blur(8px)' }}
@@ -159,35 +161,16 @@ export default function FooterSection() {
                 ))}
               </ul>
             </motion.div>
-
-            {/* Social */}
+            {/* Disclaimer */}
             <motion.div variants={cascadeItem}>
-              <p className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.25em] mb-4">Social</p>
-              <ul className="flex flex-col gap-2.5">
-                {SOCIALS.map((s) => (
-                  <li key={s.label}>
-                    <a
-                      href={s.href}
-                      className="text-sm text-[#DCE7E1]/80 hover:text-[#EAF1EC] transition-colors duration-200 inline-flex items-center gap-1.5 group"
-                    >
-                      <span className="w-0 group-hover:w-2 h-px bg-[#EAF1EC] transition-all duration-200" />
-                      {s.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-
-            {/* Availability */}
-            <motion.div variants={cascadeItem}>
-              <p className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.25em] mb-4">Status</p>
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#B8CEC2] opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#B8CEC2]" />
-                </span>
-                <span className="text-sm text-[#DCE7E1]/75">Available</span>
-              </div>
+              <p className="text-xs text-[#B8CEC2] uppercase tracking-[0.25em] mb-4 font-medium">
+                Disclaimer:
+              </p>
+              <p className="text-[11px] leading-relaxed text-[#DCE7E1]/85">
+                Trading and investing in financial markets involves risk, including
+                the potential loss of principal. Past performance is not indicative
+                of future results. Nothing on this site constitutes financial advice.
+              </p>
             </motion.div>
           </motion.div>
 
@@ -222,20 +205,20 @@ export default function FooterSection() {
             viewport={{ once: true, margin: '-100px' }}
           >
             <p className="text-xs text-[#B8CEC2]/50">
-              © 2026 Arthagama. All rights reserved.
+              © 2026 <strong className={BRAND_ON_DARK}>ARTHAGAMA</strong>. All rights reserved.
             </p>
             <div className="flex items-center gap-6">
               {SOCIALS.map((s) => {
                 const Icon = s.icon
                 return (
-                  <a
+                  <Link
                     key={s.label}
                     href={s.href}
                     aria-label={s.label}
                     className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.2em] hover:text-[#EAF1EC] transition-colors duration-200"
                   >
                     <Icon className="h-4 w-4" />
-                  </a>
+                  </Link>
                 )
               })}
             </div>

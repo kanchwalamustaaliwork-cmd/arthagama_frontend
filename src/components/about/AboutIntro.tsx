@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { easing } from '../../constans/animation'
+import { formatBrandWord, BRAND_ON_DARK, BRAND_ON_LIGHT } from '@/src/utils/brand'
 
 const maskContainer = { hidden: {}, visible: { transition: { staggerChildren: 0.05 } } }
 const maskWord = {
@@ -19,6 +20,12 @@ const blurWord = {
     visible: { opacity: 1, filter: 'blur(0px)', y: 0, transition: { duration: 0.5, ease: easing } },
 }
 
+const cardContainer = { hidden: {}, visible: { transition: { staggerChildren: 0.15 } } }
+const cardItem = {
+    hidden: { opacity: 0, y: 30, scale: 0.97 },
+    visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: easing } },
+}
+
 function MaskHeading({ text }: { text: string }) {
     const words = text.split(' ')
     return (
@@ -33,11 +40,9 @@ function MaskHeading({ text }: { text: string }) {
                 <span key={i} className="inline-block overflow-hidden">
                     <motion.span
                         variants={maskWord}
-                        className={
-                            word.toLowerCase() === 'arthagama' ? 'inline-block font-display italic' : 'inline-block'
-                        }
+                        className="inline-block"
                     >
-                        {word}
+                        {formatBrandWord(word, BRAND_ON_DARK)}
                     </motion.span>
                 </span>
             ))}
@@ -49,7 +54,7 @@ function BlurParagraph({ text }: { text: string }) {
     const words = useMemo(() => text.split(' '), [text])
     return (
         <motion.p
-            className="max-w-2xl text-base leading-relaxed text-[#244147]/85 sm:text-lg"
+            className="text-sm leading-relaxed text-[#244147]/85 sm:text-base"
             variants={blurContainer}
             initial="hidden"
             whileInView="visible"
@@ -57,7 +62,7 @@ function BlurParagraph({ text }: { text: string }) {
         >
             {words.map((word, i) => (
                 <motion.span key={i} variants={blurWord} className="mr-[0.28em] inline-block">
-                    {word}
+                    {formatBrandWord(word, BRAND_ON_LIGHT)}
                 </motion.span>
             ))}
         </motion.p>
@@ -69,35 +74,45 @@ export default function AboutIntro() {
         <section className="relative overflow-hidden px-4 py-16 sm:px-6 sm:py-20 md:px-10 md:py-24 lg:px-16">
             <div className="section-backing absolute inset-x-4 inset-y-6 -z-10 rounded-3xl sm:inset-x-6" />
 
-            <div className="mx-auto grid max-w-[1200px] grid-cols-1 items-start gap-8 md:grid-cols-12 md:gap-16">
+            <div className="mx-auto max-w-[1200px]">
+                {/* Title — full width on top */}
                 <motion.div
-                    className="md:col-span-5"
+                    className="mb-10 md:mb-14"
                     initial={{ opacity: 0, y: 24 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.9, ease: easing }}
                     viewport={{ once: true, margin: '-100px' }}
                 >
-                    <div className="mb-4 flex items-center gap-3">
-                        <div className="h-px w-8 bg-[#B8CEC2]/40" />
-                        <span className="text-[11px] uppercase tracking-[0.3em] text-[#B8CEC2]/80 sm:text-xs">
-                            Who We Are
-                        </span>
-                    </div>
-                    <MaskHeading text="Built on Arthagama's philosophy" />
+                    <MaskHeading text="Built on Arthagama philosophy" />
                 </motion.div>
 
+                {/* Boxes — side by side below title */}
                 <motion.div
-                    className="md:col-span-7"
-                    initial={{ opacity: 0, y: 24 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.9, ease: easing, delay: 0.15 }}
+                    className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 md:gap-8"
+                    variants={cardContainer}
+                    initial="hidden"
+                    whileInView="visible"
                     viewport={{ once: true, margin: '-100px' }}
                 >
-                    <div className="mint-card rounded-3xl p-6 sm:p-8">
+                    {/* Vision */}
+                    <motion.div variants={cardItem} className="mint-card rounded-3xl p-6 sm:p-8">
+                        <p className="mb-3 text-xs uppercase tracking-[0.25em] text-[#1B3236]/70">
+                            Our Vision
+                        </p>
                         <BlurParagraph
-                            text={`Arthagama was founded with a simple yet disciplined vision: to manage capital through systematic, rule-based investing driven by data, research, and technology rather than emotion. By developing and continuously refining quantitative trading strategies, we have built a strong foundation focused on consistency, risk management, and long-term performance.\n\nAs our expertise grew, so did our mission. Today, Arthagama partners with traders, investors, and institutions to transform their ideas into robust algorithmic trading solutions. We specialize in designing custom strategies tailored to each client's objectives, supported by comprehensive historical data, rigorous backtesting, and reliable server infrastructure for development, testing, and deployment.\n\nOur philosophy is straightforward—every strategy should be measurable, every decision should be data-driven, and every solution should be built with precision, transparency, and scalability at its core.`}
+                            text={`Arthagama was founded with a simple yet disciplined vision: to manage capital through systematic, rule-based investing driven by data, research, and technology rather than emotion. By developing and continuously refining quantitative trading strategies, we have built a strong foundation focused on consistency, risk management, and long-term performance.`}
                         />
-                    </div>
+                    </motion.div>
+
+                    {/* Mission */}
+                    <motion.div variants={cardItem} className="mint-card rounded-3xl p-6 sm:p-8">
+                        <p className="mb-3 text-xs uppercase tracking-[0.25em] text-[#1B3236]/70">
+                            Our Mission
+                        </p>
+                        <BlurParagraph
+                            text={`Today, Arthagama partners with traders, investors, and institutions to transform their ideas into robust algorithmic trading solutions. We specialize in designing custom strategies tailored to each client's objectives, supported by comprehensive historical data, rigorous backtesting, and reliable server infrastructure for development, testing, and deployment. Our philosophy is straightforward—every strategy should be measurable, every decision should be data-driven, and every solution should be built with precision, transparency, and scalability at its core.`}
+                        />
+                    </motion.div>
                 </motion.div>
             </div>
 

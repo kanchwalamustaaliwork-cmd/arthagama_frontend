@@ -5,8 +5,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { FaEnvelope, FaLock, FaArrowLeft } from 'react-icons/fa6'
-import TiltImage from '../components/ui/TiltImage'
 import { useAuth } from '../auth/AuthContext'
+import BrandPanel from '../components/ui/BrandPanel'
 
 export default function LoginPage() {
   const { login, pendingRedirect, setPendingRedirect } = useAuth()
@@ -51,7 +51,7 @@ export default function LoginPage() {
 
     try {
       await login(email, password)
-      
+
       const destination = pendingRedirect || '/'
       setPendingRedirect(null) // clear redirect
       router.replace(destination)
@@ -79,21 +79,7 @@ export default function LoginPage() {
 
       {/* ===================== LEFT SIDE PANEL — Brand & Tilt Image ===================== */}
       <div className="relative flex w-full lg:w-[48%] flex-col justify-center items-center px-6 pt-24 pb-12 lg:py-0">
-        <div className="relative z-10 flex flex-col items-center justify-center text-center">
-          <div className="mb-6 pointer-events-auto">
-            <TiltImage
-              src="/assets/arthagama_name.png"
-              alt="Arthagama"
-              className="w-full max-w-[280px] sm:max-w-[360px] lg:max-w-[440px] drop-shadow-[0_20px_50px_rgba(184,206,194,0.15)]"
-            />
-          </div>
-
-          <div className="w-12 h-px bg-[hsl(var(--mint)/0.3)] mb-4" />
-
-          <p className="max-w-md text-xs uppercase tracking-[0.35em] text-[hsl(var(--mint)/0.5)]">
-            Artha · Wealth + Āgama · Inflow
-          </p>
-        </div>
+        <BrandPanel />
       </div>
 
       {/* ===================== RIGHT SIDE PANEL — Login Form ===================== */}

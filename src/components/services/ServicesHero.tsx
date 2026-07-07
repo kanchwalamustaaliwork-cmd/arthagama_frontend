@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { easing } from '../../constans/animation'
+import { BRAND_ON_DARK } from '@/src/utils/brand'
 
 export default function ServicesHero() {
     return (
@@ -8,16 +9,6 @@ export default function ServicesHero() {
             style={{ perspective: 1200 }}
         >
             <div className="mx-auto max-w-[1200px] text-center">
-                <motion.div
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, ease: easing }}
-                    className="mb-5 flex items-center justify-center gap-3"
-                >
-                    <div className="h-px w-8 bg-[#B8CEC2]/40" />
-                    <span className="text-[11px] uppercase tracking-[0.3em] text-[#B8CEC2]/80">What We Offer</span>
-                    <div className="h-px w-8 bg-[#B8CEC2]/40" />
-                </motion.div>
 
                 {/* Perspective Entrance — tilts in from depth rather than blurring or masking in */}
                 <motion.h1
@@ -27,7 +18,7 @@ export default function ServicesHero() {
                     style={{ transformOrigin: 'top center' }}
                     className="text-shadow-soft mx-auto max-w-3xl font-body text-4xl font-light leading-[1.1] text-[#EAF1EC] sm:text-5xl md:text-6xl"
                 >
-                    Services built for <em className="font-display italic text-[#EAF1EC]">every stage</em> of your trading journey
+                    Services built for <em className="font-display font-semibold text-[#EAF1EC]">every stage</em> of your trading journey
                 </motion.h1>
 
                 <motion.p
@@ -36,7 +27,7 @@ export default function ServicesHero() {
                     transition={{ duration: 0.8, ease: easing, delay: 0.6 }}
                     className="text-shadow-soft mx-auto mt-6 max-w-lg text-sm text-[#DCE7E1]/85 sm:text-base"
                 >
-                    From building a strategy to trading it live — explore how Arthagama can work with you.
+                    From building a strategy to trading it live — explore how <strong className={BRAND_ON_DARK}>ARTHAGAMA</strong> can work with you.
                 </motion.p>
             </div>
 

@@ -6,7 +6,7 @@ import FooterSection from '@/src/components/FooterSection'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Arthagama - Algo Trading Company',
+  title: 'ARTHAGAMA - Algo Trading Company',
   description: 'Precision built systems for modern markets. Quantitative research and algorithmic execution strategies.',
   icons: {
     icon: [

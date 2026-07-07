@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { CULTURE_POINTS } from '../../data/jobs'
 import type { Point } from '../../types/careers'
+import { BRAND_ON_DARK } from '@/src/utils/brand'
 
 
 const MAX_PEEK_DEPTH = 3 // how many stacked layers peek out behind the front card
@@ -113,7 +114,7 @@ export default function CultureStack() {
         <div ref={containerRef} style={{ height: `${total * 85}vh` }} className="relative">
             <div className="sticky top-0 flex h-screen flex-col items-center justify-center px-5">
                 <p className="mb-10 text-[11px] uppercase tracking-[0.25em] text-[#B8CEC2]/70">
-                    Life at Arthagama
+                    Life at <strong className={BRAND_ON_DARK}>ARTHAGAMA</strong>
                 </p>
 
                 <div className="relative w-full max-w-xl sm:max-w-2xl" style={{ height: 340 }}>

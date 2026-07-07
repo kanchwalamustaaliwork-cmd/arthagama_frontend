@@ -55,7 +55,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
     >
       <motion.img
         src={NAME_SRC}
-        alt="Arthagama"
+        alt="ARTHAGAMA"
         draggable={false}
         className="h-16 sm:h-20 md:h-24 lg:h-28 w-auto object-contain select-none"
         initial={{ opacity: 0, scale: 0.6, clipPath: 'inset(0 0 0 0%)' }}

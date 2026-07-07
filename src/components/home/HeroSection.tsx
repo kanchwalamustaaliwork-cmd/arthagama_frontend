@@ -2,8 +2,9 @@
 
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
-import { FaFacebook, FaInstagram, FaXTwitter, FaLinkedin } from 'react-icons/fa6'
-import TiltImage from '../ui/TiltImage'
+import Link from 'next/link'
+import { SOCIALS } from '../../data/footer-links'
+import BrandPanel from '../ui/BrandPanel'
 
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -28,15 +29,6 @@ export default function HeroSection() {
 
   return (
     <section ref={sectionRef} id="home" className="relative min-h-screen w-full overflow-hidden">
-      {/* ---------------- Desktop logo: centered top, spans both panels, clears navbar ---------------- */}
-      <div className="blur-in absolute left-1/2 top-20 z-20 hidden -translate-x-1/2 lg:top-24 lg:flex">
-        <TiltImage
-          src="/assets/arthagama_logo.png"
-          alt="Arthagama Logo"
-          className="w-20 sm:w-24 lg:w-28"
-        />
-      </div>
-
       {/* ---------------- Foreground ---------------- */}
       <div className="relative z-10 flex min-h-screen w-full flex-col-reverse lg:flex-row">
         {/* ===================== LEFT PANEL — themed intro text ===================== */}
@@ -44,15 +36,11 @@ export default function HeroSection() {
           <div className="liquid-glass-strong absolute inset-4 rounded-3xl lg:inset-6" />
 
           <div className="relative z-10 flex h-full min-h-screen flex-col justify-center px-6 py-8 lg:px-12 lg:py-10">
-            <div className="blur-in mb-6 flex items-center gap-3">
-              <span className="text-[11px] uppercase tracking-[0.3em] text-[hsl(var(--mint)/0.6)]">
-                Algorithmic Trading
-              </span>
-            </div>
-
             <h1 className="blur-in mb-6 max-w-lg font-body text-3xl font-light leading-tight text-[hsl(var(--mint-soft))] sm:text-4xl lg:text-5xl">
-              Precision built{' '}
-              <em className="font-display italic text-[hsl(var(--mint-soft))]">systems</em>{' '}
+              <span className="font-semibold">Precision</span> built{" "}
+              <em className="font-display font-semibold text-[hsl(var(--mint-soft))]">
+                systems
+              </em>{" "}
               for modern markets.
             </h1>
 
@@ -64,42 +52,26 @@ export default function HeroSection() {
 
             <div className="blur-in flex items-center gap-3">
               <div className="liquid-glass flex items-center gap-4 rounded-full px-5 py-2.5">
-                {[FaLinkedin, FaXTwitter, FaInstagram, FaFacebook].map((Icon, i) => (
-                  <a
-                    key={i}
-                    href="#"
-                    className="text-[hsl(var(--mint-soft))] transition-colors hover:text-[hsl(var(--mint-soft)/0.7)]"
-                  >
-                    <Icon className="h-4 w-4" />
-                  </a>
-                ))}
+                {SOCIALS.map((s) => {
+                  const Icon = s.icon
+                  return (
+                    <Link
+                      key={s.label}
+                      href={s.href}
+                      aria-label={s.label}
+                      className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.2em] hover:text-[#EAF1EC] transition-colors duration-200"
+                    >
+                      <Icon className="h-4 w-4" />
+                    </Link>
+                  )
+                })}
               </div>
             </div>
           </div>
         </div>
 
-        {/* ===================== RIGHT PANEL — name + tagline, enlarged ===================== */}
         <div className="relative flex w-full flex-1 flex-col items-center justify-center px-6 py-12 text-center lg:w-[52%] lg:px-12">
-          {/* Mobile-only logo, top center of the name image */}
-          <div className="blur-in mb-6 flex justify-center lg:hidden">
-            <TiltImage
-              src="/assets/arthagama_logo.png"
-              alt="Arthagama Logo"
-              className="w-20 sm:w-24"
-            />
-          </div>
-
-          <div className="name-reveal mb-8">
-            <TiltImage
-              src="/assets/arthagama_name.png"
-              alt="Arthagama"
-              className="mx-auto w-full max-w-[380px] sm:max-w-[520px] lg:max-w-[640px]"
-            />
-          </div>
-
-          <p className="blur-in whitespace-nowrap text-[9px] tracking-[0.08em] uppercase text-[hsl(var(--mint)/0.6)] xs:text-[10px] sm:text-xs md:text-sm">
-            ArthĀ · Wealth + Āgama · Inflow
-          </p>
+          <BrandPanel />
         </div>
       </div>
 

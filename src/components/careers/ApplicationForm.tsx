@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Send } from 'lucide-react'
 import type { ApplicationPayload, ApplicationFormProps } from '../../types/careers'
 import { submitApplication } from '../../services/careersApi'
+import { BRAND_ON_LIGHT } from '@/src/utils/brand'
 
 const FIELD_CLASS =
     'form-field w-full rounded-full px-4 py-3 text-sm text-[#1B3236] outline-none placeholder:text-[#244147]/40'
@@ -76,7 +77,7 @@ export default function ApplicationForm({ jobId }: ApplicationFormProps) {
                 </svg>
                 <p className="text-sm font-medium text-[#1B3236]">Application received</p>
                 <p className="max-w-xs text-xs text-[#244147]/70">
-                    We'll review your profile and reach out if there's a fit. Thanks for applying to Arthagama.
+                    We'll review your profile and reach out if there's a fit. Thanks for applying to <strong className={BRAND_ON_LIGHT}>ARTHAGAMA</strong>.
                 </p>
             </motion.div>
         )

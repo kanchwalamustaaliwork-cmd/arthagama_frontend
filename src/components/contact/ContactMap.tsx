@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import { BRAND_ON_DARK } from '@/src/utils/brand'
 
 const easing: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 
@@ -39,7 +40,7 @@ export default function ContactMap() {
                 onMouseLeave={() => { mouseX.set(0.5); mouseY.set(0.5) }}
             >
                 <iframe
-                    title="Arthagama office location"
+                    title="ARTHAGAMA office location"
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d224.20651296696133!2d72.83394676667447!3d18.929597385341136!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7d1c49a6c18cf%3A0x71863ed25762cd9f!2skhattau%20Buildings!5e1!3m2!1sen!2sin!4v1783054214237!5m2!1sen!2sin"
                     className="h-[320px] w-full grayscale-[15%] sm:h-[380px] md:h-[440px]"
                     style={{ border: 0 }}
@@ -60,7 +61,7 @@ export default function ContactMap() {
                 </motion.div>
 
                 <div className="pointer-events-none absolute bottom-4 left-4 rounded-full bg-[#122124]/70 px-4 py-2 text-xs text-[#EAF1EC] backdrop-blur-sm">
-                    Arthagama HQ · Grd Flr, Khatau BLg 8/10 A D Modi, Stock Exchange, Mumbai
+                    <strong className={BRAND_ON_DARK}>ARTHAGAMA</strong> HQ · Grd Flr, Khatau BLg 8/10 A D Modi, Stock Exchange, Mumbai
                 </div>
             </motion.div>
 

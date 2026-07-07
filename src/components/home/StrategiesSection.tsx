@@ -46,12 +46,6 @@ export default function StrategiesSection() {
       <div className="relative z-10 max-w-[1200px] mx-auto px-5 sm:px-6 md:px-10 lg:px-16">
         {/* Header — slide up reveal */}
         <motion.div className="flex flex-col mb-10 sm:mb-12 md:mb-16" {...viewMotion}>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-px bg-[#B8CEC2]/40" />
-            <span className="text-[11px] sm:text-xs text-[#B8CEC2]/80 uppercase tracking-[0.3em]">
-              Trading Models
-            </span>
-          </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-body font-light text-[#EAF1EC]">
             Strategies <em className="font-display italic text-[#EAF1EC]">Deployed</em>
           </h2>

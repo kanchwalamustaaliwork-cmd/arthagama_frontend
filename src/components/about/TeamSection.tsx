@@ -22,12 +22,6 @@ export default function TeamSection() {
                     transition={{ duration: 0.9, ease: easing }}
                     viewport={{ once: true, margin: '-100px' }}
                 >
-                    <div className="mb-4 flex items-center gap-3">
-                        <div className="h-px w-8 bg-[#B8CEC2]/40" />
-                        <span className="text-[11px] uppercase tracking-[0.3em] text-[#B8CEC2]/80 sm:text-xs">
-                            The People
-                        </span>
-                    </div>
                     <h2 className="text-3xl font-body font-light text-[#EAF1EC] sm:text-4xl md:text-5xl">
                         Meet the <em className="font-display italic text-[#EAF1EC]">team</em>
                     </h2>

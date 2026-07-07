@@ -5,19 +5,6 @@ export default function ContactHero() {
     return (
         <section className="cv-section relative px-5 pt-32 pb-14 sm:px-6 sm:pt-36 md:px-10 lg:px-16">
             <div className="mx-auto max-w-[1200px] text-center">
-                <motion.div
-                    className="mb-5 flex items-center justify-center gap-3"
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, ease: easing }}
-                >
-                    <div className="h-px w-8 bg-[#B8CEC2]/40" />
-                    <span className="text-[11px] uppercase tracking-[0.3em] text-[#B8CEC2]/80">
-                        Get In Touch
-                    </span>
-                    <div className="h-px w-8 bg-[#B8CEC2]/40" />
-                </motion.div>
-
                 {/* Clip Path Reveal — whole heading wipes open left to right, not word-by-word */}
                 <div className="overflow-hidden">
                     <motion.h1

@@ -1,7 +1,6 @@
 "use client"
 
 import { motion } from 'framer-motion'
-import TiltImage from '../ui/TiltImage'
 import { easing } from '../../constans/animation'
 
 export default function AboutHero() {
@@ -34,12 +33,22 @@ export default function AboutHero() {
                         initial={{ opacity: 0, y: 90, filter: 'blur(14px)' }}
                         animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                         transition={{ duration: 1.3, ease: easing, delay: 0.15 }}
+                        className="max-w-5xl space-y-6 text-center"
                     >
-                        <TiltImage
-                            src="/assets/arthagama_name.png"
-                            alt="Arthagama"
-                            className="mx-auto w-full max-w-[280px] sm:max-w-[420px] lg:max-w-[520px]"
-                        />
+                        <h1 className="text-4xl font-semibold leading-tight text-[#EAF1EC] sm:text-5xl md:text-6xl lg:text-7xl">
+                            Building the Future of{" "}
+                            <span className="text-[#B8CEC2]">Algorithmic Trading</span>
+                        </h1>
+
+                        <p className="mx-auto max-w-3xl text-base leading-relaxed text-[#EAF1EC]/80 sm:text-lg md:text-xl">
+                            We combine quantitative research, data-driven strategies, automation,
+                            and disciplined risk management to create intelligent trading systems
+                            that deliver consistency, transparency, and long-term value.
+                        </p>
+
+                        <p className="mx-auto max-w-2xl text-sm italic tracking-wide text-[#B8CEC2]/90 sm:text-base">
+                            "Where innovation meets precision, and every decision is backed by data."
+                        </p>
                     </motion.div>
 
                     <motion.p

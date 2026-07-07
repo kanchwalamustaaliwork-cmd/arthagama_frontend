@@ -30,7 +30,7 @@ export const IMPORTANT_LINKS = [
 ]
 
 export const SOCIALS = [
-    { label: 'Twitter', href: '#', icon: FaXTwitter },
+    { label: 'Twitter', href: 'https://x.com/arthagama2026', icon: FaXTwitter },
     { label: 'LinkedIn', href: 'https://www.linkedin.com/company/arthagama/', icon: FaLinkedin },
     { label: 'Instagram', href: '#', icon: FaInstagram },
     { label: 'Facebook', href: '#', icon: FaFacebook },

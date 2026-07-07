@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { motion, type Transition } from 'framer-motion'
 import { easing } from '../../constans/animation'
+import { formatBrandWord, BRAND_ON_LIGHT } from '@/src/utils/brand'
 
 // ─── Shared motion presets ───────────────────────────────────────────────────
 const sectionTransition: Transition = { duration: 1, ease: easing }
@@ -94,7 +95,7 @@ function BlurRevealParagraph({ text }: { text: string }) {
     >
       {words.map((word, i) => (
         <motion.span key={i} variants={blurWord} className="inline-block mr-[0.28em]">
-          {word}
+          {formatBrandWord(word, BRAND_ON_LIGHT)}
         </motion.span>
       ))}
     </motion.p>
@@ -137,12 +138,6 @@ export default function WhatWeDoSection() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 md:gap-16 items-start">
           {/* Left Column: Heading */}
           <motion.div className="md:col-span-5" {...sectionMotion}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-px bg-[#B8CEC2]/40" />
-              <span className="text-[11px] sm:text-xs text-[#B8CEC2]/80 uppercase tracking-[0.3em]">
-                Core Philosophy
-              </span>
-            </div>
             <MaskRevealHeading text="What we do" />
           </motion.div>
 

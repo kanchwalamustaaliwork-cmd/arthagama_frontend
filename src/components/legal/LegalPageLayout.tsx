@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback, type ReactNode } from 'react'
 import Link from 'next/link'
 import { motion, useSpring, useScroll, type Transition } from 'framer-motion'
+import { formatBrandText, BRAND_ON_DARK, BRAND_ON_LIGHT } from '@/src/utils/brand'
 
 export interface LegalSection {
     id: string
@@ -165,7 +166,7 @@ export default function LegalPageLayout({
                         <span className="last-updated-pill text-xs text-[#1B3236] font-medium px-4 py-1.5 rounded-full">
                             Last updated {lastUpdated}
                         </span>
-                        <p className="text-sm text-[#DCE7E1]/80 max-w-lg leading-relaxed">{intro}</p>
+                        <p className="text-sm text-[#DCE7E1]/80 max-w-lg leading-relaxed">{typeof intro === 'string' ? formatBrandText(intro, BRAND_ON_DARK) : intro}</p>
                     </motion.div>
                 </div>
 
@@ -253,7 +254,7 @@ export default function LegalPageLayout({
                                                     variants={paraItem}
                                                     className="text-sm sm:text-[15px] text-[#244147]/85 leading-relaxed"
                                                 >
-                                                    {para}
+                                                    {typeof para === 'string' ? formatBrandText(para, BRAND_ON_LIGHT) : para}
                                                 </motion.p>
                                             ))}
                                         </motion.div>

@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import type { TeamMember } from '../../data/team'
 import { FaLinkedin } from 'react-icons/fa6'
 import { X } from 'lucide-react'
+import { formatBrandText, BRAND_ON_LIGHT } from '@/src/utils/brand'
 
 interface EmployeeProfileProps {
     member: TeamMember
@@ -60,7 +61,7 @@ export default function EmployeeProfile({ member, onClose }: EmployeeProfileProp
                         transition={{ delay: 0.15, duration: 0.5 }}
                         className="text-sm leading-relaxed text-[#244147]/85"
                     >
-                        {member.intro}
+                        {formatBrandText(member.intro, BRAND_ON_LIGHT)}
                     </motion.p>
 
                     <motion.div
@@ -74,7 +75,7 @@ export default function EmployeeProfile({ member, onClose }: EmployeeProfileProp
                             <p className="mt-1 text-sm text-[#1B3236]">{member.specialization}</p>
                         </div>
                         <div>
-                            <p className="text-[10px] uppercase tracking-[0.2em] text-[#244147]/55">Role at Arthagama</p>
+                            <p className="text-[10px] uppercase tracking-[0.2em] text-[#244147]/55">Role at <strong className={BRAND_ON_LIGHT}>ARTHAGAMA</strong></p>
                             <p className="mt-1 text-sm text-[#1B3236]">{member.role}</p>
                         </div>
                     </motion.div>
