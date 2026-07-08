@@ -12,8 +12,8 @@ export default function BrandPanel({
     showTagline = true,
     animated = true,
 }: BrandPanelProps) {
-    const logoWrapClass = animated ? 'blur-in mb-6 flex justify-center' : 'mb-6 flex justify-center'
-    const nameWrapClass = animated ? 'name-reveal mb-8' : 'mb-8'
+    const logoWrapClass = animated ? 'blur-in flex justify-center' : 'flex justify-center'
+    const nameWrapClass = 'name-reveal'
     const taglineClass = animated
         ? 'blur-in whitespace-nowrap text-[9px] tracking-[0.08em] uppercase text-[hsl(var(--mint)/0.6)] xs:text-[10px] sm:text-xs md:text-sm'
         : 'whitespace-nowrap text-[9px] tracking-[0.08em] uppercase text-[hsl(var(--mint)/0.6)] xs:text-[10px] sm:text-xs md:text-sm'
