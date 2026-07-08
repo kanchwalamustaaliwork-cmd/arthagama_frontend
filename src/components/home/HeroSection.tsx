@@ -37,8 +37,8 @@ export default function HeroSection() {
 
           <div className="relative z-10 flex h-full min-h-screen flex-col justify-center px-6 py-8 lg:px-12 lg:py-10">
             <h1 className="blur-in mb-6 max-w-lg font-body text-3xl font-light leading-tight text-[hsl(var(--mint-soft))] sm:text-4xl lg:text-5xl">
-              <span className="font-semibold">Precision</span> built{" "}
-              <em className="font-display font-semibold text-[hsl(var(--mint-soft))]">
+              <span className="font-bold">Precision</span> built{" "}
+              <em className="font-bold text-[hsl(var(--mint-soft))]">
                 systems
               </em>{" "}
               for modern markets.
