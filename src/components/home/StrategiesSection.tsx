@@ -2,38 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import StrategyCard from '../ui/StrategyCard'
 import { viewMotion } from '../../constans/animation'
-
-export interface Strategy {
-  name: string
-  description: string
-}
-
-const STRATEGIES: Strategy[] = [
-  {
-    name: 'Momentum Strategy',
-    description: 'Captures medium-term market trends using quantitative signals.',
-  },
-  {
-    name: 'Mean Reversion',
-    description: 'Identifies temporary price deviations and trades toward equilibrium.',
-  },
-  {
-    name: 'Breakout Strategy',
-    description: 'Executes trades when price breaks significant support or resistance levels.',
-  },
-  {
-    name: 'Statistical Arbitrage',
-    description: 'Uses quantitative models to identify pricing inefficiencies.',
-  },
-  {
-    name: 'Options Volatility Strategy',
-    description: 'Trades based on changes in implied and historical volatility.',
-  },
-  {
-    name: 'Trend Following',
-    description: 'Systematically follows long-term market trends using rule-based execution.',
-  },
-]
+import { STRATEGIES } from '../../data/stratergy'
 
 export default function StrategiesSection() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
@@ -47,7 +16,7 @@ export default function StrategiesSection() {
         {/* Header — slide up reveal */}
         <motion.div className="flex flex-col mb-10 sm:mb-12 md:mb-16" {...viewMotion}>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-body font-light text-[#EAF1EC]">
-            Strategies <em className="font-display italic text-[#EAF1EC]">Deployed</em>
+            Strategies <em className=" font-bold text-[#EAF1EC]">Deployed</em>
           </h2>
           <p className="text-sm text-[#DCE7E1]/85 mt-3 max-w-sm">
             Research-driven systematic modules running continuously across global markets.

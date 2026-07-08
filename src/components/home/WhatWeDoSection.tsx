@@ -71,8 +71,8 @@ function MaskRevealHeading({ text }: { text: string }) {
             variants={maskWord}
             className={
               word.toLowerCase() === 'do'
-                ? 'font-display italic text-[#EAF1EC] inline-block'
-                : 'inline-block'
+                ? 'font-bold text-[#EAF1EC] inline-block'
+                : 'inline-block font-body font-light'
             }
           >
             {word}

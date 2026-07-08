@@ -1,5 +1,5 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
-import type { Strategy } from '../home/StrategiesSection'
+import type { Strategy } from '../../types/stratergy'
 import { useRef } from 'react'
 import { viewMotion } from '../../constans/animation'
 

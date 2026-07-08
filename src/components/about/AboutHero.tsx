@@ -1,77 +1,35 @@
+// app/about/AboutHero.tsx
 "use client"
 
 import { motion } from 'framer-motion'
 import { easing } from '../../constans/animation'
+import AmbientGlassPanel from '@/src/components/backgrounds/AmbientGlassPanel'
 
 export default function AboutHero() {
     return (
-        <section className="relative px-4 pt-28 sm:px-6 sm:pt-32 md:px-10 lg:px-16">
-            <div className="hero-banner relative mx-auto max-w-[1200px] overflow-hidden rounded-[2rem] sm:rounded-[2.5rem]">
-                {/* Ambient looping visual — mesh gradient + drifting blobs, echoes the global video's palette */}
-                <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                    <motion.div
-                        className="absolute -left-24 -top-24 h-[380px] w-[380px] rounded-full bg-[#B8CEC2]/25 blur-[110px]"
-                        animate={{ x: [0, 50, -20, 0], y: [0, 30, -20, 0] }}
-                        transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-                    />
-                    <motion.div
-                        className="absolute -bottom-32 -right-16 h-[420px] w-[420px] rounded-full bg-[#244147]/60 blur-[120px]"
-                        animate={{ x: [0, -40, 20, 0], y: [0, -30, 20, 0] }}
-                        transition={{ duration: 24, repeat: Infinity, ease: 'easeInOut' }}
-                    />
-                    <div
-                        className="absolute inset-0 opacity-[0.05] mix-blend-overlay"
-                        style={{
-                            backgroundImage: 'radial-gradient(circle, #B8CEC2 1px, transparent 1px)',
-                            backgroundSize: '5px 5px',
-                        }}
-                    />
-                </div>
+        <AmbientGlassPanel sectionClassName="pt-28 sm:pt-32">
+            <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-24 text-center">
+                <motion.div
+                    initial={{ opacity: 0, y: 90, filter: 'blur(14px)' }}
+                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                    transition={{ duration: 1.3, ease: easing, delay: 0.15 }}
+                    className="max-w-5xl space-y-6 text-center"
+                >
+                    <h1 className="text-2xl font-semibold leading-tight text-[#EAF1EC] sm:text-5xl md:text-3xl lg:text-5xl">
+                        Building the Future of{" "}
+                        <span className="font-bold text-[#B8CEC2]">Algorithmic Trading</span>
+                    </h1>
+                </motion.div>
 
-                <div className="relative z-10 flex min-h-[62vh] flex-col items-center justify-center gap-8 px-6 py-24 text-center sm:min-h-[70vh]">
-                    <motion.div
-                        initial={{ opacity: 0, y: 90, filter: 'blur(14px)' }}
-                        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                        transition={{ duration: 1.3, ease: easing, delay: 0.15 }}
-                        className="max-w-5xl space-y-6 text-center"
-                    >
-                        <h1 className="text-4xl font-semibold leading-tight text-[#EAF1EC] sm:text-5xl md:text-6xl lg:text-7xl">
-                            Building the Future of{" "}
-                            <span className="text-[#B8CEC2]">Algorithmic Trading</span>
-                        </h1>
-
-                        <p className="mx-auto max-w-3xl text-base leading-relaxed text-[#EAF1EC]/80 sm:text-lg md:text-xl">
-                            We combine quantitative research, data-driven strategies, automation,
-                            and disciplined risk management to create intelligent trading systems
-                            that deliver consistency, transparency, and long-term value.
-                        </p>
-
-                        <p className="mx-auto max-w-2xl text-sm italic tracking-wide text-[#B8CEC2]/90 sm:text-base">
-                            "Where innovation meets precision, and every decision is backed by data."
-                        </p>
-                    </motion.div>
-
-                    <motion.p
-                        initial={{ opacity: 0, y: 16 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.9, ease: easing, delay: 0.7 }}
-                        className="max-w-lg text-sm uppercase tracking-[0.3em] text-[#EAF1EC]/70 sm:text-base"
-                    >
-                        Where research meets execution
-                    </motion.p>
-                </div>
+                <motion.p
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.9, ease: easing, delay: 0.7 }}
+                    className="mx-auto max-w-2xl text-sm italic tracking-wide text-[#B8CEC2]/90 sm:text-base"
+                >
+                    "Where innovation meets precision, and every decision is backed by data."
+                </motion.p>
             </div>
-
-            <style>{`
-        .hero-banner {
-          background: rgba(18, 33, 36, 0.55);
-          backdrop-filter: blur(40px) saturate(1.1);
-          -webkit-backdrop-filter: blur(40px) saturate(1.1);
-          border: 1px solid rgba(184, 206, 194, 0.15);
-          box-shadow: 0 30px 90px -30px rgba(0, 0, 0, 0.55),
-            inset 0 1px 1px rgba(184, 206, 194, 0.15);
-        }
-      `}</style>
-        </section>
+        </AmbientGlassPanel>
     )
 }

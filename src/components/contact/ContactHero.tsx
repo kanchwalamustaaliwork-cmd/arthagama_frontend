@@ -1,10 +1,16 @@
+// ContactHero.tsx
+"use client"
+
 import { motion } from 'framer-motion'
 import { easing } from '../../constans/animation'
+import AmbientGlassPanel from '@/src/components/backgrounds/AmbientGlassPanel'
 
 export default function ContactHero() {
     return (
-        <section className="cv-section relative px-5 pt-32 pb-14 sm:px-6 sm:pt-36 md:px-10 lg:px-16">
-            <div className="mx-auto max-w-[1200px] text-center">
+        <AmbientGlassPanel
+            sectionClassName="cv-section pt-32 pb-14 sm:pt-36"
+        >
+            <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-24 text-center">
                 {/* Clip Path Reveal — whole heading wipes open left to right, not word-by-word */}
                 <div className="overflow-hidden">
                     <motion.h1
@@ -29,8 +35,8 @@ export default function ContactHero() {
             </div>
 
             <style>{`
-        .text-shadow-soft { text-shadow: 0 2px 14px rgba(0, 0, 0, 0.4); }
-      `}</style>
-        </section>
+                .text-shadow-soft { text-shadow: 0 2px 14px rgba(0, 0, 0, 0.4); }
+            `}</style>
+        </AmbientGlassPanel>
     )
 }
