@@ -10,8 +10,7 @@ import {
     useTransform,
 } from 'framer-motion'
 import NavLogo from './NavLogo'
-import SignUpButton from './SingUpButton'
-import LoginButton from './LoginButton'
+import { DesktopNavAuthButtons } from './NavAuthButtons'
 
 /* ────────────────────────────────────────────────────────────────────────
  * Desktop pill nav (original component, untouched logic/animation)
@@ -167,9 +166,8 @@ export default function DesktopPillNav({ navLinks, isActive }: { navLinks: { lab
                 {/* Divider */}
                 <div className="w-px h-5 mx-1 hidden sm:block" style={{ background: 'hsl(var(--mint) / 0.25)' }} />
 
-                {/* Auth Buttons */}
-                <LoginButton />
-                <SignUpButton />
+                {/* Auth Buttons — shows Login+Signup when logged out, Logout when logged in */}
+                <DesktopNavAuthButtons />
             </div>
         </nav>
     )

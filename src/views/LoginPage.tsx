@@ -53,13 +53,14 @@ export default function LoginPage() {
       await login(email, password)
 
       const destination = pendingRedirect || '/'
-      setPendingRedirect(null) // clear redirect
+      setPendingRedirect(null)
       router.replace(destination)
-    } catch (err: any) {
-      setErrors(prev => ({
-        ...prev,
-        api: err.message || 'Authentication failed. Please verify your credentials and try again.'
-      }))
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Authentication failed. Please verify your credentials and try again.'
+      setErrors(prev => ({ ...prev, api: message }))
     } finally {
       setIsLoading(false)
     }
@@ -69,12 +70,12 @@ export default function LoginPage() {
     <div className="relative min-h-screen w-full flex flex-col lg:flex-row overflow-hidden bg-transparent">
       {/* Back Button */}
       <Link
-        href="/"
+        href="/careers"
         scroll={false}
         className="absolute top-12 md:top-24 left-6 z-50 flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[hsl(var(--mint)/0.6)] hover:text-[hsl(var(--mint))] transition-colors duration-200"
       >
         <FaArrowLeft className="w-3.5 h-3.5" />
-        Back to Home
+        Back
       </Link>
 
       {/* ===================== LEFT SIDE PANEL — Brand & Tilt Image ===================== */}
@@ -209,7 +210,7 @@ export default function LoginPage() {
             {/* Bottom transition link */}
             <div className="pt-4 text-center border-t border-[hsl(var(--mint)/0.08)]">
               <span className="text-xs text-[hsl(var(--mint)/0.55)]">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <Link
                   href="/signup"
                   scroll={false}

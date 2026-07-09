@@ -7,6 +7,7 @@ import {
     motion,
     AnimatePresence,
 } from 'framer-motion'
+import { MobileNavAuthButtons } from './NavAuthButtons'
 
 /* ────────────────────────────────────────────────────────────────────────
  * Mobile menu — floating hamburger (top-right) + cloth-wrap panel
@@ -167,61 +168,9 @@ export default function MobileMenu({ navLinks, isActive }: { navLinks: { label: 
                                     exit={{ opacity: 0 }}
                                 />
 
-                                {/* Auth buttons — continue the alternating sequence */}
+                                {/* Auth buttons — shows Login+Signup or Logout depending on session */}
                                 <div className="flex flex-col gap-2 px-2 pb-1">
-                                    <motion.div
-                                        initial={{ opacity: 0, x: -28 }}
-                                        animate={{
-                                            opacity: 1,
-                                            x: 0,
-                                            transition: {
-                                                delay: 0.18 + navLinks.length * 0.07,
-                                                type: 'spring',
-                                                stiffness: 320,
-                                                damping: 22,
-                                            },
-                                        }}
-                                        exit={{ opacity: 0, x: -16, transition: { duration: 0.15 } }}
-                                    >
-                                        <Link
-                                            href="/login"
-                                            scroll={false}
-                                            className="flex items-center justify-center min-h-[44px] w-full rounded-2xl text-base transition-colors duration-200"
-                                            style={{
-                                                border: '1px solid hsl(var(--mint) / 0.3)',
-                                                color: 'hsl(var(--mint) / 0.85)',
-                                            }}
-                                        >
-                                            Log in
-                                        </Link>
-                                    </motion.div>
-
-                                    <motion.div
-                                        initial={{ opacity: 0, x: 28 }}
-                                        animate={{
-                                            opacity: 1,
-                                            x: 0,
-                                            transition: {
-                                                delay: 0.25 + navLinks.length * 0.07,
-                                                type: 'spring',
-                                                stiffness: 320,
-                                                damping: 22,
-                                            },
-                                        }}
-                                        exit={{ opacity: 0, x: 16, transition: { duration: 0.15 } }}
-                                    >
-                                        <Link
-                                            href="/signup"
-                                            scroll={false}
-                                            className="flex items-center justify-center gap-1 min-h-[44px] w-full rounded-2xl text-base transition-colors duration-200"
-                                            style={{
-                                                background: 'hsl(var(--mint))',
-                                                color: 'hsl(var(--teal-deep))',
-                                            }}
-                                        >
-                                            Become a Member <span>↗</span>
-                                        </Link>
-                                    </motion.div>
+                                    <MobileNavAuthButtons navLinksCount={navLinks.length} />
                                 </div>
                             </div>
                         </motion.div>

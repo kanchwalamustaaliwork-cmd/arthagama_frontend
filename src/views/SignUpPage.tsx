@@ -4,38 +4,49 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { FaUser, FaEnvelope, FaLock, FaArrowLeft } from 'react-icons/fa6'
-import TiltImage from '../components/ui/TiltImage'
-import { BRAND_ON_DARK } from '@/src/utils/brand'
+import { FaUser, FaEnvelope, FaLock, FaPhone, FaArrowLeft } from 'react-icons/fa6'
+import { useAuth } from '../auth/AuthContext'
 import BrandPanel from '../components/ui/BrandPanel'
+import { BRAND_ON_DARK } from '@/src/utils/brand'
 
 export default function SignUpPage() {
+  const { signup, pendingRedirect, setPendingRedirect } = useAuth()
   const router = useRouter()
-  const [fullName, setFullName] = useState('')
+
+  // ── Form State ──────────────────────────────────────────────────────────────
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<{
-    fullName?: string
+    firstName?: string
+    lastName?: string
     email?: string
+    phoneNumber?: string
     password?: string
     confirmPassword?: string
     api?: string
   }>({})
 
-  // Form field validation logic
+  // ── Validation ──────────────────────────────────────────────────────────────
   const validateForm = () => {
     const newErrors: typeof errors = {}
 
-    // Name Validation
-    if (!fullName.trim()) {
-      newErrors.fullName = 'Full name is required'
-    } else if (fullName.trim().length < 2) {
-      newErrors.fullName = 'Name must be at least 2 characters'
+    if (!firstName.trim()) {
+      newErrors.firstName = 'First name is required'
+    } else if (firstName.trim().length < 1) {
+      newErrors.firstName = 'First name must be at least 1 character'
     }
 
-    // Email Validation
+    if (!lastName.trim()) {
+      newErrors.lastName = 'Last name is required'
+    } else if (lastName.trim().length < 1) {
+      newErrors.lastName = 'Last name must be at least 1 character'
+    }
+
     if (!email) {
       newErrors.email = 'Email address is required'
     } else {
@@ -45,16 +56,31 @@ export default function SignUpPage() {
       }
     }
 
-    // Password Validation
-    if (!password) {
-      newErrors.password = 'Password is required'
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters'
+    if (!phoneNumber.trim()) {
+      newErrors.phoneNumber = 'Phone number is required'
+    } else {
+      const cleaned = phoneNumber.trim().replace(/^\+/, '')
+      if (!/^\d+$/.test(cleaned)) {
+        newErrors.phoneNumber = 'Phone number must contain only digits (optionally starting with +)'
+      } else if (phoneNumber.trim().length < 7 || phoneNumber.trim().length > 15) {
+        newErrors.phoneNumber = 'Phone number must be between 7 and 15 digits'
+      }
     }
 
-    // Confirm Password Validation
+    if (!password) {
+      newErrors.password = 'Password is required'
+    } else if (password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters'
+    } else if (!/[A-Z]/.test(password)) {
+      newErrors.password = 'Password must contain at least one uppercase letter'
+    } else if (!/[a-z]/.test(password)) {
+      newErrors.password = 'Password must contain at least one lowercase letter'
+    } else if (!/\d/.test(password)) {
+      newErrors.password = 'Password must contain at least one digit'
+    }
+
     if (!confirmPassword) {
-      newErrors.confirmPassword = 'Confirm password is required'
+      newErrors.confirmPassword = 'Please confirm your password'
     } else if (password !== confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match'
     }
@@ -63,6 +89,7 @@ export default function SignUpPage() {
     return Object.keys(newErrors).length === 0
   }
 
+  // ── Submit Handler ───────────────────────────────────────────────────────────
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -72,37 +99,52 @@ export default function SignUpPage() {
     setErrors(prev => ({ ...prev, api: undefined }))
 
     try {
-      // Simulate network request latency (1.5 seconds)
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      await signup({
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        email,
+        phone_number: phoneNumber.trim(),
+        password,
+      })
 
-      // Simulated backend rejection for testing
-      if (email.toLowerCase() === 'taken@example.com') {
-        throw new Error('This email address is already registered.')
-      }
-
-      // Success - Route to Home (or dashboard)
-      router.push('/')
-
-    } catch (err: any) {
-      setErrors(prev => ({
-        ...prev,
-        api: err.message || 'Registration failed. Please try again.'
-      }))
+      const destination = pendingRedirect || '/'
+      setPendingRedirect(null)
+      router.replace(destination)
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Registration failed. Please try again.'
+      setErrors(prev => ({ ...prev, api: message }))
     } finally {
       setIsLoading(false)
     }
   }
 
+  // ── Shared input class helper ────────────────────────────────────────────────
+  const inputClass = (hasError: boolean) =>
+    `w-full bg-[rgba(184,206,194,0.03)] border rounded-xl py-2.5 pl-11 pr-4 text-sm text-[hsl(var(--mint-soft))] placeholder-[hsl(var(--mint)/0.35)] outline-none transition-all duration-300 ${hasError
+      ? 'border-red-500/40 focus:border-red-500/70 focus:ring-1 focus:ring-red-500/70'
+      : 'border-[hsl(var(--mint)/0.15)] focus:border-[hsl(var(--mint)/0.65)] focus:ring-1 focus:ring-[hsl(var(--mint)/0.65)]'
+    }`
+
+  const ErrorMsg = ({ msg }: { msg?: string }) =>
+    msg ? (
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-rose-400 text-xs">
+        {msg}
+      </motion.p>
+    ) : null
+
   return (
     <div className="relative min-h-screen w-full flex flex-col lg:flex-row overflow-hidden bg-transparent">
       {/* Back Button */}
       <Link
-        href="/"
+        href="/careers"
         scroll={false}
         className="absolute top-12 md:top-24 left-6 z-50 flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[hsl(var(--mint)/0.6)] hover:text-[hsl(var(--mint))] transition-colors duration-200"
       >
         <FaArrowLeft className="w-3.5 h-3.5" />
-        Back to Home
+        Back
       </Link>
 
       {/* ===================== LEFT SIDE PANEL — Brand & Tilt Image ===================== */}
@@ -123,7 +165,7 @@ export default function SignUpPage() {
               Become a <span className="font-display italic text-[hsl(var(--mint-soft))]">Member</span>
             </h2>
             <p className="text-xs text-[hsl(var(--mint)/0.6)] mt-2">
-              Create an account and start managing wealth systematic trading.
+              Create an account and start managing wealth through systematic trading.
             </p>
           </div>
 
@@ -141,40 +183,57 @@ export default function SignUpPage() {
               </motion.div>
             )}
 
-            {/* Name Field */}
-            <div className="space-y-1.5">
-              <label htmlFor="fullName" className="block text-xs uppercase tracking-wider text-[hsl(var(--mint)/0.7)] font-medium">
-                Full Name
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[hsl(var(--mint)/0.4)] pointer-events-none">
-                  <FaUser className="w-4 h-4" />
-                </span>
-                <input
-                  id="fullName"
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => {
-                    setFullName(e.target.value)
-                    if (errors.fullName) setErrors(prev => ({ ...prev, fullName: undefined }))
-                  }}
-                  disabled={isLoading}
-                  placeholder="John Doe"
-                  className={`w-full bg-[rgba(184,206,194,0.03)] border rounded-xl py-2.5 pl-11 pr-4 text-sm text-[hsl(var(--mint-soft))] placeholder-[hsl(var(--mint)/0.35)] outline-none transition-all duration-300 ${errors.fullName
-                    ? 'border-red-500/40 focus:border-red-500/70 focus:ring-1 focus:ring-red-500/70'
-                    : 'border-[hsl(var(--mint)/0.15)] focus:border-[hsl(var(--mint)/0.65)] focus:ring-1 focus:ring-[hsl(var(--mint)/0.65)]'
-                    }`}
-                />
+            {/* Name Row — First + Last */}
+            <div className="grid grid-cols-2 gap-3">
+              {/* First Name */}
+              <div className="space-y-1.5">
+                <label htmlFor="firstName" className="block text-xs uppercase tracking-wider text-[hsl(var(--mint)/0.7)] font-medium">
+                  First Name
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[hsl(var(--mint)/0.4)] pointer-events-none">
+                    <FaUser className="w-3.5 h-3.5" />
+                  </span>
+                  <input
+                    id="firstName"
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => {
+                      setFirstName(e.target.value)
+                      if (errors.firstName) setErrors(prev => ({ ...prev, firstName: undefined }))
+                    }}
+                    disabled={isLoading}
+                    placeholder="John"
+                    className={inputClass(!!errors.firstName)}
+                  />
+                </div>
+                <ErrorMsg msg={errors.firstName} />
               </div>
-              {errors.fullName && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-rose-400 text-xs"
-                >
-                  {errors.fullName}
-                </motion.p>
-              )}
+
+              {/* Last Name */}
+              <div className="space-y-1.5">
+                <label htmlFor="lastName" className="block text-xs uppercase tracking-wider text-[hsl(var(--mint)/0.7)] font-medium">
+                  Last Name
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[hsl(var(--mint)/0.4)] pointer-events-none">
+                    <FaUser className="w-3.5 h-3.5" />
+                  </span>
+                  <input
+                    id="lastName"
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => {
+                      setLastName(e.target.value)
+                      if (errors.lastName) setErrors(prev => ({ ...prev, lastName: undefined }))
+                    }}
+                    disabled={isLoading}
+                    placeholder="Doe"
+                    className={inputClass(!!errors.lastName)}
+                  />
+                </div>
+                <ErrorMsg msg={errors.lastName} />
+              </div>
             </div>
 
             {/* Email Field */}
@@ -196,21 +255,35 @@ export default function SignUpPage() {
                   }}
                   disabled={isLoading}
                   placeholder="name@example.com"
-                  className={`w-full bg-[rgba(184,206,194,0.03)] border rounded-xl py-2.5 pl-11 pr-4 text-sm text-[hsl(var(--mint-soft))] placeholder-[hsl(var(--mint)/0.35)] outline-none transition-all duration-300 ${errors.email
-                    ? 'border-red-500/40 focus:border-red-500/70 focus:ring-1 focus:ring-red-500/70'
-                    : 'border-[hsl(var(--mint)/0.15)] focus:border-[hsl(var(--mint)/0.65)] focus:ring-1 focus:ring-[hsl(var(--mint)/0.65)]'
-                    }`}
+                  className={inputClass(!!errors.email)}
                 />
               </div>
-              {errors.email && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-rose-400 text-xs"
-                >
-                  {errors.email}
-                </motion.p>
-              )}
+              <ErrorMsg msg={errors.email} />
+            </div>
+
+            {/* Phone Number Field */}
+            <div className="space-y-1.5">
+              <label htmlFor="phoneNumber" className="block text-xs uppercase tracking-wider text-[hsl(var(--mint)/0.7)] font-medium">
+                Phone Number
+              </label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[hsl(var(--mint)/0.4)] pointer-events-none">
+                  <FaPhone className="w-4 h-4" />
+                </span>
+                <input
+                  id="phoneNumber"
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => {
+                    setPhoneNumber(e.target.value)
+                    if (errors.phoneNumber) setErrors(prev => ({ ...prev, phoneNumber: undefined }))
+                  }}
+                  disabled={isLoading}
+                  placeholder="+1234567890"
+                  className={inputClass(!!errors.phoneNumber)}
+                />
+              </div>
+              <ErrorMsg msg={errors.phoneNumber} />
             </div>
 
             {/* Password Field */}
@@ -231,22 +304,11 @@ export default function SignUpPage() {
                     if (errors.password) setErrors(prev => ({ ...prev, password: undefined }))
                   }}
                   disabled={isLoading}
-                  placeholder="••••••••"
-                  className={`w-full bg-[rgba(184,206,194,0.03)] border rounded-xl py-2.5 pl-11 pr-4 text-sm text-[hsl(var(--mint-soft))] placeholder-[hsl(var(--mint)/0.35)] outline-none transition-all duration-300 ${errors.password
-                    ? 'border-red-500/40 focus:border-red-500/70 focus:ring-1 focus:ring-red-500/70'
-                    : 'border-[hsl(var(--mint)/0.15)] focus:border-[hsl(var(--mint)/0.65)] focus:ring-1 focus:ring-[hsl(var(--mint)/0.65)]'
-                    }`}
+                  placeholder="Min 8 chars, upper + lower + digit"
+                  className={inputClass(!!errors.password)}
                 />
               </div>
-              {errors.password && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-rose-400 text-xs"
-                >
-                  {errors.password}
-                </motion.p>
-              )}
+              <ErrorMsg msg={errors.password} />
             </div>
 
             {/* Confirm Password Field */}
@@ -268,21 +330,10 @@ export default function SignUpPage() {
                   }}
                   disabled={isLoading}
                   placeholder="••••••••"
-                  className={`w-full bg-[rgba(184,206,194,0.03)] border rounded-xl py-2.5 pl-11 pr-4 text-sm text-[hsl(var(--mint-soft))] placeholder-[hsl(var(--mint)/0.35)] outline-none transition-all duration-300 ${errors.confirmPassword
-                    ? 'border-red-500/40 focus:border-red-500/70 focus:ring-1 focus:ring-red-500/70'
-                    : 'border-[hsl(var(--mint)/0.15)] focus:border-[hsl(var(--mint)/0.65)] focus:ring-1 focus:ring-[hsl(var(--mint)/0.65)]'
-                    }`}
+                  className={inputClass(!!errors.confirmPassword)}
                 />
               </div>
-              {errors.confirmPassword && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-rose-400 text-xs"
-                >
-                  {errors.confirmPassword}
-                </motion.p>
-              )}
+              <ErrorMsg msg={errors.confirmPassword} />
             </div>
 
             {/* Submit Button */}
