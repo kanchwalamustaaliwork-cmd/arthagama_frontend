@@ -35,3 +35,33 @@ Each visual is self-contained (own state, own styles) — no shared animation ti
 Swapping fake data for real API data later is a single-point change: replace the PAIRS/SNAPSHOTS array with a fetch result, same rendering code stays.
 
 One thing worth doing next: since useLoop and the glass frame are now used identically everywhere, you could pull the frame + min-h-64 container into one VisualFrame wrapper so each visual file only contains its content, not its box.
+
+
+
+API FLOW FORMAT 
+
+User
+ │
+ ▼
+app/page.tsx
+ │
+ ▼
+views/HomePage.tsx
+ │
+ ▼
+components/HomeSection.tsx
+ │
+ ▼
+hooks/useHome.ts
+ │
+ ▼
+services/homeApi.ts
+ │
+ ▼
+api/axios.ts
+ │
+ ▼
+ Backend
+ │
+ ▼
+Database

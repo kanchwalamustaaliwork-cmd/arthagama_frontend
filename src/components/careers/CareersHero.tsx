@@ -13,15 +13,15 @@ export default function CareersHero() {
       <AmbientGlassPanel
         sectionClassName="cv-section pt-32 pb-16 sm:pt-36"
       >
-        <div className="flex flex-1 flex-col items-center justify-center px-6 py-24 text-center">
+        <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 py-24 text-center">
           {/* Gradient Text Animation on the main heading */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease: easing, delay: 0.15 }}
-            className="gradient-text-anim mx-auto max-w-4xl pb-2 font-body text-4xl font-light leading-[1.2] sm:text-5xl md:text-6xl"
+            className="text-2xl font-semibold leading-tight text-[#EAF1EC] sm:text-5xl md:text-3xl lg:text-5xl gradient-text-anim mx-auto max-w-4xl pb-2 "
           >
-            Don't just find a <span className="font-semibold">job</span>.
+            Don't just find a <span className="font-bold text-[#B8CEC2]">Job</span>.
             <br />
             Build what moves the markets.
           </motion.h1>
@@ -30,10 +30,10 @@ export default function CareersHero() {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: easing, delay: 0.55 }}
-            className="text-shadow-soft mx-auto mt-6 max-w-lg text-sm text-[#DCE7E1]/85 sm:text-base"
+            className="mx-auto max-w-2xl text-sm italic tracking-wide text-[#B8CEC2]/90 sm:text-base"
           >
-            We're hiring across <TypewriterRole /> — join a team that ships real
-            systems, not slideware.
+            "We're hiring across <TypewriterRole /> — join a team that ships real
+            systems, not slideware."
           </motion.p>
         </div>
 
