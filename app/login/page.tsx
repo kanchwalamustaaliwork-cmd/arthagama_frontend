@@ -1,3 +1,14 @@
-import LoginPage from '@/src/views/LoginPage'
+import LoginView from '@/src/views/LoginPage'
 
-export default LoginPage
+
+import GlobalBackground from '@/src/components/backgrounds/GlobalBackground'
+
+
+export default function LoginPage() {
+    return (
+        <>
+            <GlobalBackground />
+            <LoginView />
+        </>
+    )
+}
