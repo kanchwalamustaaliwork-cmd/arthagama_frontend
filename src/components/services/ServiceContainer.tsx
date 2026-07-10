@@ -1,13 +1,26 @@
 "use client"
 
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import type { ServiceContainerProps } from '../../types/services'
 import { easing } from '../../constans/animation'
 import ServiceVisual from './visuals/ServiceVisual'
+import { useAuth } from '../../auth/AuthContext'
 
 export default function ServiceContainer({ service, reverse, index }: ServiceContainerProps) {
+    const { isAuthenticated, setPendingRedirect } = useAuth()
+    const router = useRouter()
+
+    const handleCardClick = () => {
+        if (!isAuthenticated) {
+            setPendingRedirect(`/services/${service.slug}`)
+            router.push('/login')
+        } else {
+            router.push('/services/coming-soon')
+        }
+    }
+
     return (
         <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-14">
             {/* Directional Reveal — text slides in from the side it visually sits on */}
@@ -35,16 +48,15 @@ export default function ServiceContainer({ service, reverse, index }: ServiceCon
                         </li>
                     ))}
                 </ul>
-                <Link
-                    href={`/services/${service.slug}`}
-                    scroll={false}
+                <button
+                    onClick={handleCardClick}
                     className="cta-btn group relative inline-flex items-center gap-2 overflow-hidden rounded-full px-6 py-3 text-xs font-medium text-[#1B3236]"
                 >
                     {/* Shine Sweep on hover */}
                     <span className="shine-sweep pointer-events-none absolute inset-0" />
                     <span className="relative z-10">{service.ctaLabel}</span>
                     <ArrowUpRight className="relative z-10 h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </Link>
+                </button>
             </motion.div>
 
             <motion.div
