@@ -1,8 +1,5 @@
 import type { Metadata } from 'next'
 import AppProviders from '@/src/components/providers/AppProviders'
-import GlobalBackground from '@/src/components/backgrounds/GlobalBackground'
-import Navbar from '@/src/components/Navbar'
-import FooterSection from '@/src/components/FooterSection'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -19,19 +16,12 @@ export const metadata: Metadata = {
   manifest: '/favicon/site.webmanifest',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
         <AppProviders>
-          <GlobalBackground />
-          <Navbar />
           {children}
-          <FooterSection />
         </AppProviders>
       </body>
     </html>

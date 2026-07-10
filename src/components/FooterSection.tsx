@@ -1,7 +1,6 @@
 "use client"
 
 import { useRef, useState } from 'react'
-import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import gsap from 'gsap'
 import { motion } from 'framer-motion'
@@ -24,12 +23,8 @@ const cascadeItem = {
   },
 }
 
-const AUTH_ROUTES = ['/login', '/signup']
 
 export default function FooterSection() {
-  const pathname = usePathname()
-  if (AUTH_ROUTES.includes(pathname)) return null
-
   const [emailHovered, setEmailHovered] = useState(false)
   const emailBtnRef = useRef<HTMLDivElement>(null)
 

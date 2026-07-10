@@ -135,3 +135,498 @@ backing panel.
   vary it deliberately while staying restrained.
 - Do not build one large monolithic component when the content
   naturally splits into smaller pieces.
+
+
+
+  <!-- DASHBOARD PLAN AND DESIGN -->
+
+  # Arthagama Backend Dashboard API - Implementation Prompt
+
+You are extending an existing FastAPI backend for Arthagama, an algorithmic trading platform.
+
+The authentication system is already completed (JWT authentication, user registration, login, refresh tokens, protected routes, MongoDB integration).
+
+Your task is to design and implement the complete backend architecture required to power the authenticated Member Dashboard using modern FastAPI best practices.
+
+The solution must be production-ready, scalable, modular, and easy to maintain as the platform grows.
+
+---
+
+# Existing Project
+
+Current backend structure:
+
+```text
+app
+├── core
+├── db
+├── dependencies
+├── models
+├── routers
+├── schemas
+└── main.py
+```
+
+The existing authentication module must remain untouched unless absolutely necessary for integration.
+
+---
+
+# Objective
+
+Build the backend APIs and architecture required for the Member Dashboard.
+
+The dashboard should support:
+
+* Dashboard Overview
+* My Strategies
+* Backtesting
+* Compare Stocks
+* Research Reports
+
+The implementation should be future-proof so additional modules (Portfolio, Alerts, Brokers, Orders, AI, etc.) can be added without restructuring the project.
+
+---
+
+# Expected Project Structure
+
+Restructure and extend the backend using a clean, feature-based architecture.
+
+The project should include dedicated modules for:
+
+* Dashboard
+* Strategies
+* Backtesting
+* Stock Comparison
+* Research Reports
+* Common Utilities
+* Shared Models
+* Shared Schemas
+* Shared Services
+* Shared Dependencies
+
+Each feature should contain its own router, service layer, schema layer, and model definitions where appropriate.
+
+Business logic must never live inside routers.
+
+Routers should only receive requests and return responses.
+
+---
+
+# Dashboard Module
+
+Create APIs required for the Dashboard page.
+
+The dashboard endpoint should aggregate information from multiple modules and return a single optimized response for the frontend.
+
+The dashboard should expose data for:
+
+## Welcome
+
+* User information
+* Greeting
+* Current date
+* Market status
+
+---
+
+## Portfolio Summary
+
+* Portfolio value
+* Today's profit/loss
+* Total returns
+* Active strategies
+* Running backtests
+* Watchlist count
+* Notifications count
+
+---
+
+## Portfolio Performance
+
+Return chart-ready data.
+
+Support multiple ranges:
+
+* 1 Day
+* 1 Week
+* 1 Month
+* 3 Months
+* 6 Months
+* 1 Year
+* All
+
+---
+
+## AI Insights
+
+Return dashboard insights including:
+
+* Strategy opportunities
+* Risk observations
+* Suggested stocks
+* Market summary
+* Daily insights
+* Recommendation cards
+
+For now, return mock/generated data with an architecture that allows AI integration later.
+
+---
+
+## Strategy Summary
+
+Return:
+
+* Total strategies
+* Active strategies
+* Paused strategies
+* Best performing strategy
+* Recent strategies
+
+---
+
+## Strategy Matches
+
+Return stocks currently matching user strategies.
+
+Each result should contain:
+
+* Stock
+* Match percentage
+* Strategy
+* Signal
+* Confidence
+
+---
+
+## Research Summary
+
+Return:
+
+* Latest reports
+* Featured reports
+* Recommended reports
+
+---
+
+## Market Movers
+
+Return:
+
+* Top gainers
+* Top losers
+* Trending stocks
+* Most active stocks
+
+---
+
+## Heatmap Data
+
+Return sector performance data.
+
+---
+
+## Watchlist Summary
+
+Return:
+
+* Watchlist stocks
+* Price
+* Daily change
+* Signal
+
+---
+
+## Notifications
+
+Return latest notifications.
+
+---
+
+## Economic Calendar
+
+Return upcoming market events.
+
+---
+
+## Recent Activity
+
+Return user activity history.
+
+---
+
+# Strategy Module
+
+Implement complete CRUD support for user strategies.
+
+A strategy belongs to one authenticated user.
+
+Users can:
+
+* Create
+* Edit
+* Delete
+* Clone
+* Archive
+* Activate
+* Pause
+* Retrieve
+* List
+
+Each strategy should support:
+
+* Name
+* Description
+* Market
+* Timeframe
+* Entry Rules
+* Exit Rules
+* Risk Management
+* Position Sizing
+* Stop Loss
+* Target
+* Indicators
+* Status
+* Created Date
+* Updated Date
+
+Design the data model so that future visual strategy builders can use it without schema changes.
+
+---
+
+# Backtesting Module
+
+Implement APIs that allow users to:
+
+* Run a backtest
+* Save a backtest
+* View previous backtests
+* Retrieve detailed backtest results
+
+Each result should contain:
+
+* Total trades
+* Winning trades
+* Losing trades
+* Win rate
+* CAGR
+* Drawdown
+* Profit factor
+* Sharpe ratio
+* Equity curve data
+* Monthly returns
+* Trade history
+
+For now, mock calculations are acceptable if market execution is not yet implemented, but the API contracts should remain production-ready.
+
+---
+
+# Compare Stocks Module
+
+Create APIs allowing comparison of multiple stocks.
+
+Comparison should include:
+
+* Company overview
+* Fundamentals
+* Financial ratios
+* Valuation
+* Growth
+* Profitability
+* Technical indicators
+* Overall comparison summary
+
+The architecture should allow future integration with real NSE/BSE market data providers.
+
+---
+
+# Research Reports Module
+
+Implement APIs for research reports.
+
+Support:
+
+* List reports
+* Report details
+* Featured reports
+* Categories
+* Search
+* Filters
+* Save report
+* Remove saved report
+
+Each report should include:
+
+* Title
+* Author
+* Category
+* Published date
+* Summary
+* Recommendation
+* Risk level
+* Charts (metadata)
+* Tags
+
+---
+
+# Authentication
+
+Every dashboard endpoint must require authentication.
+
+Every resource must only be accessible by its owner unless explicitly marked as public.
+
+Authorization should always verify ownership before returning or modifying user-specific data.
+
+---
+
+# Database Design
+
+Design MongoDB collections following best practices.
+
+Collections should be normalized where appropriate and indexed for performance.
+
+Include suitable indexes for:
+
+* User lookups
+* Strategy queries
+* Dashboard queries
+* Report searches
+* Activity history
+
+Models should be designed to accommodate future scaling without breaking changes.
+
+---
+
+# API Design
+
+Use RESTful conventions.
+
+Each module should expose clean, predictable endpoints.
+
+Support:
+
+* Filtering
+* Sorting
+* Searching
+* Pagination
+
+Responses should be consistent across all modules.
+
+Use standardized success and error response structures.
+
+---
+
+# Validation
+
+Use Pydantic models for all requests and responses.
+
+Separate:
+
+* Request schemas
+* Response schemas
+* Internal database models
+
+Never expose database models directly through the API.
+
+---
+
+# Error Handling
+
+Implement consistent error handling across the application.
+
+Return meaningful HTTP status codes and structured error responses.
+
+---
+
+# Services
+
+Business logic must live inside service classes/functions.
+
+Services should remain independent from routers and reusable across multiple endpoints.
+
+---
+
+# Dependency Injection
+
+Use FastAPI dependency injection throughout the application.
+
+Keep dependencies centralized and reusable.
+
+---
+
+# Performance
+
+Optimize the backend for:
+
+* Async MongoDB operations
+* Efficient queries
+* Minimal database round-trips
+* Pagination
+* Index usage
+
+Dashboard APIs should aggregate data efficiently and avoid unnecessary queries.
+
+---
+
+# API Documentation
+
+Every endpoint should include:
+
+* Clear summary
+* Description
+* Request schema
+* Response schema
+* Tags
+
+Swagger documentation should be clean and organized by feature.
+
+---
+
+# Future Scalability
+
+The architecture should allow future modules to be added easily, including:
+
+* Portfolio Management
+* Broker Integration
+* Live Trading
+* Paper Trading
+* Order Management
+* Notifications
+* Alerts
+* AI Recommendations
+* Market Scanner
+* Watchlists
+* Subscription Plans
+* Admin Dashboard
+* Analytics
+* Audit Logs
+* Payment Gateway
+* Role-Based Access Control (RBAC)
+
+Adding new modules should not require restructuring the existing codebase.
+
+---
+
+# Expected Deliverables
+
+Generate the complete production-ready backend implementation.
+
+Include:
+
+* Updated project structure
+* All new folders and files
+* MongoDB models
+* Pydantic schemas
+* Routers
+* Service layer
+* Dependencies
+* Database utilities
+* API endpoints
+* Index creation
+* Configuration updates
+* Integration with the existing authentication module
+
+Maintain consistent coding style across the project.
+
+Follow modern FastAPI, Pydantic v2, Motor (MongoDB), and Python best practices throughout the implementation.
+
+Do not skip files or provide placeholders. Generate the implementation module by module, ensuring each module is complete, fully functional, and ready to integrate into the existing codebase.

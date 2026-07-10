@@ -107,7 +107,7 @@ export default function SignUpPage() {
         password,
       })
 
-      const destination = pendingRedirect || '/'
+      const destination = pendingRedirect || '/dashboard'
       setPendingRedirect(null)
       router.replace(destination)
     } catch (err: unknown) {

@@ -34,17 +34,39 @@ export function DesktopNavAuthButtons() {
 
     if (isAuthenticated) {
         return (
-            <button
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-                className="relative z-10 text-xs sm:text-sm rounded-full px-3 sm:px-4 py-1.5 sm:py-2 transition-all duration-200 whitespace-nowrap disabled:opacity-50 disabled:pointer-events-none"
-                style={{
-                    background: 'hsl(var(--mint))',
-                    color: 'hsl(var(--teal-deep))',
-                }}
-            >
-                {isLoggingOut ? 'Signing out…' : 'Log out'}
-            </button>
+            <>
+                {/* Dashboard link */}
+                <Link
+                    href="/dashboard"
+                    className="relative z-10 text-xs sm:text-sm rounded-full px-3 sm:px-4 py-1.5 sm:py-2 transition-all duration-200 whitespace-nowrap"
+                    style={{
+                        border: '1px solid hsl(var(--mint) / 0.3)',
+                        color: 'hsl(var(--mint) / 0.85)',
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.color = 'hsl(var(--mint-soft))'
+                        e.currentTarget.style.borderColor = 'hsl(var(--mint) / 0.6)'
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.color = 'hsl(var(--mint) / 0.85)'
+                        e.currentTarget.style.borderColor = 'hsl(var(--mint) / 0.3)'
+                    }}
+                >
+                    Dashboard ↗
+                </Link>
+                {/* Log out */}
+                <button
+                    onClick={handleLogout}
+                    disabled={isLoggingOut}
+                    className="relative z-10 text-xs sm:text-sm rounded-full px-3 sm:px-4 py-1.5 sm:py-2 transition-all duration-200 whitespace-nowrap disabled:opacity-50 disabled:pointer-events-none"
+                    style={{
+                        background: 'hsl(var(--mint))',
+                        color: 'hsl(var(--teal-deep))',
+                    }}
+                >
+                    {isLoggingOut ? 'Signing out…' : 'Log out'}
+                </button>
+            </>
         )
     }
 
@@ -130,17 +152,32 @@ export function MobileNavAuthButtons({ navLinksCount }: MobileNavAuthButtonsProp
 
     if (isAuthenticated) {
         return (
-            <button
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-                className="flex items-center justify-center min-h-[44px] w-full rounded-2xl text-base transition-colors duration-200 disabled:opacity-50 disabled:pointer-events-none"
-                style={{
-                    background: 'hsl(var(--mint))',
-                    color: 'hsl(var(--teal-deep))',
-                }}
-            >
-                {isLoggingOut ? 'Signing out…' : 'Log out'}
-            </button>
+            <>
+                {/* Go to Dashboard */}
+                <Link
+                    href="/dashboard"
+                    className="flex items-center justify-center min-h-[44px] w-full rounded-2xl text-base transition-colors duration-200"
+                    style={{
+                        background: 'hsl(var(--teal) / 0.7)',
+                        color: 'hsl(var(--mint-soft))',
+                        border: '1px solid hsl(var(--mint) / 0.3)',
+                    }}
+                >
+                    Go to Dashboard ↗
+                </Link>
+                {/* Log out */}
+                <button
+                    onClick={handleLogout}
+                    disabled={isLoggingOut}
+                    className="flex items-center justify-center min-h-[44px] w-full rounded-2xl text-base transition-colors duration-200 disabled:opacity-50 disabled:pointer-events-none"
+                    style={{
+                        background: 'hsl(var(--mint))',
+                        color: 'hsl(var(--teal-deep))',
+                    }}
+                >
+                    {isLoggingOut ? 'Signing out…' : 'Log out'}
+                </button>
+            </>
         )
     }
 

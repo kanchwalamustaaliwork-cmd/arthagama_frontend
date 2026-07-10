@@ -22,13 +22,8 @@ const THEME_VARS = {
   '--mint-soft': '135 14% 88%',
 } as React.CSSProperties
 
-const AUTH_ROUTES = ['/login', '/signup']
-
 export default function Navbar() {
   const pathname = usePathname()
-
-  // Hide navbar on auth pages
-  if (AUTH_ROUTES.includes(pathname)) return null
 
   const isActive = (to: string) => {
     if (to === '/') return pathname === '/'
