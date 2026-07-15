@@ -72,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             value={{
                 user,
                 isAuthenticated: !!user,
+                isAdmin: user?.role === 1,
                 isInitializing,
                 login,
                 signup,

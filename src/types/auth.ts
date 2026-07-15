@@ -17,6 +17,7 @@ export interface UserResponse {
     phone_number: string
     is_active: boolean
     created_at: string  // ISO-8601 datetime string
+    role: '0' | '1'  // role = '0' → normal user, role = '1' → admin
 }
 
 /**
@@ -29,6 +30,8 @@ export interface AuthUser {
     firstName: string
     lastName: string
     phoneNumber: string
+    /** 0 = normal user, 1 = admin. Matches backend role field. */
+    role: 0 | 1
 }
 
 // ─── Token ────────────────────────────────────────────────────────────────────
@@ -62,6 +65,8 @@ export interface SignupPayload {
 export interface AuthContextValue {
     user: AuthUser | null
     isAuthenticated: boolean
+    /** true when the authenticated user has role = 1 (admin) */
+    isAdmin: boolean
     isInitializing: boolean
     login: (email: string, password: string) => Promise<void>
     signup: (payload: SignupPayload) => Promise<void>

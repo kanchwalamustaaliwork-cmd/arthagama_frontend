@@ -60,6 +60,8 @@ function mapToAuthUser(r: UserResponse): AuthUser {
         firstName: r.first_name,
         lastName: r.last_name,
         phoneNumber: r.phone_number,
+        // Map backend string role ('0' or '1') to numeric: '1' → 1, anything else → 0
+        role: r.role === '1' ? 1 : 0,
     }
 }
 
