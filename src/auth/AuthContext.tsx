@@ -7,7 +7,7 @@
  *
  * Session Strategy:
  *   - Tokens are stored in httpOnly cookies (set by Next.js route handlers).
- *   - On mount, calls restoreSession() which hits GET /auth/me using the
+ *   - On mount, calls restoreSession() which hits GET /users/me using the
  *     stored access token cookie — if valid, the user is rehydrated.
  *   - No localStorage usage anywhere in this file.
  *
@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await logoutService()
         setUser(null)
     }, [])
-
+    console.log(user)
     return (
         <AuthContext.Provider
             value={{

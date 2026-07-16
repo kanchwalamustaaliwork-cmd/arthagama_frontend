@@ -1,27 +1,21 @@
 /**
- * app/api/auth/clear-tokens/route.ts
+ * app/api/auth/clear-tokens/route.ts  [RETIRED]
  *
- * Next.js Route Handler — clears the httpOnly refresh_token cookie on logout.
+ * This route handler is no longer used.
  *
- * The access token does not need clearing here — it lives in-memory (tokenStore)
- * and is cleared directly by authService.logout() via tokenStore.clear().
+ * Previously, the frontend called this to clear the httpOnly refresh cookie
+ * by setting Max-Age=0 server-side (since JS can't clear httpOnly cookies).
  *
- * Called by: src/auth/authService.ts (clearRefreshToken) on logout
+ * Now, the backend handles cookie clearing directly:
+ *   POST /auth/logout → backend responds with Set-Cookie: refresh_token=; Max-Age=0
+ *   The browser clears the cookie automatically from that response.
  */
 
 import { NextResponse } from 'next/server'
 
 export async function POST() {
-    const response = NextResponse.json({ success: true })
-
-    // Expire the refresh_token cookie immediately
-    response.cookies.set('refresh_token', '', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 0,
-        path: '/',
-    })
-
-    return response
+    return NextResponse.json(
+        { error: 'This proxy endpoint is retired. Call the backend /auth/logout directly.' },
+        { status: 410 },
+    )
 }

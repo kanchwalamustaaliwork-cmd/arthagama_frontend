@@ -52,7 +52,7 @@ export default function LoginPage() {
     try {
       await login(email, password)
 
-      const destination = pendingRedirect || '/dashboard'
+      const destination = pendingRedirect || '/'
       setPendingRedirect(null)
       router.replace(destination)
     } catch (err: unknown) {

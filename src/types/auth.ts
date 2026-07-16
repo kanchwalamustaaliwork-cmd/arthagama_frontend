@@ -8,7 +8,7 @@
 
 // ─── User ─────────────────────────────────────────────────────────────────────
 
-/** The public user object returned by GET /auth/me */
+/** The public user object returned by GET /users/me */
 export interface UserResponse {
     id: string          // MongoDB ObjectId as string
     first_name: string
@@ -17,7 +17,7 @@ export interface UserResponse {
     phone_number: string
     is_active: boolean
     created_at: string  // ISO-8601 datetime string
-    role: '0' | '1'  // role = '0' → normal user, role = '1' → admin
+    role: 0 | 1  // role = '0' → normal user, role = '1' → admin
 }
 
 /**
@@ -36,11 +36,16 @@ export interface AuthUser {
 
 // ─── Token ────────────────────────────────────────────────────────────────────
 
-/** Shape returned by POST /auth/login, /auth/signup, /auth/refresh */
+/**
+ * Response body returned by POST /auth/login, /auth/signup, /auth/refresh.
+ *
+ * IMPORTANT: The refresh token is NOT in this response body.
+ * The backend sets it exclusively as an httpOnly Set-Cookie header.
+ * JavaScript never sees, stores, or sends the refresh token.
+ */
 export interface TokenResponse {
     access_token: string
-    refresh_token: string
-    token_type: string // "bearer"
+    token_type: string  // "bearer"
 }
 
 // ─── Request Payloads ────────────────────────────────────────────────────────
