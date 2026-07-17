@@ -1,42 +1,110 @@
-import { useCallback, useEffect, useState } from 'react'
-import type { AdminLog, PaginatedResponse } from '@/src/types/admin'
-import { fetchStrategyLogs, type FetchLogsParams } from '@/src/services/admin/adminApi'
+'use client'
 
-type Status = 'loading' | 'ready' | 'error'
+import { useCallback, useEffect, useState, useRef } from 'react'
+import type { TerminalLogItem } from '@/src/types/admin'
+import { fetchStrategyLogs } from '@/src/services/admin/adminApi'
 
 export function useStrategyLogs(strategyId: string) {
-    const [response, setResponse] = useState<PaginatedResponse<AdminLog> | null>(null)
-    const [status, setStatus] = useState<Status>('loading')
+    const [logs, setLogs] = useState<TerminalLogItem[]>([])
+    const [pageRange, setPageRange] = useState({ start: 1, end: 1 })
+    const [total, setTotal] = useState(0)
+    const [hasNext, setHasNext] = useState(false)
+    const [hasPrevious, setHasPrevious] = useState(false)
+    const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
     const [search, setSearch] = useState('')
-    const [eventType, setEventType] = useState('all')
-    const [logStatus, setLogStatus] = useState('all')
-    const [page, setPage] = useState(1)
+    const [level, setLevel] = useState('all')
 
-    const load = useCallback(() => {
-        if (!strategyId) return
+    const fetchingRef = useRef(false)
+
+    const loadPage = useCallback(async (pageNum: number, direction: 'append' | 'prepend' | 'reset') => {
+        if (!strategyId || fetchingRef.current) return
+        fetchingRef.current = true
         setStatus('loading')
-        const params: FetchLogsParams = { page, pageSize: 10, search, eventType, status: logStatus }
-        fetchStrategyLogs(strategyId, params)
-            .then(data => { setResponse(data); setStatus('ready') })
-            .catch(() => setStatus('error'))
-    }, [strategyId, page, search, eventType, logStatus])
 
-    useEffect(() => { setPage(1) }, [search, eventType, logStatus])
-    useEffect(() => { load() }, [load])
+        try {
+            const res = await fetchStrategyLogs(strategyId, {
+                page: pageNum,
+                pageSize: 100,
+                search,
+                eventType: level,
+                status: level,
+            })
+
+            const newItems = res.items
+            const { total: totalCount, hasNext: nextExists, hasPrevious: prevExists } = res.pagination
+
+            setTotal(totalCount)
+            setHasNext(nextExists)
+            setHasPrevious(prevExists)
+
+            setLogs(prev => {
+                if (direction === 'reset') {
+                    setPageRange({ start: pageNum, end: pageNum })
+                    return newItems
+                }
+
+                if (direction === 'append') {
+                    const combined = [...prev, ...newItems]
+                    const pageLimit = 6
+                    if (combined.length > pageLimit * 100) {
+                        setPageRange(r => ({ start: r.start + 1, end: pageNum }))
+                        return combined.slice(100)
+                    }
+                    setPageRange(r => ({ ...r, end: pageNum }))
+                    return combined
+                }
+
+                if (direction === 'prepend') {
+                    const combined = [...newItems, ...prev]
+                    const pageLimit = 6
+                    if (combined.length > pageLimit * 100) {
+                        setPageRange(r => ({ start: pageNum, end: r.end - 1 }))
+                        return combined.slice(0, combined.length - 100)
+                    }
+                    setPageRange(r => ({ ...r, start: pageNum }))
+                    return combined
+                }
+
+                return prev
+            })
+            setStatus('ready')
+        } catch {
+            setStatus('error')
+        } finally {
+            fetchingRef.current = false
+        }
+    }, [strategyId, search, level])
+
+    // Load page 1 on filter/search change
+    useEffect(() => {
+        loadPage(1, 'reset')
+    }, [strategyId, search, level])
+
+    const loadNext = useCallback(() => {
+        if (hasNext && status !== 'loading') {
+            loadPage(pageRange.end + 1, 'append')
+        }
+    }, [hasNext, status, pageRange.end, loadPage])
+
+    const loadPrevious = useCallback(() => {
+        if (hasPrevious && status !== 'loading') {
+            return loadPage(pageRange.start - 1, 'prepend')
+        }
+        return Promise.resolve()
+    }, [hasPrevious, status, pageRange.start, loadPage])
 
     return {
-        logs: response?.data ?? [],
-        total: response?.total ?? 0,
-        hasMore: response?.hasMore ?? false,
+        logs,
+        total,
+        hasNext,
+        hasPrevious,
         status,
-        page,
-        setPage,
         search,
         setSearch,
-        eventType,
-        setEventType,
-        logStatus,
-        setLogStatus,
-        retry: load,
+        level,
+        setLevel,
+        loadNext,
+        loadPrevious,
+        retry: () => loadPage(pageRange.start, 'reset'),
     }
 }

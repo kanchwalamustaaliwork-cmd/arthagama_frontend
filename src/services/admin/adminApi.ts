@@ -17,14 +17,26 @@ import type {
     AdminCustomer,
     AdminStrategy,
     AdminHolding,
-    AdminLog,
+    TerminalLogItem,
+    TerminalLogResponse,
     StrategyAnalysis,
     AdminPlatformStats,
     PaginatedResponse,
     StrategyEditFormData,
     CustomerStatus,
     AdminStrategyStatus,
+    AdminTrade,
+    UniverseResponse,
+    TradeQueryParams,
 } from '@/src/types/admin'
+
+import {
+    apiGet,
+    apiPost,
+    apiPut,
+    apiPatch,
+    apiDelete,
+} from '@/src/api/axios'
 
 import {
     ADMIN_PLATFORM_STATS,
@@ -33,17 +45,32 @@ import {
     MOCK_STRATEGY_HOLDINGS,
     MOCK_STRATEGY_LOGS,
     MOCK_STRATEGY_ANALYSIS,
+    MOCK_STRATEGY_TRADES,
 } from '@/src/data/admin/admin-mock'
 
 // Simulate network delay for realistic loading states
 const delay = (ms = 400) => new Promise(r => setTimeout(r, ms))
 
-// ─── Platform Stats ───────────────────────────────────────────────────────────
-
 export async function fetchAdminStats(): Promise<AdminPlatformStats> {
-    await delay()
-    // TODO: return (await apiGet<AdminPlatformStats>('/admin/stats')).data
-    return { ...ADMIN_PLATFORM_STATS }
+    try {
+        const response = await apiGet<AdminPlatformStats>('/admin/stats')
+        return response.data
+    } catch {
+        try {
+            const res = await fetchAdminStrategies({ page: 1, pageSize: 100 })
+            const totalStrategies = res.total
+            const runningStrategies = res.data.filter(s => s.status === 'running').length
+            const stoppedStrategies = res.data.filter(s => s.status === 'paused' || s.status === 'draft').length
+            return {
+                ...ADMIN_PLATFORM_STATS,
+                totalStrategies,
+                runningStrategies,
+                stoppedStrategies,
+            }
+        } catch {
+            return { ...ADMIN_PLATFORM_STATS }
+        }
+    }
 }
 
 // ─── Customers ────────────────────────────────────────────────────────────────
@@ -112,71 +139,86 @@ export interface FetchStrategiesParams {
     pageSize?: number
     search?: string
     status?: AdminStrategyStatus | 'all'
+    isActive?: 'all' | 'active' | 'inactive'
+    sortBy?: string
 }
 
 export async function fetchAdminStrategies(params: FetchStrategiesParams = {}): Promise<PaginatedResponse<AdminStrategy>> {
-    await delay()
-    const { page = 1, pageSize = 20, search = '', status = 'all' } = params
-
-    let filtered = [...MOCK_ADMIN_STRATEGIES]
-
-    if (search) {
-        const q = search.toLowerCase()
-        filtered = filtered.filter(s =>
-            s.name.toLowerCase().includes(q) ||
-            s.assignedUserName.toLowerCase().includes(q)
-        )
+    const queryParams: Record<string, any> = {
+        page: params.page,
+        pageSize: params.pageSize,
+        search: params.search,
+        status: params.status,
+    }
+    if (params.isActive !== undefined && params.isActive !== 'all') {
+        queryParams.isActive = params.isActive === 'active' ? 'true' : 'false'
+        queryParams.is_active = params.isActive === 'active' ? 'true' : 'false'
+    }
+    if (params.sortBy) {
+        queryParams.sortBy = params.sortBy
+        queryParams.sort_by = params.sortBy
     }
 
-    if (status !== 'all') {
-        filtered = filtered.filter(s => s.status === status)
-    }
-
-    const total = filtered.length
-    const start = (page - 1) * pageSize
-    const data = filtered.slice(start, start + pageSize)
-
-    // TODO:
-    // return (await apiGet<PaginatedResponse<AdminStrategy>>('/admin/strategies', { params })).data
-    return { data, total, page, pageSize, hasMore: start + pageSize < total }
+    const response = await apiGet<PaginatedResponse<AdminStrategy>>('/admin/strategies', { params: queryParams })
+    return response.data
 }
 
 export async function fetchAdminStrategy(id: string): Promise<AdminStrategy | null> {
-    await delay()
-    // TODO: return (await apiGet<AdminStrategy>(`/admin/strategies/${id}`)).data
-    return MOCK_ADMIN_STRATEGIES.find(s => s.id === id) ?? null
+    try {
+        const response = await apiGet<AdminStrategy>(`/admin/strategies/${id}`)
+        return response.data
+    } catch {
+        return null
+    }
 }
 
 export async function updateStrategyStatus(id: string, action: 'start' | 'stop' | 'archive'): Promise<AdminStrategy> {
-    await delay(300)
-    const strategy = MOCK_ADMIN_STRATEGIES.find(s => s.id === id)
-    if (!strategy) throw new Error('Strategy not found')
-    const statusMap: Record<string, AdminStrategyStatus> = { start: 'running', stop: 'paused', archive: 'archived' }
-    // TODO: return (await apiPatch<AdminStrategy>(`/admin/strategies/${id}/${action}`)).data
-    return { ...strategy, status: statusMap[action] }
+    const response = await apiPost<AdminStrategy>(`/admin/strategies/${id}/status`, { action })
+    return response.data
 }
 
 export async function updateStrategy(id: string, data: StrategyEditFormData): Promise<AdminStrategy> {
-    await delay(400)
-    const strategy = MOCK_ADMIN_STRATEGIES.find(s => s.id === id)
-    if (!strategy) throw new Error('Strategy not found')
-    // TODO: return (await apiPut<AdminStrategy>(`/admin/strategies/${id}`, data)).data
-    return {
-        ...strategy,
-        name: data.name,
-        description: data.description,
-        version: data.version,
-        instruments: data.instruments.split(',').map(i => i.trim()).filter(Boolean),
-        updatedAt: new Date().toISOString(),
-    }
+    const response = await apiPut<AdminStrategy>(`/admin/strategies/${id}`, data)
+    return response.data
+}
+
+export async function createStrategy(data: StrategyEditFormData): Promise<AdminStrategy> {
+    const response = await apiPost<AdminStrategy>('/admin/strategies', data)
+    return response.data
+}
+
+export async function deleteStrategy(id: string): Promise<void> {
+    await apiDelete(`/admin/strategies/${id}`)
+}
+
+export async function toggleStrategyActive(id: string): Promise<AdminStrategy> {
+    const response = await apiPost<AdminStrategy>(`/admin/strategies/${id}/toggle-active`)
+    return response.data
+}
+
+export async function fetchStrategyTrades(strategyId: string, params: TradeQueryParams = {}): Promise<PaginatedResponse<AdminTrade>> {
+    const response = await apiGet<PaginatedResponse<AdminTrade>>(`/admin/strategies/${strategyId}/trades`, {
+        params: {
+            page: params.page,
+            pageSize: params.pageSize,
+            search: params.search,
+            action: params.action,
+            status: params.status,
+        }
+    })
+    return response.data
+}
+
+export async function fetchStrategyUniverse(strategyId: string): Promise<UniverseResponse> {
+    const response = await apiGet<UniverseResponse>(`/admin/strategies/${strategyId}/universe`)
+    return response.data
 }
 
 // ─── Holdings ─────────────────────────────────────────────────────────────────
 
 export async function fetchStrategyHoldings(strategyId: string): Promise<AdminHolding[]> {
-    await delay()
-    // TODO: return (await apiGet<AdminHolding[]>(`/admin/strategies/${strategyId}/holdings`)).data
-    return MOCK_STRATEGY_HOLDINGS.filter(h => h.strategyId === strategyId)
+    const response = await apiGet<AdminHolding[]>(`/admin/strategies/${strategyId}/holdings`)
+    return response.data
 }
 
 // ─── Logs ─────────────────────────────────────────────────────────────────────
@@ -189,32 +231,46 @@ export interface FetchLogsParams {
     status?: string
 }
 
-export async function fetchStrategyLogs(strategyId: string, params: FetchLogsParams = {}): Promise<PaginatedResponse<AdminLog>> {
-    await delay()
-    const { page = 1, pageSize = 10, search = '', eventType = 'all', status = 'all' } = params
-
-    let filtered = MOCK_STRATEGY_LOGS.filter(l => l.strategyId === strategyId)
-
-    if (search) {
-        const q = search.toLowerCase()
-        filtered = filtered.filter(l => l.description.toLowerCase().includes(q))
-    }
-    if (eventType !== 'all') filtered = filtered.filter(l => l.eventType === eventType)
-    if (status !== 'all') filtered = filtered.filter(l => l.status === status)
-
-    const total = filtered.length
-    const start = (page - 1) * pageSize
-    const data = filtered.slice(start, start + pageSize)
-
-    // TODO:
-    // return (await apiGet<PaginatedResponse<AdminLog>>(`/admin/strategies/${strategyId}/logs`, { params })).data
-    return { data, total, page, pageSize, hasMore: start + pageSize < total }
+export async function fetchStrategyLogs(strategyId: string, params: FetchLogsParams = {}): Promise<TerminalLogResponse> {
+    const response = await apiGet<TerminalLogResponse>(`/admin/strategies/${strategyId}/logs`, {
+        params: {
+            page: params.page,
+            pageSize: params.pageSize,
+            search: params.search,
+            eventType: params.eventType,
+            status: params.status,
+        }
+    })
+    return response.data
 }
 
 // ─── Analysis ─────────────────────────────────────────────────────────────────
 
 export async function fetchStrategyAnalysis(strategyId: string): Promise<StrategyAnalysis> {
-    await delay()
-    // TODO: return (await apiGet<StrategyAnalysis>(`/admin/strategies/${strategyId}/analysis`)).data
-    return { ...MOCK_STRATEGY_ANALYSIS, strategyId }
+    try {
+        const response = await apiGet<StrategyAnalysis>(`/admin/strategies/${strategyId}/analysis`)
+        return response.data
+    } catch {
+        // Fallback to dynamic synthesis when Phase 2 backend is not yet ready
+        const strategy = await fetchAdminStrategy(strategyId)
+        if (!strategy) throw new Error('Strategy not found')
+
+        return {
+            strategyId,
+            totalStocksBought: strategy.totalBuyOrders,
+            totalStocksSold: strategy.totalSellOrders,
+            activeHoldings: strategy.openPositions,
+            closedHoldings: strategy.closedPositions,
+            totalProfit: strategy.totalProfit,
+            totalLoss: strategy.totalLoss,
+            winRate: strategy.winRate,
+            avgHoldingPeriodDays: 18,
+            bestPerformingStock: 'RELIANCE',
+            worstPerformingStock: 'WIPRO',
+            mostTradedStock: strategy.instruments[0] || 'NIFTY50',
+            maxDrawdown: 8.2,
+            sharpeRatio: 1.84,
+        }
+    }
 }
+

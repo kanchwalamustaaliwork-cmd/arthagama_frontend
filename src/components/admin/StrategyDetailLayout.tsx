@@ -32,11 +32,12 @@ const STATUS_VARIANT: Record<AdminStrategyStatus, 'success' | 'warning' | 'neutr
     running:  'success',
     paused:   'warning',
     draft:    'neutral',
+    error:    'error',
     archived: 'error',
 }
 
 const STATUS_LABEL: Record<AdminStrategyStatus, string> = {
-    running: 'Running', paused: 'Paused', draft: 'Draft', archived: 'Archived',
+    running: 'Running', paused: 'Paused', draft: 'Draft', error: 'Error', archived: 'Archived',
 }
 
 interface StrategyDetailLayoutProps {

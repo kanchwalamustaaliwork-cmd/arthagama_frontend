@@ -7,7 +7,7 @@ interface Props {
     params: Promise<{ strategyId: string }>
 }
 
-export default function StrategyEditPage({ params }: Props) {
+export default function StrategyUniversePage({ params }: Props) {
     const { strategyId } = use(params)
-    return <StrategyDetailPage strategyId={strategyId} tab="settings" />
+    return <StrategyDetailPage strategyId={strategyId} tab="universe" />
 }

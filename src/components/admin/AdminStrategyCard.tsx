@@ -1,14 +1,17 @@
 'use client'
 
+import { useState } from 'react'
 import type { AdminStrategy, AdminStrategyStatus } from '@/src/types/admin'
 import Badge from '@/src/components/dashboard/ui/Badge'
-import { Play, Pause, Edit2, Archive, Eye, User } from 'lucide-react'
+import ConfirmDialog from '@/src/components/admin/ConfirmDialog'
+import { Play, Pause, Edit2, Trash2, Eye, Server, Globe, Calendar, RefreshCcw } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 const STATUS_VARIANT: Record<AdminStrategyStatus, 'success' | 'warning' | 'neutral' | 'error'> = {
     running:  'success',
     paused:   'warning',
     draft:    'neutral',
+    error:    'error',
     archived: 'error',
 }
 
@@ -16,95 +19,230 @@ const STATUS_LABEL: Record<AdminStrategyStatus, string> = {
     running:  'Running',
     paused:   'Paused',
     draft:    'Draft',
+    error:    'Error',
     archived: 'Archived',
 }
 
 interface AdminStrategyCardProps {
     strategy: AdminStrategy
     onStatusChange?: (id: string, action: 'start' | 'stop' | 'archive') => void
+    onToggleActive?: (id: string) => void
+    onDelete?: (id: string) => void
 }
 
-export default function AdminStrategyCard({ strategy, onStatusChange }: AdminStrategyCardProps) {
+export default function AdminStrategyCard({ strategy, onStatusChange, onToggleActive, onDelete }: AdminStrategyCardProps) {
     const router = useRouter()
-    const netPnl = strategy.totalProfit - strategy.totalLoss
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+
+    const netPnl = strategy.currentPnL ?? (strategy.totalProfit - strategy.totalLoss)
     const isProfit = netPnl >= 0
 
     const fmtCurrency = (v: number) =>
         `${v >= 0 ? '+' : ''}₹${Math.abs(v).toLocaleString('en-IN')}`
 
+    const handleDeleteClick = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        setShowDeleteConfirm(true)
+    }
+
+    const handleDeleteConfirm = () => {
+        setShowDeleteConfirm(false)
+        if (onDelete) {
+            onDelete(strategy.id)
+        }
+    }
+
     return (
         <div
             className="db-card"
-            style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '14px', cursor: 'pointer', transition: 'transform 0.15s ease, border-color 0.15s ease' }}
+            style={{ 
+                padding: '20px 22px', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '16px', 
+                cursor: 'pointer', 
+                transition: 'transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease',
+                position: 'relative',
+                boxShadow: 'var(--db-shadow-sm)'
+            }}
             onClick={() => router.push(`/admin/strategies/${strategy.id}`)}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--db-border-hover)' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--db-border)' }}
+            onMouseEnter={e => { 
+                (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)'; 
+                (e.currentTarget as HTMLElement).style.borderColor = 'var(--db-border-hover)';
+                (e.currentTarget as HTMLElement).style.boxShadow = 'var(--db-shadow-md)';
+            }}
+            onMouseLeave={e => { 
+                (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; 
+                (e.currentTarget as HTMLElement).style.borderColor = 'var(--db-border)';
+                (e.currentTarget as HTMLElement).style.boxShadow = 'var(--db-shadow-sm)';
+            }}
         >
-            {/* Header */}
+            {/* Top row: Title and Status Badge */}
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                    <h3 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--db-text)', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{strategy.name}</h3>
+                    <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--db-text)', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {strategy.name}
+                    </h3>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: '11px', color: 'var(--db-text-muted)' }}>{strategy.version}</span>
+                        <span className="db-badge db-badge-teal" style={{ fontSize: '9.5px', padding: '1px 6px' }}>{strategy.version}</span>
                         {strategy.instruments.slice(0, 2).map(inst => (
-                            <span key={inst} className="db-badge db-badge-neutral" style={{ fontSize: '10px' }}>{inst}</span>
+                            <span key={inst} className="db-badge db-badge-neutral" style={{ fontSize: '9px', padding: '1px 6px' }}>{inst}</span>
                         ))}
-                        {strategy.instruments.length > 2 && <span style={{ fontSize: '10px', color: 'var(--db-text-muted)' }}>+{strategy.instruments.length - 2}</span>}
+                        {strategy.instruments.length > 2 && (
+                            <span style={{ fontSize: '9.5px', color: 'var(--db-text-muted)' }}>+{strategy.instruments.length - 2}</span>
+                        )}
                     </div>
                 </div>
-                <Badge variant={STATUS_VARIANT[strategy.status]} dot>
-                    {STATUS_LABEL[strategy.status]}
-                </Badge>
-            </div>
-
-            {/* Assigned user */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'var(--db-elevated)', border: '1px solid var(--db-border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <User size={11} color="var(--db-text-muted)" />
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                    <Badge variant={STATUS_VARIANT[strategy.status]} dot>
+                        {STATUS_LABEL[strategy.status]}
+                    </Badge>
                 </div>
-                <span style={{ fontSize: '12px', color: 'var(--db-text-2)' }}>{strategy.assignedUserName}</span>
             </div>
 
-            {/* Metrics */}
+            {/* Quick Summary description */}
+            {strategy.quickSummary && (
+                <p style={{ fontSize: '12px', color: 'var(--db-text-muted)', fontStyle: 'italic', lineHeight: 1.4, margin: '0' }}>
+                    &ldquo;{strategy.quickSummary}&rdquo;
+                </p>
+            )}
+
+            {/* Description */}
+            <p style={{ fontSize: '12.5px', color: 'var(--db-text-2)', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', margin: '0' }}>
+                {strategy.description}
+            </p>
+
+            {/* Database & Universe indicators */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '10px 12px', background: 'var(--db-elevated)', borderRadius: 'var(--db-radius-md)', border: '1px solid var(--db-border)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Server size={12} color="var(--db-text-muted)" />
+                    <span style={{ fontSize: '11.5px', color: 'var(--db-text-muted)' }}>Database:</span>
+                    <span style={{ fontSize: '11.5px', fontWeight: 500, color: 'var(--db-text-2)', fontFamily: 'monospace' }}>{strategy.databaseName}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Globe size={12} color="var(--db-text-muted)" />
+                    <span style={{ fontSize: '11.5px', color: 'var(--db-text-muted)' }}>Universe:</span>
+                    <span style={{ fontSize: '11.5px', fontWeight: 500, color: 'var(--db-text-2)' }}>{strategy.universeName}</span>
+                </div>
+            </div>
+
+            {/* Metrics grid - 2 rows x 3 columns */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                 {[
                     { label: 'Net P&L', value: fmtCurrency(netPnl), color: isProfit ? 'var(--db-profit)' : 'var(--db-loss)' },
+                    { label: 'Return', value: `${strategy.overallReturnPct?.toFixed(1)}%`, color: strategy.overallReturnPct >= 0 ? 'var(--db-profit)' : 'var(--db-loss)' },
+                    { label: 'Win Rate', value: `${strategy.winRate?.toFixed(1)}%`, color: 'var(--db-text)' },
                     { label: 'Holdings', value: String(strategy.holdingsCount), color: 'var(--db-text)' },
-                    { label: 'Win Rate', value: strategy.totalBuyOrders > 0 ? `${Math.round((strategy.openPositions / strategy.totalBuyOrders) * 100)}%` : '—', color: 'var(--db-text)' },
+                    { label: 'Total Trades', value: String(strategy.totalTrades || strategy.totalBuyOrders + strategy.totalSellOrders), color: 'var(--db-text)' },
+                    { label: 'Today\'s P&L', value: fmtCurrency(strategy.todayPnL || 0), color: (strategy.todayPnL || 0) >= 0 ? 'var(--db-profit)' : 'var(--db-loss)' }
                 ].map(m => (
-                    <div key={m.label} style={{ background: 'var(--db-elevated)', borderRadius: '10px', padding: '8px 10px' }}>
-                        <div style={{ fontSize: '10px', color: 'var(--db-text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '4px' }}>{m.label}</div>
-                        <div style={{ fontSize: '14px', fontWeight: 700, color: m.color }}>{m.value}</div>
+                    <div key={m.label} style={{ background: 'var(--db-elevated)', borderRadius: '8px', padding: '6px 8px', border: '1px solid var(--db-border)' }}>
+                        <div style={{ fontSize: '9px', color: 'var(--db-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.label}</div>
+                        <div style={{ fontSize: '12.5px', fontWeight: 700, color: m.color }}>{m.value}</div>
                     </div>
                 ))}
             </div>
 
-            {/* Footer: actions */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '8px', borderTop: '1px solid var(--db-border)' }}>
-                <span style={{ fontSize: '11px', color: 'var(--db-text-muted)' }}>Updated {new Date(strategy.updatedAt).toLocaleDateString('en-IN')}</span>
-                <div style={{ display: 'flex', gap: '4px' }} onClick={e => e.stopPropagation()}>
-                    <button onClick={() => router.push(`/admin/strategies/${strategy.id}`)} title="View" className="db-btn db-btn-ghost db-btn-sm" style={{ padding: '5px', borderRadius: '8px' }}>
-                        <Eye size={14} />
-                    </button>
-                    {strategy.status === 'paused' || strategy.status === 'draft' ? (
-                        <button onClick={() => onStatusChange?.(strategy.id, 'start')} title="Start" className="db-btn db-btn-ghost db-btn-sm" style={{ padding: '5px', borderRadius: '8px', color: 'var(--db-profit)' }}>
-                            <Play size={14} />
+            {/* Footer row: Active Toggle Switch, Last Updated & Actions */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '10px', borderTop: '1px solid var(--db-border)', flexWrap: 'wrap', gap: '8px' }}>
+                {/* Active switch */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={e => e.stopPropagation()}>
+                    <label style={{ position: 'relative', display: 'inline-block', width: '28px', height: '16px' }}>
+                        <input 
+                            type="checkbox" 
+                            checked={strategy.isActive} 
+                            onChange={() => onToggleActive?.(strategy.id)}
+                            style={{ opacity: 0, width: 0, height: 0 }}
+                        />
+                        <span style={{ 
+                            position: 'absolute', 
+                            cursor: 'pointer', 
+                            inset: 0, 
+                            backgroundColor: strategy.isActive ? 'var(--db-profit)' : 'rgba(255,255,255,0.15)',
+                            transition: '0.2s',
+                            borderRadius: '16px'
+                        }}>
+                            <span style={{ 
+                                position: 'absolute', 
+                                content: '""', 
+                                height: '12px', 
+                                width: '12px', 
+                                left: strategy.isActive ? '14px' : '2px', 
+                                bottom: '2px', 
+                                backgroundColor: 'white',
+                                transition: '0.2s',
+                                borderRadius: '50%'
+                            }} />
+                        </span>
+                    </label>
+                    <span style={{ fontSize: '11px', fontWeight: 500, color: strategy.isActive ? 'var(--db-profit)' : 'var(--db-text-muted)' }}>
+                        {strategy.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={e => e.stopPropagation()}>
+                    <span style={{ fontSize: '11px', color: 'var(--db-text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <RefreshCcw size={10} /> {new Date(strategy.updatedAt).toLocaleDateString('en-IN')}
+                    </span>
+                    <div style={{ display: 'flex', gap: '2px' }}>
+                        <button 
+                            onClick={() => router.push(`/admin/strategies/${strategy.id}`)} 
+                            title="Open Strategy" 
+                            className="db-btn db-btn-ghost db-btn-sm" 
+                            style={{ padding: '6px', borderRadius: '6px', color: 'var(--db-mint)' }}
+                        >
+                            <Eye size={13} />
                         </button>
-                    ) : strategy.status === 'running' ? (
-                        <button onClick={() => onStatusChange?.(strategy.id, 'stop')} title="Stop" className="db-btn db-btn-ghost db-btn-sm" style={{ padding: '5px', borderRadius: '8px', color: 'var(--db-warning)' }}>
-                            <Pause size={14} />
+                        {strategy.status === 'paused' || strategy.status === 'draft' ? (
+                            <button 
+                                onClick={() => onStatusChange?.(strategy.id, 'start')} 
+                                title="Start Engine" 
+                                className="db-btn db-btn-ghost db-btn-sm" 
+                                style={{ padding: '6px', borderRadius: '6px', color: 'var(--db-profit)' }}
+                            >
+                                <Play size={13} />
+                            </button>
+                        ) : strategy.status === 'running' ? (
+                            <button 
+                                onClick={() => onStatusChange?.(strategy.id, 'stop')} 
+                                title="Stop Engine" 
+                                className="db-btn db-btn-ghost db-btn-sm" 
+                                style={{ padding: '6px', borderRadius: '6px', color: 'var(--db-warning)' }}
+                            >
+                                <Pause size={13} />
+                            </button>
+                        ) : null}
+                        <button 
+                            onClick={() => router.push(`/admin/strategies/${strategy.id}/settings`)} 
+                            title="Configure Settings" 
+                            className="db-btn db-btn-ghost db-btn-sm" 
+                            style={{ padding: '6px', borderRadius: '6px' }}
+                        >
+                            <Edit2 size={13} />
                         </button>
-                    ) : null}
-                    <button onClick={() => router.push(`/admin/strategies/${strategy.id}/edit`)} title="Edit" className="db-btn db-btn-ghost db-btn-sm" style={{ padding: '5px', borderRadius: '8px' }}>
-                        <Edit2 size={14} />
-                    </button>
-                    {strategy.status !== 'archived' && (
-                        <button onClick={() => onStatusChange?.(strategy.id, 'archive')} title="Archive" className="db-btn db-btn-ghost db-btn-sm" style={{ padding: '5px', borderRadius: '8px', color: 'var(--db-text-muted)' }}>
-                            <Archive size={14} />
+                        <button 
+                            onClick={handleDeleteClick} 
+                            title="Delete Strategy" 
+                            className="db-btn db-btn-ghost db-btn-sm" 
+                            style={{ padding: '6px', borderRadius: '6px', color: 'var(--db-loss)' }}
+                        >
+                            <Trash2 size={13} />
                         </button>
-                    )}
+                    </div>
                 </div>
             </div>
+
+            {/* Confirm Deletion */}
+            <ConfirmDialog 
+                open={showDeleteConfirm}
+                title="Delete Strategy?"
+                message={`Are you sure you want to delete "${strategy.name}"? This action cannot be undone.`}
+                confirmLabel="Delete"
+                cancelLabel="Cancel"
+                variant="danger"
+                onConfirm={handleDeleteConfirm}
+                onCancel={() => setShowDeleteConfirm(false)}
+            />
         </div>
     )
 }

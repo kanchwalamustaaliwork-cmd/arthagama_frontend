@@ -16,11 +16,13 @@ export default function StrategyTabs({ strategyId }: StrategyTabsProps) {
     const pathname = usePathname()
 
     const tabs: Tab[] = [
-        { label: 'Overview',  href: `/admin/strategies/${strategyId}` },
-        { label: 'Holdings',  href: `/admin/strategies/${strategyId}/holdings` },
-        { label: 'Analysis',  href: `/admin/strategies/${strategyId}/analysis` },
-        { label: 'Logs',      href: `/admin/strategies/${strategyId}/logs` },
-        { label: 'Edit',      href: `/admin/strategies/${strategyId}/edit` },
+        { label: 'Overview',             href: `/admin/strategies/${strategyId}` },
+        { label: 'Holdings',             href: `/admin/strategies/${strategyId}/holdings` },
+        { label: 'Trades',               href: `/admin/strategies/${strategyId}/trades` },
+        { label: 'Logs',                 href: `/admin/strategies/${strategyId}/logs` },
+        { label: 'Universe',             href: `/admin/strategies/${strategyId}/universe` },
+        { label: 'Performance Analysis', href: `/admin/strategies/${strategyId}/analysis` },
+        { label: 'Settings',             href: `/admin/strategies/${strategyId}/settings` },
     ]
 
     return (
