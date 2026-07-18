@@ -24,7 +24,7 @@ import {
 import {
     MOCK_STRATEGIES, MOCK_INSIGHTS, MOCK_STOCK_MATCHES, MOCK_REPORTS,
     MOCK_GAINERS, MOCK_LOSERS, MOCK_ACTIVE,
-    MOCK_SECTORS, MOCK_WATCHLIST, MOCK_NOTIFICATIONS, MOCK_ACTIVITIES, MOCK_CALENDAR,
+    MOCK_SECTORS, MOCK_WATCHLIST, MOCK_NOTIFICATIONS, MOCK_CALENDAR,
 } from '@/src/data/dashboard/dashboard-mock'
 import { useRouter } from 'next/navigation'
 
@@ -187,14 +187,6 @@ export default function AnalyticsOverviewPage() {
                         <SectionHeader title="Notifications" actionLabel="Mark all read" />
                     </div>
                     {MOCK_NOTIFICATIONS.map(n => <NotificationCard key={n.id} notif={n} />)}
-                </section>
-
-                {/* Recent Activity */}
-                <section className="db-card" style={{ padding: '20px' }}>
-                    <SectionHeader title="Recent Activity" />
-                    {MOCK_ACTIVITIES.map((a, i) => (
-                        <ActivityItem key={a.id} activity={a} last={i === MOCK_ACTIVITIES.length - 1} />
-                    ))}
                 </section>
             </div>
 

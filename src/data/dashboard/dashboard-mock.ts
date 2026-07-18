@@ -166,16 +166,6 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     { id: 'n5', type: 'system', title: 'Session will expire in 1 hour', description: 'Your session token refreshes automatically in background.', timestamp: '4 hrs ago', read: true },
 ]
 
-// ─── Activity ─────────────────────────────────────────────────────────────────
-
-export const MOCK_ACTIVITIES: Activity[] = [
-    { id: 'a1', action: 'created', subject: 'IT Sector Pairs Trade', detail: 'new strategy', timestamp: '2 hours ago' },
-    { id: 'a2', action: 'backtest', subject: 'Nifty Momentum Breakout', detail: '365-day backtest completed', timestamp: '4 hours ago' },
-    { id: 'a3', action: 'viewed', subject: 'India Rate Sensitivity Report', timestamp: 'Yesterday, 6:42 PM' },
-    { id: 'a4', action: 'edited', subject: 'Mid-Cap Mean Reversion', detail: 'updated exit rules', timestamp: 'Yesterday, 3:10 PM' },
-    { id: 'a6', action: 'cloned', subject: 'Banking Long-Short v1 → v2', timestamp: '3 days ago' },
-]
-
 // ─── Economic Calendar ────────────────────────────────────────────────────────
 
 export const MOCK_CALENDAR: CalendarEvent[] = [

@@ -5,11 +5,10 @@ import { useRouter } from 'next/navigation'
 import { Layers, FlaskConical, BarChart2, BookOpen, Zap, ArrowUpRight, Clock } from 'lucide-react'
 import DashboardCard from '@/src/components/dashboard/ui/DashboardCard'
 import SectionHeader from '@/src/components/dashboard/SectionHeader'
-import ActivityItem from '@/src/components/dashboard/ActivityItem'
 import ReportCard from '@/src/components/dashboard/ReportCard'
 import EconomicCalendarItem from '@/src/components/dashboard/EconomicCalendarItem'
 import WatchlistRow from '@/src/components/dashboard/WatchlistRow'
-import { MOCK_ACTIVITIES, MOCK_REPORTS, MOCK_CALENDAR, MOCK_WATCHLIST } from '@/src/data/dashboard/dashboard-mock'
+import { MOCK_REPORTS, MOCK_CALENDAR, MOCK_WATCHLIST } from '@/src/data/dashboard/dashboard-mock'
 
 const QUICK_TILES = [
     { label: 'New Strategy', desc: 'Create a systematic strategy', icon: Layers, href: '/dashboard/my-strategies', color: '#5FAFD7' },
@@ -125,14 +124,6 @@ export default function WorkspaceHomePage() {
 
             {/* ── 3-column: Recent Activity + Mini Watchlist + Upcoming Events ── */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
-
-                {/* Recent Activity */}
-                <DashboardCard style={{ padding: '20px' }}>
-                    <SectionHeader title="Recent Activity" actionLabel="View All" actionHref="/dashboard" />
-                    {MOCK_ACTIVITIES.slice(0, 5).map((a, i) => (
-                        <ActivityItem key={a.id} activity={a} last={i === 4} />
-                    ))}
-                </DashboardCard>
 
                 {/* Mini Watchlist */}
                 <DashboardCard style={{ padding: '0', overflow: 'hidden' }}>

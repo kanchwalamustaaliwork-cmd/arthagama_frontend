@@ -10,7 +10,7 @@ import PageHeader from '@/src/components/admin/PageHeader'
 import { useAdminStats } from '@/src/hooks/admin/useAdminStats'
 import { useAdminStrategies } from '@/src/hooks/admin/useAdminStrategies'
 import { MOCK_CUSTOMERS } from '@/src/data/admin/admin-mock'
-import { MOCK_ACTIVITIES, MOCK_INSIGHTS } from '@/src/data/dashboard/dashboard-mock'
+import { MOCK_INSIGHTS } from '@/src/data/dashboard/dashboard-mock'
 import LoadingState from '@/src/components/dashboard/ui/LoadingState'
 import AIInsightCard from '@/src/components/shared/AIInsightCard'
 
@@ -84,14 +84,6 @@ export default function AdminDashboardPage() {
                                 {c.status}
                             </span>
                         </div>
-                    ))}
-                </div>
-
-                {/* Recent Activity */}
-                <div className="db-card" style={{ padding: '20px' }}>
-                    <SectionHeader title="Platform Activity" />
-                    {MOCK_ACTIVITIES.map((a, i) => (
-                        <ActivityItem key={a.id} activity={a} last={i === MOCK_ACTIVITIES.length - 1} />
                     ))}
                 </div>
             </div>
