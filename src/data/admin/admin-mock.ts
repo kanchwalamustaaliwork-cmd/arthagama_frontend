@@ -227,9 +227,6 @@ export const ADMIN_PAGE_TITLES: Record<string, string> = {
     '/admin': 'Admin Dashboard',
     '/admin/customers': 'Customers',
     '/admin/strategies': 'Strategies',
-    '/admin/portfolio': 'Portfolio',
-    '/admin/analytics': 'Analytics',
-    '/admin/settings': 'Settings',
 }
 
 // ─── Trades (mock) ────────────────────────────────────────────────────────────

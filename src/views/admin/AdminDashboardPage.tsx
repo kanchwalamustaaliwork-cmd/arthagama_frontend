@@ -34,7 +34,7 @@ export default function AdminDashboardPage() {
 
             {/* ── Platform Stats ── */}
             <section>
-                <SectionHeader title="Platform Overview" subtitle="Live platform metrics" />
+                <SectionHeader title="Platform Overview" subtitle="Platform metrics" />
                 {statsStatus === 'loading' ? (
                     <LoadingState variant="skeleton-card" count={8} />
                 ) : (
