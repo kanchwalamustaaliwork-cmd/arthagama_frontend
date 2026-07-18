@@ -13,7 +13,7 @@ import type { AdminStrategyStatus } from '@/src/types/admin'
 import { useRouter } from 'next/navigation'
 
 const FILTERS = [
-    { label: 'All Statuses', value: 'all' },
+    { label: 'All Status', value: 'all' },
     { label: 'Running', value: 'running' },
     { label: 'Paused', value: 'paused' },
     { label: 'Draft', value: 'draft' },
@@ -28,14 +28,14 @@ const ACTIVE_FILTERS = [
 
 export default function AdminStrategiesPage() {
     const router = useRouter()
-    const { 
-        strategies, 
-        total, 
-        status, 
-        search, 
-        setSearch, 
-        filterStatus, 
-        setFilterStatus, 
+    const {
+        strategies,
+        total,
+        status,
+        search,
+        setSearch,
+        filterStatus,
+        setFilterStatus,
         filterActive,
         setFilterActive,
         sortBy,
@@ -55,24 +55,56 @@ export default function AdminStrategiesPage() {
 
             {/* Search + Filter */}
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <SearchBar value={search} onChange={setSearch} placeholder="Search strategies…" width="280px" />
-                    <FilterBar options={FILTERS} active={filterStatus} onChange={v => setFilterStatus(v as AdminStrategyStatus | 'all')} />
-                    <FilterBar options={ACTIVE_FILTERS} active={filterActive} onChange={v => setFilterActive(v as any)} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {/* Row 1: Search */}
+                    <SearchBar
+                        value={search}
+                        onChange={setSearch}
+                        placeholder="Search strategies…"
+                        width="320px"
+                    />
+
+                    {/* Row 2: Filters, grouped and separated */}
+                    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '12px', color: 'var(--text-muted, #8a8f98)' }}>
+                                Status
+                            </span>
+                            <FilterBar
+                                options={FILTERS}
+                                active={filterStatus}
+                                onChange={v => setFilterStatus(v as AdminStrategyStatus | 'all')}
+                            />
+                        </div>
+
+                        {/* divider to visually break the two groups apart */}
+                        <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.1)' }} />
+
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '12px', color: 'var(--text-muted, #8a8f98)' }}>
+                                Active
+                            </span>
+                            <FilterBar
+                                options={ACTIVE_FILTERS}
+                                active={filterActive}
+                                onChange={v => setFilterActive(v as any)}
+                            />
+                        </div>
+                    </div>
                 </div>
                 <div>
-                    <select 
-                        value={sortBy} 
-                        onChange={e => setSortBy(e.target.value)} 
-                        style={{ 
-                            background: 'var(--db-elevated)', 
-                            border: '1px solid var(--db-border)', 
-                            borderRadius: 'var(--db-radius-md)', 
-                            color: 'var(--db-text)', 
-                            padding: '8px 12px', 
-                            fontSize: '13px', 
-                            outline: 'none', 
-                            cursor: 'pointer' 
+                    <select
+                        value={sortBy}
+                        onChange={e => setSortBy(e.target.value)}
+                        style={{
+                            background: 'var(--db-elevated)',
+                            border: '1px solid var(--db-border)',
+                            borderRadius: 'var(--db-radius-md)',
+                            color: 'var(--db-text)',
+                            padding: '8px 12px',
+                            fontSize: '13px',
+                            outline: 'none',
+                            cursor: 'pointer'
                         }}
                     >
                         <option value="">Sort By</option>
@@ -92,10 +124,10 @@ export default function AdminStrategiesPage() {
             ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '16px' }}>
                     {strategies.map(s => (
-                        <AdminStrategyCard 
-                            key={s.id} 
-                            strategy={s} 
-                            onStatusChange={handleStatusChange} 
+                        <AdminStrategyCard
+                            key={s.id}
+                            strategy={s}
+                            onStatusChange={handleStatusChange}
                             onToggleActive={handleToggleActive}
                             onDelete={handleDelete}
                         />

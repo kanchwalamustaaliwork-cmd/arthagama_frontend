@@ -97,24 +97,6 @@ export default function AdminDashboardPage() {
                     ))}
                 </div>
             </section>
-
-            {/* ── Platform Status ── */}
-            <div className="db-card" style={{ padding: '22px 24px', borderLeft: '3px solid #a855f7' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
-                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <Zap size={16} color="#a855f7" />
-                    </div>
-                    <div>
-                        <div style={{ fontSize: '11px', color: 'var(--db-text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>System Status</div>
-                        <p style={{ fontSize: '13.5px', color: 'var(--db-text)', lineHeight: 1.65 }}>
-                            All <strong style={{ color: '#a855f7' }}>{stats?.runningStrategies ?? 0} running strategies</strong> are operating normally.
-                            {' '}<strong style={{ color: 'var(--db-mint)' }}>{stats?.activeCustomers ?? 0} active customers</strong> are using the platform.
-                            {' '}No critical errors detected in the last 24 hours.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
         </div>
     )
 }

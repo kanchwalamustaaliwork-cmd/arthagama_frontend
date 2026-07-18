@@ -219,9 +219,6 @@ export const ADMIN_NAV_ITEMS = [
     { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { label: 'Customers', href: '/admin/customers', icon: Users },
     { label: 'Strategies', href: '/admin/strategies', icon: Layers },
-    { label: 'Portfolio', href: '/admin/portfolio', icon: Briefcase },
-    { label: 'Analytics', href: '/admin/analytics', icon: BarChart2 },
-    { label: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
 // ─── Admin Page Titles ────────────────────────────────────────────────────────
