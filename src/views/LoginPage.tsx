@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { FaEnvelope, FaLock, FaArrowLeft } from 'react-icons/fa6'
 import { useAuth } from '../auth/AuthContext'
@@ -11,6 +11,9 @@ import BrandPanel from '../components/ui/BrandPanel'
 export default function LoginPage() {
   const { login, pendingRedirect, setPendingRedirect } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirectTo')
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -52,7 +55,7 @@ export default function LoginPage() {
     try {
       await login(email, password)
 
-      const destination = pendingRedirect || '/'
+      const destination = redirectTo || pendingRedirect || '/'
       setPendingRedirect(null)
       router.replace(destination)
     } catch (err: unknown) {
@@ -212,7 +215,7 @@ export default function LoginPage() {
               <span className="text-xs text-[hsl(var(--mint)/0.55)]">
                 Don&apos;t have an account?{' '}
                 <Link
-                  href="/signup"
+                  href={redirectTo ? `/signup?redirectTo=${encodeURIComponent(redirectTo)}` : "/signup"}
                   scroll={false}
                   className="text-[hsl(var(--mint))] font-medium hover:underline transition-all duration-200"
                 >

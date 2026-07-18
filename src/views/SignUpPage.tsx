@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { FaUser, FaEnvelope, FaLock, FaPhone, FaArrowLeft } from 'react-icons/fa6'
 import { useAuth } from '../auth/AuthContext'
@@ -12,6 +12,8 @@ import { BRAND_ON_DARK } from '@/src/utils/brand'
 export default function SignUpPage() {
   const { signup, pendingRedirect, setPendingRedirect } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirectTo')
 
   // ── Form State ──────────────────────────────────────────────────────────────
   const [firstName, setFirstName] = useState('')
@@ -107,7 +109,7 @@ export default function SignUpPage() {
         password,
       })
 
-      const destination = pendingRedirect || '/dashboard'
+      const destination = redirectTo || pendingRedirect || '/dashboard'
       setPendingRedirect(null)
       router.replace(destination)
     } catch (err: unknown) {
@@ -357,7 +359,7 @@ export default function SignUpPage() {
               <span className="text-xs text-[hsl(var(--mint)/0.55)]">
                 Already a member?{' '}
                 <Link
-                  href="/login"
+                  href={redirectTo ? `/login?redirectTo=${encodeURIComponent(redirectTo)}` : "/login"}
                   scroll={false}
                   className="text-[hsl(var(--mint))] font-medium hover:underline transition-all duration-200"
                 >

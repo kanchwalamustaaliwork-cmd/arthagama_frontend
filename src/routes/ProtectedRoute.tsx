@@ -11,8 +11,9 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         if (!isInitializing && !isAuthenticated) {
-            setPendingRedirect(pathname)
-            router.replace('/login')
+            const currentUrl = window.location.pathname + window.location.search + window.location.hash
+            setPendingRedirect(currentUrl)
+            router.replace(`/login?redirectTo=${encodeURIComponent(currentUrl)}`)
         }
     }, [isInitializing, isAuthenticated, pathname, router, setPendingRedirect])
 

@@ -9,14 +9,16 @@ interface DashboardGuardProps {
 }
 
 export default function DashboardGuard({ children }: DashboardGuardProps) {
-    const { isAuthenticated, isInitializing } = useAuth()
+    const { isAuthenticated, isInitializing, setPendingRedirect } = useAuth()
     const router = useRouter()
 
     useEffect(() => {
         if (!isInitializing && !isAuthenticated) {
-            router.replace('/login')
+            const currentUrl = window.location.pathname + window.location.search + window.location.hash
+            setPendingRedirect(currentUrl)
+            router.replace(`/login?redirectTo=${encodeURIComponent(currentUrl)}`)
         }
-    }, [isAuthenticated, isInitializing, router])
+    }, [isAuthenticated, isInitializing, router, setPendingRedirect])
 
     // While session is restoring — show a minimal full-screen loader
     if (isInitializing) {

@@ -17,20 +17,22 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/src/auth/AuthContext'
 
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
-    const { isAuthenticated, isAdmin, isInitializing } = useAuth()
+    const { isAuthenticated, isAdmin, isInitializing, setPendingRedirect } = useAuth()
     const router = useRouter()
 
     useEffect(() => {
         if (isInitializing) return
         if (!isAuthenticated) {
-            router.replace('/login')
+            const currentUrl = window.location.pathname + window.location.search + window.location.hash
+            setPendingRedirect(currentUrl)
+            router.replace(`/login?redirectTo=${encodeURIComponent(currentUrl)}`)
             return
         }
         if (!isAdmin) {
             // Authenticated but not admin — redirect to their dashboard
             router.replace('/dashboard')
         }
-    }, [isAuthenticated, isAdmin, isInitializing, router])
+    }, [isAuthenticated, isAdmin, isInitializing, router, setPendingRedirect])
 
     // While session is restoring
     if (isInitializing) {
