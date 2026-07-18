@@ -5,7 +5,7 @@ import { useAuth } from '@/src/auth/AuthContext'
 import StatCard from '@/src/components/dashboard/StatCard'
 import SectionHeader from '@/src/components/dashboard/SectionHeader'
 import PerformanceChart from '@/src/components/dashboard/PerformanceChart'
-import AIInsightCard from '@/src/components/dashboard/AIInsightCard'
+import LiveNews from '@/src/components/shared/LiveNews'
 import StrategyCard from '@/src/components/dashboard/StrategyCard'
 import StockMatchCard from '@/src/components/dashboard/StockMatchCard'
 import ReportCard from '@/src/components/dashboard/ReportCard'
@@ -22,7 +22,7 @@ import {
 } from '@/src/data/dashboard/analytics-overview'
 
 import {
-    MOCK_STRATEGIES, MOCK_INSIGHTS, MOCK_STOCK_MATCHES, MOCK_REPORTS,
+    MOCK_STRATEGIES, MOCK_STOCK_MATCHES, MOCK_REPORTS,
     MOCK_GAINERS, MOCK_LOSERS, MOCK_ACTIVE,
     MOCK_SECTORS, MOCK_WATCHLIST, MOCK_NOTIFICATIONS, MOCK_CALENDAR,
 } from '@/src/data/dashboard/dashboard-mock'
@@ -91,12 +91,10 @@ export default function AnalyticsOverviewPage() {
                 <PerformanceChart height={220} />
             </section>
 
-            {/* ── AI Insights ── */}
+            {/* ── Live Financial News ── */}
             <section>
-                <SectionHeader title="AI Insights" subtitle="Powered by Arthagama's quantitative research engine" />
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '14px' }}>
-                    {MOCK_INSIGHTS.map(insight => <AIInsightCard key={insight.id} insight={insight} />)}
-                </div>
+                <SectionHeader title="Live Financial News" subtitle="Real-time market updates and scraping metrics" />
+                <LiveNews />
             </section>
 
             {/* ── My Strategies ── */}

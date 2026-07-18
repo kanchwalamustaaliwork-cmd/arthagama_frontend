@@ -10,9 +10,8 @@ import PageHeader from '@/src/components/admin/PageHeader'
 import { useAdminStats } from '@/src/hooks/admin/useAdminStats'
 import { useAdminStrategies } from '@/src/hooks/admin/useAdminStrategies'
 import { MOCK_CUSTOMERS } from '@/src/data/admin/admin-mock'
-import { MOCK_INSIGHTS } from '@/src/data/dashboard/dashboard-mock'
 import LoadingState from '@/src/components/dashboard/ui/LoadingState'
-import AIInsightCard from '@/src/components/shared/AIInsightCard'
+import LiveNews from '@/src/components/shared/LiveNews'
 
 export default function AdminDashboardPage() {
     const router = useRouter()
@@ -88,14 +87,10 @@ export default function AdminDashboardPage() {
                 </div>
             </div>
 
-            {/* ── AI Insights ── */}
+            {/* ── Live Financial News ── */}
             <section>
-                <SectionHeader title="System AI Insights" subtitle="Powered by Arthagama's quantitative research engine" />
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '14px' }}>
-                    {MOCK_INSIGHTS.slice(0, 3).map(insight => (
-                        <AIInsightCard key={insight.id} insight={insight} />
-                    ))}
-                </div>
+                <SectionHeader title="System Live Financial News" subtitle="Real-time market updates and scraping metrics" />
+                <LiveNews />
             </section>
         </div>
     )

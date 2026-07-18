@@ -2,7 +2,7 @@
 // All sections use this file. Replace with real API calls later.
 
 import type { Strategy } from '../../components/dashboard/StrategyCard'
-import type { AIInsight } from '../../components/dashboard/AIInsightCard'
+
 import type { StockMatch } from '../../components/dashboard/StockMatchCard'
 import type { Report } from '../../components/dashboard/ReportCard'
 import type { MarketMover } from '../../components/dashboard/MarketMoverRow'
@@ -37,30 +37,6 @@ export const MOCK_STRATEGIES: Strategy[] = [
     },
 ]
 
-// ─── AI Insights ─────────────────────────────────────────────────────────────
-
-export const MOCK_INSIGHTS: AIInsight[] = [
-    {
-        id: 'i1', type: 'opportunity', title: 'HDFC Bank showing breakout pattern',
-        body: 'HDFCBANK has formed a classic cup-and-handle on the weekly chart with volume confirmation. RSI at 58 leaves room for upside momentum.',
-        confidence: 82, actionLabel: 'View Analysis', actionHref: '#', timestamp: '10 min ago',
-    },
-    {
-        id: 'i2', type: 'risk', title: 'Increased volatility expected — RBI meeting tomorrow',
-        body: 'RBI Monetary Policy Committee meeting on July 11 may cause 1.5–2.5% intraday swings. Consider reducing position sizing across rate-sensitive sectors.',
-        confidence: 91, actionLabel: 'Adjust Positions', actionHref: '#', timestamp: '1 hr ago',
-    },
-    {
-        id: 'i3', type: 'recommendation', title: 'Nifty IT Index — Mean Reversion Setup',
-        body: 'NIFTYIT has retraced 7.2% in 10 sessions. Historical data shows 74% probability of recovery within 3 sessions when RSI crosses below 35.',
-        confidence: 74, actionLabel: 'Run Backtest', actionHref: '/dashboard/backtest', timestamp: '3 hrs ago',
-    },
-    {
-        id: 'i4', type: 'alert', title: 'Trailing stop triggered — WIPRO position',
-        body: 'Your trailing stop for WIPRO (3%) was triggered at ₹485.20. Position closed with +₹4,320 profit.',
-        confidence: 100, timestamp: '5 hrs ago',
-    },
-]
 
 // ─── Stock Matches ────────────────────────────────────────────────────────────
 
