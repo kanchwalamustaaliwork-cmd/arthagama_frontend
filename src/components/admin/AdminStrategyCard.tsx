@@ -34,7 +34,16 @@ export default function AdminStrategyCard({ strategy, onStatusChange, onToggleAc
     const router = useRouter()
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
-    const netPnl = strategy.currentPnL ?? (strategy.totalProfit - strategy.totalLoss)
+    const metrics = strategy.metrics || {
+        totalReturn: 0,
+        totalPnL: 0,
+        todayPnL: 0,
+        activeHoldings: 0,
+        winRate: 0,
+        sharpeRatio: 0,
+        averageHoldingTime: 0,
+    }
+    const netPnl = metrics.totalPnL
     const isProfit = netPnl >= 0
 
     const fmtCurrency = (v: number) =>
@@ -84,13 +93,7 @@ export default function AdminStrategyCard({ strategy, onStatusChange, onToggleAc
                         {strategy.name}
                     </h3>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                        <span className="db-badge db-badge-teal" style={{ fontSize: '9.5px', padding: '1px 6px' }}>{strategy.version}</span>
-                        {strategy.instruments.slice(0, 2).map(inst => (
-                            <span key={inst} className="db-badge db-badge-neutral" style={{ fontSize: '9px', padding: '1px 6px' }}>{inst}</span>
-                        ))}
-                        {strategy.instruments.length > 2 && (
-                            <span style={{ fontSize: '9.5px', color: 'var(--db-text-muted)' }}>+{strategy.instruments.length - 2}</span>
-                        )}
+                        <span className="db-badge db-badge-teal" style={{ fontSize: '10px', padding: '2px 8px', fontWeight: 600 }}>{strategy.category}</span>
                     </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
@@ -101,9 +104,9 @@ export default function AdminStrategyCard({ strategy, onStatusChange, onToggleAc
             </div>
 
             {/* Quick Summary description */}
-            {strategy.quickSummary && (
+            {strategy.summary && (
                 <p style={{ fontSize: '12px', color: 'var(--db-text-muted)', fontStyle: 'italic', lineHeight: 1.4, margin: '0' }}>
-                    &ldquo;{strategy.quickSummary}&rdquo;
+                    &ldquo;{strategy.summary}&rdquo;
                 </p>
             )}
 
@@ -130,11 +133,11 @@ export default function AdminStrategyCard({ strategy, onStatusChange, onToggleAc
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                 {[
                     { label: 'Net P&L', value: fmtCurrency(netPnl), color: isProfit ? 'var(--db-profit)' : 'var(--db-loss)' },
-                    { label: 'Return', value: `${strategy.overallReturnPct?.toFixed(1)}%`, color: strategy.overallReturnPct >= 0 ? 'var(--db-profit)' : 'var(--db-loss)' },
-                    { label: 'Win Rate', value: `${strategy.winRate?.toFixed(1)}%`, color: 'var(--db-text)' },
-                    { label: 'Holdings', value: String(strategy.holdingsCount), color: 'var(--db-text)' },
-                    { label: 'Total Trades', value: String(strategy.totalTrades || strategy.totalBuyOrders + strategy.totalSellOrders), color: 'var(--db-text)' },
-                    { label: 'Today\'s P&L', value: fmtCurrency(strategy.todayPnL || 0), color: (strategy.todayPnL || 0) >= 0 ? 'var(--db-profit)' : 'var(--db-loss)' }
+                    { label: 'Return', value: `${metrics.totalReturn?.toFixed(1)}%`, color: metrics.totalReturn >= 0 ? 'var(--db-profit)' : 'var(--db-loss)' },
+                    { label: 'Win Rate', value: `${metrics.winRate?.toFixed(1)}%`, color: 'var(--db-text)' },
+                    { label: 'Holdings', value: String(metrics.activeHoldings), color: 'var(--db-text)' },
+                    { label: 'Sharpe Ratio', value: metrics.sharpeRatio?.toFixed(2), color: 'var(--db-text)' },
+                    { label: 'Today\'s P&L', value: fmtCurrency(metrics.todayPnL), color: metrics.todayPnL >= 0 ? 'var(--db-profit)' : 'var(--db-loss)' }
                 ].map(m => (
                     <div key={m.label} style={{ background: 'var(--db-elevated)', borderRadius: '8px', padding: '6px 8px', border: '1px solid var(--db-border)' }}>
                         <div style={{ fontSize: '9px', color: 'var(--db-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.label}</div>

@@ -28,6 +28,7 @@ import type {
     AdminTrade,
     UniverseResponse,
     TradeQueryParams,
+    StrategyMetrics,
 } from '@/src/types/admin'
 
 import {
@@ -141,6 +142,7 @@ export interface FetchStrategiesParams {
     status?: AdminStrategyStatus | 'all'
     isActive?: 'all' | 'active' | 'inactive'
     sortBy?: string
+    category?: string
 }
 
 export async function fetchAdminStrategies(params: FetchStrategiesParams = {}): Promise<PaginatedResponse<AdminStrategy>> {
@@ -149,6 +151,7 @@ export async function fetchAdminStrategies(params: FetchStrategiesParams = {}): 
         pageSize: params.pageSize,
         search: params.search,
         status: params.status,
+        category: params.category,
     }
     if (params.isActive !== undefined && params.isActive !== 'all') {
         queryParams.isActive = params.isActive === 'active' ? 'true' : 'false'
@@ -255,22 +258,44 @@ export async function fetchStrategyAnalysis(strategyId: string): Promise<Strateg
         const strategy = await fetchAdminStrategy(strategyId)
         if (!strategy) throw new Error('Strategy not found')
 
+        const metrics = strategy.metrics || {
+            totalReturn: 0,
+            totalPnL: 0,
+            todayPnL: 0,
+            activeHoldings: 0,
+            winRate: 0,
+            sharpeRatio: 0,
+            averageHoldingTime: 0,
+        }
+
         return {
             strategyId,
-            totalStocksBought: strategy.totalBuyOrders,
-            totalStocksSold: strategy.totalSellOrders,
-            activeHoldings: strategy.openPositions,
-            closedHoldings: strategy.closedPositions,
-            totalProfit: strategy.totalProfit,
-            totalLoss: strategy.totalLoss,
-            winRate: strategy.winRate,
-            avgHoldingPeriodDays: 18,
+            totalStocksBought: 0,
+            totalStocksSold: 0,
+            activeHoldings: metrics.activeHoldings,
+            closedHoldings: 0,
+            totalProfit: metrics.totalPnL > 0 ? metrics.totalPnL : 0,
+            totalLoss: metrics.totalPnL < 0 ? Math.abs(metrics.totalPnL) : 0,
+            winRate: metrics.winRate,
+            avgHoldingPeriodDays: metrics.averageHoldingTime,
             bestPerformingStock: 'RELIANCE',
             worstPerformingStock: 'WIPRO',
-            mostTradedStock: strategy.instruments[0] || 'NIFTY50',
+            mostTradedStock: 'NIFTY50',
             maxDrawdown: 8.2,
-            sharpeRatio: 1.84,
+            sharpeRatio: metrics.sharpeRatio,
         }
     }
+}
+
+// ─── Metrics ──────────────────────────────────────────────────────────────────
+
+export async function fetchStrategyMetrics(strategyId: string): Promise<StrategyMetrics> {
+    const response = await apiGet<StrategyMetrics>(`/admin/strategies/${strategyId}/metrics`)
+    return response.data
+}
+
+export async function updateStrategyMetrics(strategyId: string, data: Partial<StrategyMetrics>): Promise<StrategyMetrics> {
+    const response = await apiPut<StrategyMetrics>(`/admin/strategies/${strategyId}/metrics`, data)
+    return response.data
 }
 

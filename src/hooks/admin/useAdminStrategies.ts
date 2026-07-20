@@ -10,15 +10,16 @@ export function useAdminStrategies() {
     const [search, setSearch] = useState('')
     const [filterStatus, setFilterStatus] = useState<AdminStrategyStatus | 'all'>('all')
     const [filterActive, setFilterActive] = useState<'all' | 'active' | 'inactive'>('all')
+    const [filterCategory, setFilterCategory] = useState<string>('all')
     const [sortBy, setSortBy] = useState<string>('')
     const [localOverrides, setLocalOverrides] = useState<Record<string, Partial<AdminStrategy>>>({})
 
     const load = useCallback(() => {
         setStatus('loading')
-        fetchAdminStrategies({ search, status: filterStatus, isActive: filterActive, sortBy })
+        fetchAdminStrategies({ search, status: filterStatus, isActive: filterActive, sortBy, category: filterCategory })
             .then(data => { setResponse(data); setStatus('ready') })
             .catch(() => setStatus('error'))
-    }, [search, filterStatus, filterActive, sortBy])
+    }, [search, filterStatus, filterActive, sortBy, filterCategory])
 
     useEffect(() => { load() }, [load])
 
@@ -83,6 +84,8 @@ export function useAdminStrategies() {
         setFilterStatus,
         filterActive,
         setFilterActive,
+        filterCategory,
+        setFilterCategory,
         sortBy,
         setSortBy,
         handleStatusChange,

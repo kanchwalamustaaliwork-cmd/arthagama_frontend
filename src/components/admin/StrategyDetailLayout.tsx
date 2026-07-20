@@ -93,14 +93,14 @@ export default function StrategyDetailLayout({
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px', flexWrap: 'wrap' }}>
                             <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--db-text)', letterSpacing: '-0.01em' }}>{strategy.name}</h1>
                             <Badge variant={STATUS_VARIANT[strategy.status]} dot>{STATUS_LABEL[strategy.status]}</Badge>
-                            <span className="db-badge db-badge-teal">{strategy.version}</span>
+                            <span className="db-badge db-badge-teal">{strategy.category}</span>
                         </div>
                         <p style={{ fontSize: '13px', color: 'var(--db-text-2)', lineHeight: 1.6, marginBottom: '14px', maxWidth: '600px' }}>
                             {strategy.description}
                         </p>
                         <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
                             {[
-                                { icon: User, label: strategy.assignedUserName },
+                                { icon: User, label: strategy.ownerAdminName || 'Unassigned Admin' },
                                 { icon: Calendar, label: `Created ${fmtDate(strategy.createdAt)}` },
                                 { icon: Tag, label: `Updated ${fmtDate(strategy.updatedAt)}` },
                             ].map(({ icon: Icon, label }) => (

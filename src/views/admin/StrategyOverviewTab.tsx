@@ -9,19 +9,26 @@ import { ShoppingCart, TrendingUp, TrendingDown, Layers, X, CheckCircle, Databas
 interface Props { strategy: AdminStrategy }
 
 export default function StrategyOverviewTab({ strategy }: Props) {
-    const netPnl = strategy.currentPnL ?? (strategy.totalProfit - strategy.totalLoss)
+    const metrics = strategy.metrics || {
+        totalReturn: 0,
+        totalPnL: 0,
+        todayPnL: 0,
+        activeHoldings: 0,
+        winRate: 0,
+        sharpeRatio: 0,
+        averageHoldingTime: 0,
+    }
+    const netPnl = metrics.totalPnL
     const isProfit = netPnl >= 0
 
     const fmtINR = (v: number) => `₹${Math.abs(v).toLocaleString('en-IN')}`
     const fmtDate = (iso: string) => new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 
     const stats = [
-        { label: 'Total Holdings', value: String(strategy.holdingsCount), icon: Layers, accent: '#5FAFD7' },
-        { label: 'Total Trades', value: String(strategy.totalTrades || strategy.totalBuyOrders + strategy.totalSellOrders), icon: ShoppingCart, accent: '#38D996' },
-        { label: 'Open Positions', value: String(strategy.openPositions), icon: TrendingUp, accent: '#F3B84D' },
-        { label: 'Closed Positions', value: String(strategy.closedPositions), icon: CheckCircle, accent: '#708482' },
-        { label: 'Win Rate', value: `${strategy.winRate?.toFixed(1)}%`, icon: TrendingUp, accent: '#38D996' },
-        { label: 'Loss Rate', value: `${strategy.lossRate?.toFixed(1)}%`, icon: TrendingDown, accent: '#E35D6A' },
+        { label: 'Active Holdings', value: String(metrics.activeHoldings), icon: Layers, accent: '#5FAFD7' },
+        { label: 'Win Rate', value: `${metrics.winRate?.toFixed(1)}%`, icon: TrendingUp, accent: '#38D996' },
+        { label: 'Sharpe Ratio', value: metrics.sharpeRatio?.toFixed(2), icon: CheckCircle, accent: '#F3B84D' },
+        { label: 'Avg Holding Time', value: `${metrics.averageHoldingTime?.toFixed(1)} Days`, icon: Calendar, accent: '#708482' },
     ]
 
     return (
@@ -44,10 +51,10 @@ export default function StrategyOverviewTab({ strategy }: Props) {
                     </div>
 
                     {/* Today's P&L card */}
-                    <div className="db-card" style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: '8px', borderLeft: `3px solid ${(strategy.todayPnL || 0) >= 0 ? 'var(--db-profit)' : 'var(--db-loss)'}` }}>
+                    <div className="db-card" style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: '8px', borderLeft: `3px solid ${metrics.todayPnL >= 0 ? 'var(--db-profit)' : 'var(--db-loss)'}` }}>
                         <span style={{ fontSize: '11px', color: 'var(--db-text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Today's P&L</span>
-                        <span style={{ fontSize: '20px', fontWeight: 700, color: (strategy.todayPnL || 0) >= 0 ? 'var(--db-profit)' : 'var(--db-loss)', letterSpacing: '-0.02em' }}>
-                            {(strategy.todayPnL || 0) >= 0 ? '+' : '-'}{fmtINR(strategy.todayPnL || 0)}
+                        <span style={{ fontSize: '20px', fontWeight: 700, color: metrics.todayPnL >= 0 ? 'var(--db-profit)' : 'var(--db-loss)', letterSpacing: '-0.02em' }}>
+                            {metrics.todayPnL >= 0 ? '+' : '-'}{fmtINR(metrics.todayPnL)}
                         </span>
                     </div>
                 </div>
@@ -64,7 +71,7 @@ export default function StrategyOverviewTab({ strategy }: Props) {
                             {[
                                 { icon: Database, label: 'Execution Database', value: strategy.databaseName, desc: 'TimescaleDB deployment container' },
                                 { icon: Globe, label: 'Trading Universe', value: strategy.universeName, desc: 'Assigned index component assets' },
-                                { icon: Percent, label: 'Cumulative ROI', value: `${strategy.overallReturnPct?.toFixed(2)}%`, desc: 'Overall portfolio gain factor', color: strategy.overallReturnPct >= 0 ? 'var(--db-profit)' : 'var(--db-loss)' },
+                                { icon: Percent, label: 'Cumulative ROI', value: `${metrics.totalReturn?.toFixed(2)}%`, desc: 'Overall portfolio gain factor', color: metrics.totalReturn >= 0 ? 'var(--db-profit)' : 'var(--db-loss)' },
                                 { icon: Calendar, label: 'Created Time', value: fmtDate(strategy.createdAt), desc: 'Date when module initialized' }
                             ].map(item => (
                                 <div key={item.label} style={{ display: 'flex', gap: '12px' }}>

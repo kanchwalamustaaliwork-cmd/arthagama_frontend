@@ -1,6 +1,6 @@
 'use client'
 
-import TerminalLogViewer from '@/src/components/admin/TerminalLogViewer'
+import TerminalLogViewer from '@/src/components/admin/terminal/TerminalLogViewer'
 import { useStrategyLogs } from '@/src/hooks/admin/useStrategyLogs'
 
 interface Props { strategyId: string }

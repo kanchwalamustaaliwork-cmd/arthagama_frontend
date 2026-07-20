@@ -15,19 +15,13 @@ export default function StrategyCreatePage() {
     const [form, setForm] = useState<StrategyEditFormData>({
         name: '',
         description: '',
-        version: 'v1.0',
-        instruments: 'NIFTY50, NIFTY BANK',
+        summary: '',
         databaseName: 'timescale_prod_db',
         universeName: 'Nifty 50 Index',
+        category: 'Options',
         isActive: true,
         status: 'draft',
-        entryRules: 'EMA(20) crosses above EMA(50) AND RSI(14) > 50',
-        exitRules: 'EMA(20) crosses below EMA(50) OR Stop-Loss hit (-2%)',
-        positionSizePct: '5',
-        stopLossPct: '2',
-        targetPct: '6',
-        indicators: 'EMA(20), EMA(50), RSI(14)',
-        riskSettings: 'Max 5 concurrent trades. Max daily loss limit 2% of capital.',
+        assignedUserId: null,
     })
 
     const set = (k: keyof StrategyEditFormData) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -95,18 +89,27 @@ export default function StrategyCreatePage() {
                     </div>
 
                     <div>
+                        <label style={labelStyle}>Summary</label>
+                        <input value={form.summary} onChange={set('summary')} placeholder="e.g. Short-term mean reversion on index components" style={{ ...fieldStyle, resize: undefined }} />
+                    </div>
+
+                    <div>
                         <label style={labelStyle}>Description</label>
                         <textarea value={form.description} onChange={set('description')} rows={3} placeholder="Explain the high-level logic, timeframe, and goals of this strategy..." style={fieldStyle} />
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                         <div>
-                            <label style={labelStyle}>Version</label>
-                            <input value={form.version} onChange={set('version')} style={{ ...fieldStyle, resize: undefined }} />
+                            <label style={labelStyle}>Category</label>
+                            <select value={form.category} onChange={set('category')} style={{ ...fieldStyle, WebkitAppearance: 'none', appearance: 'none', background: 'var(--db-elevated) url("data:image/svg+xml;utf8,<svg fill=\'%23A5B7B3\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/><path d=\'M0 0h24v24H0z\' fill=\'none\'/></svg>") no-repeat right 12px center' }}>
+                                <option value="Options">Options</option>
+                                <option value="Futures">Futures</option>
+                                <option value="Equity">Equity</option>
+                            </select>
                         </div>
                         <div>
-                            <label style={labelStyle}>Instruments (comma-separated)</label>
-                            <input value={form.instruments} onChange={set('instruments')} style={{ ...fieldStyle, resize: undefined }} />
+                            <label style={labelStyle}>Owner Admin</label>
+                            <input value="Current Logged-in Admin" style={{ ...fieldStyle, resize: undefined, opacity: 0.7, cursor: 'not-allowed' }} disabled />
                         </div>
                     </div>
 
@@ -142,51 +145,6 @@ export default function StrategyCreatePage() {
                                 Set active immediately
                             </label>
                         </div>
-                    </div>
-                </div>
-
-                {/* Rules */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <h3 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--db-text)', textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '1px solid var(--db-border)', paddingBottom: '8px' }}>Strategy Rules</h3>
-                    
-                    <div>
-                        <label style={labelStyle}>Entry Rules</label>
-                        <textarea value={form.entryRules} onChange={set('entryRules')} rows={3} style={fieldStyle} />
-                    </div>
-
-                    <div>
-                        <label style={labelStyle}>Exit Rules</label>
-                        <textarea value={form.exitRules} onChange={set('exitRules')} rows={3} style={fieldStyle} />
-                    </div>
-
-                    <div>
-                        <label style={labelStyle}>Indicators Used</label>
-                        <textarea value={form.indicators} onChange={set('indicators')} rows={2} style={fieldStyle} />
-                    </div>
-                </div>
-
-                {/* Risk */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <h3 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--db-text)', textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '1px solid var(--db-border)', paddingBottom: '8px' }}>Risk Management</h3>
-                    
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-                        <div>
-                            <label style={labelStyle}>Position Size %</label>
-                            <input value={form.positionSizePct} onChange={set('positionSizePct')} style={{ ...fieldStyle, resize: undefined }} />
-                        </div>
-                        <div>
-                            <label style={labelStyle}>Stop Loss %</label>
-                            <input value={form.stopLossPct} onChange={set('stopLossPct')} style={{ ...fieldStyle, resize: undefined }} />
-                        </div>
-                        <div>
-                            <label style={labelStyle}>Target %</label>
-                            <input value={form.targetPct} onChange={set('targetPct')} style={{ ...fieldStyle, resize: undefined }} />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label style={labelStyle}>Risk Settings & Notes</label>
-                        <textarea value={form.riskSettings} onChange={set('riskSettings')} rows={3} style={fieldStyle} />
                     </div>
                 </div>
 

@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await logoutService()
         setUser(null)
     }, [])
-    console.log(user)
+
     return (
         <AuthContext.Provider
             value={{

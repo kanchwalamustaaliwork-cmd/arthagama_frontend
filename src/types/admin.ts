@@ -25,6 +25,23 @@ export interface AdminCustomer {
     avatarInitials: string
 }
 
+// ─── Strategy Metrics ─────────────────────────────────────────────────────────
+
+export interface StrategyMetrics {
+    id: string
+    strategyId: string
+    totalReturn: number
+    totalPnL: number
+    todayPnL: number
+    activeHoldings: number
+    winRate: number
+    sharpeRatio: number
+    averageHoldingTime: number
+    lastTradeTimestamp: string | null
+    createdAt: string
+    updatedAt: string
+}
+
 // ─── Strategy (Admin view) ────────────────────────────────────────────────────
 
 export type AdminStrategyStatus = 'running' | 'paused' | 'draft' | 'archived' | 'error'
@@ -33,31 +50,32 @@ export interface AdminStrategy {
     id: string
     name: string
     description: string
+    summary: string
     status: AdminStrategyStatus
-    version: string
     isActive: boolean
     databaseName: string
     universeName: string
-    currentPnL: number
-    overallReturnPct: number
-    winRate: number
-    lossRate: number
-    quickSummary: string
-    todayPnL: number
+    category: string // 'Options' | 'Futures' | 'Equity'
+    
+    // Auditing / Ownership Info
+    ownerAdminId: string
+    ownerAdminName: string
+    ownerAdminEmail: string
+    
+    createdByAdminId: string
+    createdByAdminName: string
+    createdByAdminEmail: string
+    
+    lastModifiedByAdminId: string
+    lastModifiedByAdminName: string
+    lastModifiedByAdminEmail: string
+
+    assignedUserId: string | null
+
     createdAt: string          // ISO-8601
     updatedAt: string          // ISO-8601
-    assignedUserId: string
-    assignedUserName: string
-    assignedUserEmail: string
-    holdingsCount: number
-    totalBuyOrders: number
-    totalSellOrders: number
-    openPositions: number
-    closedPositions: number
-    totalProfit: number
-    totalLoss: number
-    instruments: string[]
-    totalTrades: number
+    
+    metrics?: StrategyMetrics
 }
 
 // ─── Holding ──────────────────────────────────────────────────────────────────
@@ -176,19 +194,13 @@ export interface PaginatedResponse<T> {
 export interface StrategyEditFormData {
     name: string
     description: string
-    version: string
-    instruments: string         // comma-separated
+    summary: string
     databaseName: string
     universeName: string
+    category: string // 'Options' | 'Futures' | 'Equity'
     isActive: boolean
     status: AdminStrategyStatus
-    entryRules: string
-    exitRules: string
-    positionSizePct: string
-    stopLossPct: string
-    targetPct: string
-    indicators: string
-    riskSettings: string
+    assignedUserId: string | null
 }
 
 // ─── Legacy Log types (Deprecated) ──────────────────────────────────────────

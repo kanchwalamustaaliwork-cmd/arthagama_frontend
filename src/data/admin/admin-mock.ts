@@ -109,57 +109,111 @@ export const MOCK_CUSTOMERS: AdminCustomer[] = [
 export let MOCK_ADMIN_STRATEGIES: AdminStrategy[] = [
     {
         id: 'as001', name: 'Nifty Momentum Breakout', description: 'Momentum-based strategy targeting Nifty 50 breakout patterns using EMA crossovers and RSI confirmation.',
+        summary: 'EMA crossovers + RSI breakouts',
         status: 'running', isActive: true, databaseName: 'timescale_nifty_prod', universeName: 'Nifty 50 Index',
-        currentPnL: 163400, overallReturnPct: 14.2, winRate: 64.3, lossRate: 35.7, quickSummary: 'EMA crossovers + RSI breakouts',
-        todayPnL: 12400, version: 'v2.4', createdAt: '2025-01-15T09:00:00Z', updatedAt: '2026-07-14T18:30:00Z',
-        assignedUserId: 'c005', assignedUserName: 'Vikram Singh', assignedUserEmail: 'vikram.singh@email.com',
-        holdingsCount: 12, totalBuyOrders: 87, totalSellOrders: 75, openPositions: 12, closedPositions: 63,
-        totalProfit: 245800, totalLoss: 82400, instruments: ['NIFTY50', 'NIFTY BANK'], totalTrades: 162,
+        category: 'Options',
+        ownerAdminId: 'u001', ownerAdminName: 'Aditya Sen', ownerAdminEmail: 'aditya.sen@arthagama.com',
+        createdByAdminId: 'u001', createdByAdminName: 'Aditya Sen', createdByAdminEmail: 'aditya.sen@arthagama.com',
+        lastModifiedByAdminId: 'u001', lastModifiedByAdminName: 'Aditya Sen', lastModifiedByAdminEmail: 'aditya.sen@arthagama.com',
+        assignedUserId: 'c005',
+        createdAt: '2025-01-15T09:00:00Z', updatedAt: '2026-07-14T18:30:00Z',
+        metrics: {
+            id: 'm001', strategyId: 'as001',
+            totalReturn: 14.2, totalPnL: 163400, todayPnL: 12400,
+            activeHoldings: 12, winRate: 64.3, sharpeRatio: 1.84,
+            averageHoldingTime: 12.5, lastTradeTimestamp: '2026-07-14T15:25:00Z',
+            createdAt: '2025-01-15T09:00:00Z', updatedAt: '2026-07-14T18:30:00Z'
+        }
     },
     {
         id: 'as002', name: 'Mid-Cap Mean Reversion', description: 'Statistical mean reversion strategy on Nifty Midcap 150 index components using Bollinger Bands.',
+        summary: 'Bollinger Band reversion scanner',
         status: 'running', isActive: true, databaseName: 'timescale_midcap_prod', universeName: 'Midcap 150 Top',
-        currentPnL: 53100, overallReturnPct: 8.9, winRate: 58.2, lossRate: 41.8, quickSummary: 'Bollinger Band reversion scanner',
-        todayPnL: -3200, version: 'v1.8', createdAt: '2025-03-22T11:15:00Z', updatedAt: '2026-07-14T20:00:00Z',
-        assignedUserId: 'c003', assignedUserName: 'Rahul Nair', assignedUserEmail: 'rahul.nair@email.com',
-        holdingsCount: 8, totalBuyOrders: 42, totalSellOrders: 34, openPositions: 8, closedPositions: 26,
-        totalProfit: 98200, totalLoss: 45100, instruments: ['MIDCAP150'], totalTrades: 76,
+        category: 'Futures',
+        ownerAdminId: 'u001', ownerAdminName: 'Aditya Sen', ownerAdminEmail: 'aditya.sen@arthagama.com',
+        createdByAdminId: 'u001', createdByAdminName: 'Aditya Sen', createdByAdminEmail: 'aditya.sen@arthagama.com',
+        lastModifiedByAdminId: 'u001', lastModifiedByAdminName: 'Aditya Sen', lastModifiedByAdminEmail: 'aditya.sen@arthagama.com',
+        assignedUserId: 'c003',
+        createdAt: '2025-03-22T11:15:00Z', updatedAt: '2026-07-14T20:00:00Z',
+        metrics: {
+            id: 'm002', strategyId: 'as002',
+            totalReturn: 8.9, totalPnL: 53100, todayPnL: -3200,
+            activeHoldings: 8, winRate: 58.2, sharpeRatio: 1.52,
+            averageHoldingTime: 8.2, lastTradeTimestamp: '2026-07-14T14:45:00Z',
+            createdAt: '2025-03-22T11:15:00Z', updatedAt: '2026-07-14T20:00:00Z'
+        }
     },
     {
         id: 'as003', name: 'IT Sector Pairs Trade', description: 'Long-short pairs trading between Indian IT majors based on relative strength divergence.',
+        summary: 'Statistical arbitrage on IT giants',
         status: 'paused', isActive: false, databaseName: 'timescale_it_prod', universeName: 'IT Bluechips',
-        currentPnL: 114400, overallReturnPct: 11.5, winRate: 72.4, lossRate: 27.6, quickSummary: 'Statistical arbitrage on IT giants',
-        todayPnL: 0, version: 'v3.1', createdAt: '2024-12-10T14:00:00Z', updatedAt: '2026-07-10T09:00:00Z',
-        assignedUserId: 'c002', assignedUserName: 'Priya Sharma', assignedUserEmail: 'priya.sharma@email.com',
-        holdingsCount: 0, totalBuyOrders: 29, totalSellOrders: 29, openPositions: 0, closedPositions: 29,
-        totalProfit: 156700, totalLoss: 42300, instruments: ['TCS', 'INFY', 'WIPRO'], totalTrades: 58,
+        category: 'Equity',
+        ownerAdminId: 'u001', ownerAdminName: 'Aditya Sen', ownerAdminEmail: 'aditya.sen@arthagama.com',
+        createdByAdminId: 'u001', createdByAdminName: 'Aditya Sen', createdByAdminEmail: 'aditya.sen@arthagama.com',
+        lastModifiedByAdminId: 'u001', lastModifiedByAdminName: 'Aditya Sen', lastModifiedByAdminEmail: 'aditya.sen@arthagama.com',
+        assignedUserId: 'c002',
+        createdAt: '2024-12-10T14:00:00Z', updatedAt: '2026-07-10T09:00:00Z',
+        metrics: {
+            id: 'm003', strategyId: 'as003',
+            totalReturn: 11.5, totalPnL: 114400, todayPnL: 0,
+            activeHoldings: 0, winRate: 72.4, sharpeRatio: 2.12,
+            averageHoldingTime: 18.0, lastTradeTimestamp: '2026-07-10T08:50:00Z',
+            createdAt: '2024-12-10T14:00:00Z', updatedAt: '2026-07-10T09:00:00Z'
+        }
     },
     {
         id: 'as004', name: 'Banking Sector Long-Short', description: 'Quantitative long-short strategy on PSU and private banking stocks using NPA and credit growth signals.',
+        summary: 'Macro banking quantitative model',
         status: 'draft', isActive: false, databaseName: 'timescale_banking_dev', universeName: 'Nifty Bank Universe',
-        currentPnL: 0, overallReturnPct: 0.0, winRate: 0.0, lossRate: 0.0, quickSummary: 'Macro banking quantitative model',
-        todayPnL: 0, version: 'v0.9', createdAt: '2026-06-01T10:00:00Z', updatedAt: '2026-07-01T16:00:00Z',
-        assignedUserId: 'c001', assignedUserName: 'Arjun Mehta', assignedUserEmail: 'arjun.mehta@email.com',
-        holdingsCount: 0, totalBuyOrders: 0, totalSellOrders: 0, openPositions: 0, closedPositions: 0,
-        totalProfit: 0, totalLoss: 0, instruments: ['HDFCBANK', 'ICICIBANK', 'SBIN'], totalTrades: 0,
+        category: 'Options',
+        ownerAdminId: 'u001', ownerAdminName: 'Aditya Sen', ownerAdminEmail: 'aditya.sen@arthagama.com',
+        createdByAdminId: 'u001', createdByAdminName: 'Aditya Sen', createdByAdminEmail: 'aditya.sen@arthagama.com',
+        lastModifiedByAdminId: 'u001', lastModifiedByAdminName: 'Aditya Sen', lastModifiedByAdminEmail: 'aditya.sen@arthagama.com',
+        assignedUserId: 'c001',
+        createdAt: '2026-06-01T10:00:00Z', updatedAt: '2026-07-01T16:00:00Z',
+        metrics: {
+            id: 'm004', strategyId: 'as004',
+            totalReturn: 0.0, totalPnL: 0, todayPnL: 0,
+            activeHoldings: 0, winRate: 0.0, sharpeRatio: 0.0,
+            averageHoldingTime: 0.0, lastTradeTimestamp: null,
+            createdAt: '2026-06-01T10:00:00Z', updatedAt: '2026-07-01T16:00:00Z'
+        }
     },
     {
         id: 'as005', name: 'Energy Sector Momentum', description: 'Trend-following strategy in the Energy sector with trailing stops and ATR-based position sizing.',
+        summary: 'ATR-based energy sector trend following',
         status: 'running', isActive: true, databaseName: 'timescale_energy_prod', universeName: 'Energy Index Giants',
-        currentPnL: 214000, overallReturnPct: 22.8, winRate: 60.5, lossRate: 39.5, quickSummary: 'ATR-based energy sector trend following',
-        todayPnL: 8500, version: 'v2.0', createdAt: '2025-02-08T08:30:00Z', updatedAt: '2026-07-15T07:00:00Z',
-        assignedUserId: 'c010', assignedUserName: 'Meera Iyer', assignedUserEmail: 'meera.iyer@email.com',
-        holdingsCount: 6, totalBuyOrders: 54, totalSellOrders: 48, openPositions: 6, closedPositions: 42,
-        totalProfit: 312000, totalLoss: 98000, instruments: ['RELIANCE', 'ONGC', 'BPCL'], totalTrades: 102,
+        category: 'Futures',
+        ownerAdminId: 'u001', ownerAdminName: 'Aditya Sen', ownerAdminEmail: 'aditya.sen@arthagama.com',
+        createdByAdminId: 'u001', createdByAdminName: 'Aditya Sen', createdByAdminEmail: 'aditya.sen@arthagama.com',
+        lastModifiedByAdminId: 'u001', lastModifiedByAdminName: 'Aditya Sen', lastModifiedByAdminEmail: 'aditya.sen@arthagama.com',
+        assignedUserId: 'c010',
+        createdAt: '2025-02-08T08:30:00Z', updatedAt: '2026-07-15T07:00:00Z',
+        metrics: {
+            id: 'm005', strategyId: 'as005',
+            totalReturn: 22.8, totalPnL: 214000, todayPnL: 8500,
+            activeHoldings: 6, winRate: 60.5, sharpeRatio: 2.45,
+            averageHoldingTime: 14.2, lastTradeTimestamp: '2026-07-15T06:40:00Z',
+            createdAt: '2025-02-08T08:30:00Z', updatedAt: '2026-07-15T07:00:00Z'
+        }
     },
     {
         id: 'as006', name: 'Pharma Breakout Scanner', description: 'Identifies breakout setups in the Pharma sector using volume surge and price pattern analysis.',
+        summary: 'Pharma breakouts volume filters',
         status: 'archived', isActive: false, databaseName: 'timescale_pharma_archive', universeName: 'Nifty Pharma Universe',
-        currentPnL: 14000, overallReturnPct: 4.8, winRate: 50.0, lossRate: 50.0, quickSummary: 'Pharma breakouts volume filters',
-        todayPnL: 0, version: 'v1.2', createdAt: '2024-09-15T12:00:00Z', updatedAt: '2025-12-01T00:00:00Z',
-        assignedUserId: 'c007', assignedUserName: 'Rohan Gupta', assignedUserEmail: 'rohan.gupta@email.com',
-        holdingsCount: 0, totalBuyOrders: 18, totalSellOrders: 18, openPositions: 0, closedPositions: 18,
-        totalProfit: 42000, totalLoss: 28000, instruments: ['SUNPHARMA', 'DRREDDY', 'CIPLA'], totalTrades: 36,
+        category: 'Equity',
+        ownerAdminId: 'u001', ownerAdminName: 'Aditya Sen', ownerAdminEmail: 'aditya.sen@arthagama.com',
+        createdByAdminId: 'u001', createdByAdminName: 'Aditya Sen', createdByAdminEmail: 'aditya.sen@arthagama.com',
+        lastModifiedByAdminId: 'u001', lastModifiedByAdminName: 'Aditya Sen', lastModifiedByAdminEmail: 'aditya.sen@arthagama.com',
+        assignedUserId: 'c007',
+        createdAt: '2024-09-15T12:00:00Z', updatedAt: '2025-12-01T00:00:00Z',
+        metrics: {
+            id: 'm006', strategyId: 'as006',
+            totalReturn: 4.8, totalPnL: 14000, todayPnL: 0,
+            activeHoldings: 0, winRate: 50.0, sharpeRatio: 1.05,
+            averageHoldingTime: 6.8, lastTradeTimestamp: '2025-11-30T15:10:00Z',
+            createdAt: '2024-09-15T12:00:00Z', updatedAt: '2025-12-01T00:00:00Z'
+        }
     },
 ]
 

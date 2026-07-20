@@ -20,19 +20,13 @@ export default function StrategySettingsTab({ strategy, onSave, saving, onToggle
     const [form, setForm] = useState<StrategyEditFormData>({
         name: strategy.name,
         description: strategy.description,
-        version: strategy.version,
-        instruments: strategy.instruments.join(', '),
+        summary: strategy.summary || '',
         databaseName: strategy.databaseName || '',
         universeName: strategy.universeName || '',
+        category: strategy.category || 'Options',
         isActive: strategy.isActive,
         status: strategy.status,
-        entryRules: 'EMA(20) crosses above EMA(50) AND RSI > 55',
-        exitRules: 'EMA(20) crosses below EMA(50) OR RSI < 40 OR Stop-Loss hit',
-        positionSizePct: '5',
-        stopLossPct: '3',
-        targetPct: '10',
-        indicators: 'EMA(20), EMA(50), RSI(14), ATR(14)',
-        riskSettings: 'Max 5 concurrent positions. Daily loss limit 2% of portfolio.',
+        assignedUserId: strategy.assignedUserId,
     })
     const [saved, setSaved] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
@@ -42,19 +36,13 @@ export default function StrategySettingsTab({ strategy, onSave, saving, onToggle
         setForm({
             name: strategy.name,
             description: strategy.description,
-            version: strategy.version,
-            instruments: strategy.instruments.join(', '),
+            summary: strategy.summary || '',
             databaseName: strategy.databaseName || '',
             universeName: strategy.universeName || '',
+            category: strategy.category || 'Options',
             isActive: strategy.isActive,
             status: strategy.status,
-            entryRules: 'EMA(20) crosses above EMA(50) AND RSI > 55',
-            exitRules: 'EMA(20) crosses below EMA(50) OR RSI < 40 OR Stop-Loss hit',
-            positionSizePct: '5',
-            stopLossPct: '3',
-            targetPct: '10',
-            indicators: 'EMA(20), EMA(50), RSI(14), ATR(14)',
-            riskSettings: 'Max 5 concurrent positions. Daily loss limit 2% of portfolio.',
+            assignedUserId: strategy.assignedUserId,
         })
     }, [strategy])
 
@@ -154,6 +142,11 @@ export default function StrategySettingsTab({ strategy, onSave, saving, onToggle
                     <label style={labelStyle}>Strategy Name</label>
                     <input value={form.name} onChange={set('name')} style={{ ...fieldStyle, resize: undefined }} />
                 </div>
+
+                <div>
+                    <label style={labelStyle}>Summary</label>
+                    <input value={form.summary} onChange={set('summary')} style={{ ...fieldStyle, resize: undefined }} />
+                </div>
                 
                 <div>
                     <label style={labelStyle}>Description</label>
@@ -162,12 +155,16 @@ export default function StrategySettingsTab({ strategy, onSave, saving, onToggle
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
                     <div>
-                        <label style={labelStyle}>Version</label>
-                        <input value={form.version} onChange={set('version')} style={{ ...fieldStyle, resize: undefined }} />
+                        <label style={labelStyle}>Category</label>
+                        <select value={form.category} onChange={set('category')} style={{ ...fieldStyle, WebkitAppearance: 'none', appearance: 'none', background: 'var(--db-elevated) url("data:image/svg+xml;utf8,<svg fill=\'%23A5B7B3\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/><path d=\'M0 0h24v24H0z\' fill=\'none\'/></svg>") no-repeat right 12px center' }}>
+                            <option value="Options">Options</option>
+                            <option value="Futures">Futures</option>
+                            <option value="Equity">Equity</option>
+                        </select>
                     </div>
                     <div>
-                        <label style={labelStyle}>Instruments (comma-separated)</label>
-                        <input value={form.instruments} onChange={set('instruments')} style={{ ...fieldStyle, resize: undefined }} />
+                        <label style={labelStyle}>Owner Admin</label>
+                        <input value={strategy.ownerAdminName || 'Unassigned'} style={{ ...fieldStyle, resize: undefined, opacity: 0.7, cursor: 'not-allowed' }} disabled />
                     </div>
                 </div>
 
@@ -205,46 +202,6 @@ export default function StrategySettingsTab({ strategy, onSave, saving, onToggle
                             Active state enabled
                         </label>
                     </div>
-                </div>
-            </section>
-
-            {/* Rules */}
-            <section style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                <h3 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--db-text)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Strategy Rules</h3>
-                <div>
-                    <label style={labelStyle}>Entry Rules</label>
-                    <textarea value={form.entryRules} onChange={set('entryRules')} rows={3} style={fieldStyle} />
-                </div>
-                <div>
-                    <label style={labelStyle}>Exit Rules</label>
-                    <textarea value={form.exitRules} onChange={set('exitRules')} rows={3} style={fieldStyle} />
-                </div>
-                <div>
-                    <label style={labelStyle}>Indicators Used</label>
-                    <textarea value={form.indicators} onChange={set('indicators')} rows={2} style={fieldStyle} />
-                </div>
-            </section>
-
-            {/* Risk */}
-            <section style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                <h3 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--db-text)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Risk Management</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
-                    <div>
-                        <label style={labelStyle}>Position Size %</label>
-                        <input value={form.positionSizePct} onChange={set('positionSizePct')} style={{ ...fieldStyle, resize: undefined }} />
-                    </div>
-                    <div>
-                        <label style={labelStyle}>Stop Loss %</label>
-                        <input value={form.stopLossPct} onChange={set('stopLossPct')} style={{ ...fieldStyle, resize: undefined }} />
-                    </div>
-                    <div>
-                        <label style={labelStyle}>Target %</label>
-                        <input value={form.targetPct} onChange={set('targetPct')} style={{ ...fieldStyle, resize: undefined }} />
-                    </div>
-                </div>
-                <div>
-                    <label style={labelStyle}>Risk Settings & Notes</label>
-                    <textarea value={form.riskSettings} onChange={set('riskSettings')} rows={3} style={fieldStyle} />
                 </div>
             </section>
 
