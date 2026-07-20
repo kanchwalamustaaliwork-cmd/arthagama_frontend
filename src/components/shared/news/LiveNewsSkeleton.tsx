@@ -1,30 +1,53 @@
+import SkeletonRow from "./SkeletonRow"
 export default function LiveNewsSkeleton() {
     return (
         <div className="live-news-container">
-            {/* Left Section (Featured News Skeleton) */}
-            <div className="featured-news-card" style={{ pointerEvents: 'none' }}>
-                <div className="featured-image-wrapper db-skeleton" style={{ height: '300px', flex: 'none' }} />
-                <div className="featured-content" style={{ gap: '12px' }}>
-                    <div className="db-skeleton" style={{ height: '14px', width: '35%' }} />
-                    <div className="db-skeleton" style={{ height: '24px', width: '85%' }} />
-                    <div className="db-skeleton" style={{ height: '14px', width: '100%' }} />
-                    <div className="db-skeleton" style={{ height: '14px', width: '60%' }} />
-                </div>
-            </div>
+            <style>{`
+                .live-news-container {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
+                }
+                .news-marquee-row {
+                    overflow: hidden;
+                    position: relative;
+                    padding: 6px 0;
+                }
+                .news-marquee-track {
+                    display: flex;
+                    gap: 16px;
+                    width: max-content;
+                    align-items: stretch;
+                }
+                .marquee-news-card {
+                    flex: 0 0 320px;
+                    width: 320px;
+                    height: 260px;
+                    display: flex;
+                    flex-direction: column;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    background: rgba(255, 255, 255, 0.02);
+                }
+                .marquee-news-image-wrapper {
+                    width: 100%;
+                    height: 150px;
+                    flex: none;
+                    position: relative;
+                    overflow: hidden;
+                }
+                .marquee-news-content {
+                    padding: 12px 14px 14px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 6px;
+                    flex: 1;
+                    min-height: 0;
+                }
+            `}</style>
 
-            {/* Right Section (News List Skeleton) */}
-            <div className="news-list-scroll" style={{ overflow: 'hidden' }}>
-                {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="news-item-card" style={{ pointerEvents: 'none', border: '1px solid var(--db-border)' }}>
-                        <div className="news-item-thumbnail-wrapper db-skeleton" style={{ width: '76px', height: '76px' }} />
-                        <div className="news-item-info" style={{ gap: '10px' }}>
-                            <div className="db-skeleton" style={{ height: '14px', width: '75%' }} />
-                            <div className="db-skeleton" style={{ height: '11px', width: '90%' }} />
-                            <div className="db-skeleton" style={{ height: '10px', width: '30%' }} />
-                        </div>
-                    </div>
-                ))}
-            </div>
+            <SkeletonRow />
+            <SkeletonRow />
         </div>
     )
 }

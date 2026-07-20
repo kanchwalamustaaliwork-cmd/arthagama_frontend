@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import AppProviders from '@/src/components/providers/AppProviders'
 import './globals.css'
+import { TooltipProvider } from '@/src/components/ui/Tooltip'
 
 export const metadata: Metadata = {
   title: 'ARTHAGAMA - Algo Trading Company',
@@ -21,7 +22,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <AppProviders>
-          {children}
+          <TooltipProvider>
+            {children}
+          </TooltipProvider>
         </AppProviders>
       </body>
     </html>
