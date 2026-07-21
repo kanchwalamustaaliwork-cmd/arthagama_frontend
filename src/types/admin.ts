@@ -120,6 +120,12 @@ export interface UniverseResponse {
     instruments: string
 }
 
+export interface LTPRecord {
+    ticker: string
+    latestPrice: number
+    timestamp: string
+}
+
 export interface TradeQueryParams {
     page?: number
     pageSize?: number

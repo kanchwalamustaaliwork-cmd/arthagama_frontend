@@ -15,9 +15,10 @@ import StrategyUniverseTab from './StrategyUniverseTab'
 import StrategyAnalysisTab from './StrategyAnalysisTab'
 import StrategySettingsTab from './StrategySettingsTab'
 import StrategyLogsTab from './StrategyLogsTab'
+import StrategyLtpTab from './StrategyLtpTab'
 import { useAdminStrategy } from '@/src/hooks/admin/useAdminStrategy'
 
-export type StrategyTab = 'overview' | 'holdings' | 'trades' | 'logs' | 'universe' | 'analysis' | 'settings'
+export type StrategyTab = 'overview' | 'holdings' | 'trades' | 'logs' | 'universe' | 'ltp' | 'analysis' | 'settings'
 
 interface Props {
     strategyId: string
@@ -38,6 +39,7 @@ export default function StrategyDetailPage({ strategyId, tab }: Props) {
             {tab === 'holdings' && <StrategyHoldingsTab strategyId={strategyId} />}
             {tab === 'trades' && <StrategyTradesTab strategyId={strategyId} />}
             {tab === 'universe' && strategy && <StrategyUniverseTab strategy={strategy} />}
+            {tab === 'ltp' && <StrategyLtpTab strategyId={strategyId} />}
             {tab === 'analysis' && <StrategyAnalysisTab strategyId={strategyId} />}
             {tab === 'settings' && strategy && (
                 <StrategySettingsTab 

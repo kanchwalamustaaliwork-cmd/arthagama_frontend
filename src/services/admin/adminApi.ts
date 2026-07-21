@@ -299,3 +299,10 @@ export async function updateStrategyMetrics(strategyId: string, data: Partial<St
     return response.data
 }
 
+// ─── WebSocket Tickets ────────────────────────────────────────────────────────
+
+export async function fetchStrategyWSTicket(strategyId: string): Promise<string> {
+    const response = await apiPost<{ ticket: string }>(`/admin/strategies/${strategyId}/ltp/ws-ticket`)
+    return response.data.ticket
+}
+

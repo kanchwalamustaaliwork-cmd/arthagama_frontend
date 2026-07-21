@@ -21,6 +21,7 @@ export default function StrategyTabs({ strategyId }: StrategyTabsProps) {
         { label: 'Trades',               href: `/admin/strategies/${strategyId}/trades` },
         { label: 'Logs',                 href: `/admin/strategies/${strategyId}/logs` },
         { label: 'Universe',             href: `/admin/strategies/${strategyId}/universe` },
+        { label: 'LTP',                  href: `/admin/strategies/${strategyId}/ltp` },
         { label: 'Performance Analysis', href: `/admin/strategies/${strategyId}/analysis` },
         { label: 'Settings',             href: `/admin/strategies/${strategyId}/settings` },
     ]
