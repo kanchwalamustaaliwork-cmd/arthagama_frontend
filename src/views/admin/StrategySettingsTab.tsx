@@ -17,12 +17,19 @@ interface Props {
 
 export default function StrategySettingsTab({ strategy, onSave, saving, onToggleActive, onDelete }: Props) {
     const router = useRouter()
+    const getInitialUniverseType = (category: string, type?: string) => {
+        if (category === 'Futures' || category === 'Options') return 'custom'
+        return (type as 'default' | 'custom') || 'default'
+    }
+
     const [form, setForm] = useState<StrategyEditFormData>({
         name: strategy.name,
         description: strategy.description,
         summary: strategy.summary || '',
         databaseName: strategy.databaseName || '',
         universeName: strategy.universeName || '',
+        universeType: getInitialUniverseType(strategy.category || 'Options', strategy.universeType),
+        instruments: strategy.instruments || '',
         category: strategy.category || 'Options',
         isActive: strategy.isActive,
         status: strategy.status,
@@ -39,6 +46,8 @@ export default function StrategySettingsTab({ strategy, onSave, saving, onToggle
             summary: strategy.summary || '',
             databaseName: strategy.databaseName || '',
             universeName: strategy.universeName || '',
+            universeType: getInitialUniverseType(strategy.category || 'Options', strategy.universeType),
+            instruments: strategy.instruments || '',
             category: strategy.category || 'Options',
             isActive: strategy.isActive,
             status: strategy.status,
@@ -48,11 +57,45 @@ export default function StrategySettingsTab({ strategy, onSave, saving, onToggle
 
     const set = (k: keyof StrategyEditFormData) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const val = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value
-        setForm(prev => ({ ...prev, [k]: val }))
+        setForm(prev => {
+            const updated = { ...prev, [k]: val }
+            if (k === 'category') {
+                if (val === 'Futures' || val === 'Options') {
+                    updated.universeType = 'custom'
+                    updated.universeName = ''
+                } else if (val === 'Equity') {
+                    updated.universeType = 'default'
+                    updated.universeName = 'NIFTY 50'
+                    updated.instruments = ''
+                }
+            } else if (k === 'universeType') {
+                if (val === 'default') {
+                    updated.universeName = 'NIFTY 50'
+                    updated.instruments = ''
+                } else {
+                    updated.universeName = ''
+                }
+            }
+            return updated
+        })
     }
 
     const handleSave = async () => {
-        const ok = await onSave(form)
+        // Validation based on category and type
+        const payload = { ...form }
+        if (payload.category === 'Futures' || payload.category === 'Options') {
+            payload.universeType = 'custom'
+        }
+
+        if (payload.universeType === 'custom') {
+            if (!payload.universeName.trim()) return alert('Universe Name is required for custom universes')
+            if (!payload.instruments.trim()) return alert('Instruments are required for custom universes')
+        } else {
+            if (!payload.universeName) return alert('Default Universe selection is required')
+            payload.instruments = '' // clear instruments for default universe
+        }
+
+        const ok = await onSave(payload)
         if (ok) {
             setSaved(true)
             setTimeout(() => setSaved(false), 3000)
@@ -173,11 +216,42 @@ export default function StrategySettingsTab({ strategy, onSave, saving, onToggle
                         <label style={labelStyle}>Database Name</label>
                         <input value={form.databaseName} onChange={set('databaseName')} placeholder="e.g. timescale_nifty_prod" style={{ ...fieldStyle, resize: undefined }} />
                     </div>
-                    <div>
-                        <label style={labelStyle}>Universe Name</label>
-                        <input value={form.universeName} onChange={set('universeName')} placeholder="e.g. Nifty 50 Bluechips" style={{ ...fieldStyle, resize: undefined }} />
-                    </div>
+                    {form.category === 'Equity' ? (
+                        <div>
+                            <label style={labelStyle}>Universe Type</label>
+                            <select value={form.universeType} onChange={set('universeType')} style={{ ...fieldStyle, WebkitAppearance: 'none', appearance: 'none', background: 'var(--db-elevated) url("data:image/svg+xml;utf8,<svg fill=\'%23A5B7B3\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/><path d=\'M0 0h24v24H0z\' fill=\'none\'/></svg>") no-repeat right 12px center' }}>
+                                <option value="default">Default Universe</option>
+                                <option value="custom">Custom Universe</option>
+                            </select>
+                        </div>
+                    ) : (
+                        <div>
+                            <label style={labelStyle}>Universe Type</label>
+                            <input value="Custom Universe" style={{ ...fieldStyle, resize: undefined, opacity: 0.7, cursor: 'not-allowed' }} disabled />
+                        </div>
+                    )}
                 </div>
+
+                {form.universeType === 'default' && form.category === 'Equity' ? (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                        <div>
+                            <label style={labelStyle}>Default Universe Name</label>
+                            <input value={form.universeName} onChange={set('universeName')} placeholder="e.g. NIFTY 50" style={{ ...fieldStyle, resize: undefined }} />
+                        </div>
+                        <div />
+                    </div>
+                ) : (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                        <div>
+                            <label style={labelStyle}>Universe Name</label>
+                            <input value={form.universeName} onChange={set('universeName')} placeholder="e.g. Momentum Stocks" style={{ ...fieldStyle, resize: undefined }} />
+                        </div>
+                        <div>
+                            <label style={labelStyle}>Instruments (Comma-separated)</label>
+                            <input value={form.instruments} onChange={set('instruments')} placeholder="e.g. RELIANCE, TCS, INFY, HDFCBANK" style={{ ...fieldStyle, resize: undefined }} />
+                        </div>
+                    </div>
+                )}
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
                     <div>

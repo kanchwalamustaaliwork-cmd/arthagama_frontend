@@ -17,7 +17,9 @@ export default function StrategyCreatePage() {
         description: '',
         summary: '',
         databaseName: 'timescale_prod_db',
-        universeName: 'Nifty 50 Index',
+        universeName: 'NIFTY 50',
+        universeType: 'custom', // category default Options requires custom
+        instruments: '',
         category: 'Options',
         isActive: true,
         status: 'draft',
@@ -26,16 +28,50 @@ export default function StrategyCreatePage() {
 
     const set = (k: keyof StrategyEditFormData) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const val = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value
-        setForm(prev => ({ ...prev, [k]: val }))
+        setForm(prev => {
+            const updated = { ...prev, [k]: val }
+            if (k === 'category') {
+                if (val === 'Futures' || val === 'Options') {
+                    updated.universeType = 'custom'
+                    updated.universeName = ''
+                } else if (val === 'Equity') {
+                    updated.universeType = 'default'
+                    updated.universeName = 'NIFTY 50'
+                    updated.instruments = ''
+                }
+            } else if (k === 'universeType') {
+                if (val === 'default') {
+                    updated.universeName = 'NIFTY 50'
+                    updated.instruments = ''
+                } else {
+                    updated.universeName = ''
+                }
+            }
+            return updated
+        })
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!form.name.trim()) return alert('Strategy Name is required')
 
+        // Validation based on category and type
+        const payload = { ...form }
+        if (payload.category === 'Futures' || payload.category === 'Options') {
+            payload.universeType = 'custom'
+        }
+
+        if (payload.universeType === 'custom') {
+            if (!payload.universeName.trim()) return alert('Universe Name is required for custom universes')
+            if (!payload.instruments.trim()) return alert('Instruments are required for custom universes')
+        } else {
+            if (!payload.universeName) return alert('Default Universe selection is required')
+            payload.instruments = '' // clear instruments for default universe
+        }
+
         setSaving(true)
         try {
-            await createStrategy(form)
+            await createStrategy(payload)
             setSaved(true)
             setTimeout(() => {
                 router.push('/admin/strategies')
@@ -78,11 +114,11 @@ export default function StrategyCreatePage() {
             <PageHeader title="Create Strategy" subtitle="Configure and deploy a new trading strategy engine" icon={Plus} />
 
             <form onSubmit={handleSubmit} className="db-card" style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                
+
                 {/* Basic Info */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <h3 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--db-text)', textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '1px solid var(--db-border)', paddingBottom: '8px' }}>Basic Details</h3>
-                    
+
                     <div>
                         <label style={labelStyle}>Strategy Name *</label>
                         <input value={form.name} onChange={set('name')} placeholder="e.g. Nifty Mean Reversion Bands" style={{ ...fieldStyle, resize: undefined }} required />
@@ -118,11 +154,42 @@ export default function StrategyCreatePage() {
                             <label style={labelStyle}>Database Name</label>
                             <input value={form.databaseName} onChange={set('databaseName')} style={{ ...fieldStyle, resize: undefined }} />
                         </div>
-                        <div>
-                            <label style={labelStyle}>Universe Name</label>
-                            <input value={form.universeName} onChange={set('universeName')} style={{ ...fieldStyle, resize: undefined }} />
-                        </div>
+                        {form.category === 'Equity' ? (
+                            <div>
+                                <label style={labelStyle}>Universe Type</label>
+                                <select value={form.universeType} onChange={set('universeType')} style={{ ...fieldStyle, WebkitAppearance: 'none', appearance: 'none', background: 'var(--db-elevated) url("data:image/svg+xml;utf8,<svg fill=\'%23A5B7B3\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/><path d=\'M0 0h24v24H0z\' fill=\'none\'/></svg>") no-repeat right 12px center' }}>
+                                    <option value="default">Default Universe</option>
+                                    <option value="custom">Custom Universe</option>
+                                </select>
+                            </div>
+                        ) : (
+                            <div>
+                                <label style={labelStyle}>Universe Type</label>
+                                <input value="Custom Universe" style={{ ...fieldStyle, resize: undefined, opacity: 0.7, cursor: 'not-allowed' }} disabled />
+                            </div>
+                        )}
                     </div>
+
+                    {form.universeType === 'default' && form.category === 'Equity' ? (
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                            <div>
+                                <label style={labelStyle}>Default Universe Name</label>
+                                <input value={form.universeName} onChange={set('universeName')} placeholder="e.g. NIFTY 50" style={{ ...fieldStyle, resize: undefined }} />
+                            </div>
+                            <div />
+                        </div>
+                    ) : (
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                            <div>
+                                <label style={labelStyle}>Universe Name</label>
+                                <input value={form.universeName} onChange={set('universeName')} placeholder="e.g. Momentum Stocks" style={{ ...fieldStyle, resize: undefined }} />
+                            </div>
+                            <div>
+                                <label style={labelStyle}>Instruments (Comma-separated)</label>
+                                <input value={form.instruments} onChange={set('instruments')} placeholder="e.g. RELIANCE, TCS, INFY, HDFCBANK" style={{ ...fieldStyle, resize: undefined }} />
+                            </div>
+                        </div>
+                    )}
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                         <div>
@@ -134,10 +201,10 @@ export default function StrategyCreatePage() {
                             </select>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '20px' }}>
-                            <input 
-                                type="checkbox" 
+                            <input
+                                type="checkbox"
                                 id="createActiveCheckbox"
-                                checked={form.isActive} 
+                                checked={form.isActive}
                                 onChange={e => setForm(prev => ({ ...prev, isActive: e.target.checked }))}
                                 style={{ width: '16px', height: '16px', accentColor: 'var(--db-mint)', cursor: 'pointer' }}
                             />

@@ -55,6 +55,8 @@ export interface AdminStrategy {
     isActive: boolean
     databaseName: string
     universeName: string
+    universeType: 'default' | 'custom'
+    instruments: string
     category: string // 'Options' | 'Futures' | 'Equity'
     
     // Auditing / Ownership Info
@@ -113,8 +115,9 @@ export interface AdminTrade {
 
 export interface UniverseResponse {
     strategyId: string
-    totalSymbols: number
-    symbols: string[]
+    universeName: string
+    universeType: 'default' | 'custom'
+    instruments: string
 }
 
 export interface TradeQueryParams {
@@ -197,6 +200,8 @@ export interface StrategyEditFormData {
     summary: string
     databaseName: string
     universeName: string
+    universeType: 'default' | 'custom'
+    instruments: string
     category: string // 'Options' | 'Futures' | 'Equity'
     isActive: boolean
     status: AdminStrategyStatus

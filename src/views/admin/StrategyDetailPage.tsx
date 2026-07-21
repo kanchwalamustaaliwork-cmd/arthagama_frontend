@@ -37,7 +37,7 @@ export default function StrategyDetailPage({ strategyId, tab }: Props) {
             {tab === 'overview'  && strategy && <StrategyOverviewTab strategy={strategy} />}
             {tab === 'holdings' && <StrategyHoldingsTab strategyId={strategyId} />}
             {tab === 'trades' && <StrategyTradesTab strategyId={strategyId} />}
-            {tab === 'universe' && <StrategyUniverseTab strategyId={strategyId} />}
+            {tab === 'universe' && strategy && <StrategyUniverseTab strategy={strategy} />}
             {tab === 'analysis' && <StrategyAnalysisTab strategyId={strategyId} />}
             {tab === 'settings' && strategy && (
                 <StrategySettingsTab 
