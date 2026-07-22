@@ -126,7 +126,7 @@ export default function LiveNews() {
                 }
                 .news-marquee-track {
                     display: flex;
-                    gap: 16px;
+                    gap: 20px;
                     width: max-content;
                     align-items: stretch;
                     will-change: transform;

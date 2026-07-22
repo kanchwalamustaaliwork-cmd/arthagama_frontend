@@ -15,7 +15,7 @@ export default function LiveNewsSkeleton() {
                 }
                 .news-marquee-track {
                     display: flex;
-                    gap: 16px;
+                    gap: 20px;
                     width: max-content;
                     align-items: stretch;
                 }
