@@ -29,10 +29,10 @@ import {
 } from 'lucide-react'
 
 const STATUS_VARIANT: Record<AdminStrategyStatus, 'success' | 'warning' | 'neutral' | 'error'> = {
-    running:  'success',
-    paused:   'warning',
-    draft:    'neutral',
-    error:    'error',
+    running: 'success',
+    paused: 'warning',
+    draft: 'neutral',
+    error: 'error',
     archived: 'error',
 }
 
@@ -59,11 +59,19 @@ export default function StrategyDetailLayout({
 
     if (loading) {
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '1200px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: '14px' }}>
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: 'calc(100vh - 120px)', // adjust for header height
+                    width: '100%',
+                }}
+            >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%', maxWidth: '1200px' }}>
                     <LoadingState variant="skeleton-card" count={4} />
+                    <LoadingState variant="skeleton-table" />
                 </div>
-                <LoadingState variant="skeleton-table" />
             </div>
         )
     }

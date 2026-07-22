@@ -24,7 +24,7 @@ function Spinner({ message }: { message?: string }) {
 
 function SkeletonCard() {
     return (
-        <div className="db-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div className="db-card" style={{ padding: '50px 40px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div className="db-skeleton" style={{ height: '14px', width: '60%' }} />
             <div className="db-skeleton" style={{ height: '32px', width: '40%' }} />
             <div className="db-skeleton" style={{ height: '12px', width: '80%' }} />
@@ -56,7 +56,7 @@ function SkeletonTable() {
 }
 
 export default function LoadingState({ variant = 'spinner', count = 3, message }: LoadingStateProps) {
-    if (variant === 'spinner')        return <Spinner message={message} />
+    if (variant === 'spinner') return <Spinner message={message} />
     if (variant === 'skeleton-table') return <SkeletonTable />
     return (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
