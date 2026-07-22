@@ -9,6 +9,7 @@ import ReportCard from '@/src/components/dashboard/ReportCard'
 import EmptyState from '@/src/components/dashboard/ui/EmptyState'
 import { MOCK_REPORTS } from '@/src/data/dashboard/dashboard-mock'
 import type { Report } from '@/src/components/dashboard/ReportCard'
+import { useDebounce } from '@/src/hooks/useDebounce'
 
 const CATEGORY_FILTERS = [
     { label: 'All', value: 'all' },
@@ -26,6 +27,9 @@ const SORT_OPTIONS = [
 
 export default function ResearchReportsPage() {
     const [search, setSearch] = useState('')
+    const debouncedSearch = useDebounce(search, 300)
+    const activeSearch = search === '' ? '' : debouncedSearch
+
     const [category, setCategory] = useState('all')
     const [sort, setSort] = useState('latest')
     const [savedIds, setSavedIds] = useState<Set<string>>(new Set())
@@ -33,8 +37,8 @@ export default function ResearchReportsPage() {
     const filtered = useMemo(() => {
         let list = [...MOCK_REPORTS]
         if (category !== 'all') list = list.filter(r => r.category === category)
-        if (search) {
-            const q = search.toLowerCase()
+        if (activeSearch) {
+            const q = activeSearch.toLowerCase()
             list = list.filter(r =>
                 r.title.toLowerCase().includes(q) ||
                 r.analyst.toLowerCase().includes(q) ||
@@ -43,7 +47,7 @@ export default function ResearchReportsPage() {
         }
         if (sort === 'oldest') list.reverse()
         return list
-    }, [search, category, sort])
+    }, [activeSearch, category, sort])
 
     const featured = MOCK_REPORTS.filter(r => r.featured)
     const saved = MOCK_REPORTS.filter(r => savedIds.has(r.id))

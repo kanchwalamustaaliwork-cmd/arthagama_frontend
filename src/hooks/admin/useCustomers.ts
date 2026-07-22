@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { AdminCustomer, CustomerStatus, PaginatedResponse } from '@/src/types/admin'
 import { fetchCustomers, updateCustomerStatus, deleteCustomer } from '@/src/services/admin/adminApi'
+import { useDebounce } from '@/src/hooks/useDebounce'
 
 type Status = 'loading' | 'ready' | 'error'
 
@@ -8,6 +9,9 @@ export function useCustomers() {
     const [response, setResponse] = useState<PaginatedResponse<AdminCustomer> | null>(null)
     const [status, setStatus] = useState<Status>('loading')
     const [search, setSearch] = useState('')
+    const debouncedSearch = useDebounce(search, 400)
+    const activeSearch = search === '' ? '' : debouncedSearch
+
     const [filterStatus, setFilterStatus] = useState<CustomerStatus | 'all'>('all')
     const [page, setPage] = useState(1)
 
@@ -15,17 +19,29 @@ export function useCustomers() {
     const [localOverrides, setLocalOverrides] = useState<Record<string, Partial<AdminCustomer>>>({})
     const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set())
 
+    const requestVersionRef = useRef(0)
+
     const load = useCallback(() => {
+        const currentVersion = ++requestVersionRef.current
         setStatus('loading')
-        fetchCustomers({ page, pageSize: 10, search, status: filterStatus })
-            .then(data => { setResponse(data); setStatus('ready') })
-            .catch(() => setStatus('error'))
-    }, [page, search, filterStatus])
+        fetchCustomers({ page, pageSize: 10, search: activeSearch, status: filterStatus })
+            .then(data => {
+                if (currentVersion === requestVersionRef.current) {
+                    setResponse(data)
+                    setStatus('ready')
+                }
+            })
+            .catch(() => {
+                if (currentVersion === requestVersionRef.current) {
+                    setStatus('error')
+                }
+            })
+    }, [page, activeSearch, filterStatus])
 
     useEffect(() => {
-        // Reset to page 1 when filters change
+        // Reset to page 1 when filters or debounced search change
         setPage(1)
-    }, [search, filterStatus])
+    }, [activeSearch, filterStatus])
 
     useEffect(() => { load() }, [load])
 

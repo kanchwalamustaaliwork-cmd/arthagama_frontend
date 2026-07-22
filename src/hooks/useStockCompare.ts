@@ -1,12 +1,15 @@
 import { useMemo, useState } from 'react'
 import { STOCKS } from '../data/stocks'
 import type { Stock } from '../types/compareStocks'
+import { useDebounce } from './useDebounce'
 
 const MAX_SELECTED = 4
 
 export function useStockCompare() {
     const [selectedSymbols, setSelectedSymbols] = useState<string[]>(['RELIANCE', 'TCS'])
     const [query, setQuery] = useState('')
+    const debouncedQuery = useDebounce(query, 300)
+    const activeQuery = query === '' ? '' : debouncedQuery
 
     const selected: Stock[] = useMemo(
         () => selectedSymbols.map((s) => STOCKS.find((stock) => stock.symbol === s)!).filter(Boolean),
@@ -14,13 +17,13 @@ export function useStockCompare() {
     )
 
     const availableResults = useMemo(() => {
-        const q = query.trim().toLowerCase()
+        const q = activeQuery.trim().toLowerCase()
         return STOCKS.filter(
             (s) =>
                 !selectedSymbols.includes(s.symbol) &&
                 (q.length === 0 || s.symbol.toLowerCase().includes(q) || s.name.toLowerCase().includes(q))
         )
-    }, [query, selectedSymbols])
+    }, [activeQuery, selectedSymbols])
 
     const canAddMore = selectedSymbols.length < MAX_SELECTED
 

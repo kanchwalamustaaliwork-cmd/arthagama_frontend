@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, X, Search } from 'lucide-react'
+import { Plus, X } from 'lucide-react'
 import type { StockSearchPickerProps } from '../../../types/compareStocks'
 import { easing } from '../../../constans/animation'
+import SearchBar from '@/src/components/dashboard/ui/SearchBar'
 
 export default function StockSearchPicker({
     selected, availableResults, query, onQueryChange, onAdd, onRemove, canAddMore, maxSelected,
@@ -39,15 +40,24 @@ export default function StockSearchPicker({
 
             {canAddMore ? (
                 <div className="relative">
-                    <div className="search-field flex items-center gap-3 rounded-full px-4 py-3">
-                        <Search className="h-4 w-4 flex-shrink-0 text-[#244147]/60" />
-                        <input
-                            value={query}
-                            onChange={(e) => onQueryChange(e.target.value)}
-                            placeholder="Search by symbol or name..."
-                            className="w-full bg-transparent text-sm text-[#1B3236] outline-none placeholder:text-[#244147]/40"
-                        />
-                    </div>
+                    <SearchBar
+                        value={query}
+                        onChange={onQueryChange}
+                        placeholder="Search by symbol or name..."
+                        variant="pill"
+                        iconColor="rgba(36, 65, 71, 0.6)"
+                        containerStyle={{
+                            background: 'rgba(18, 33, 36, 0.06)',
+                            border: '1px solid rgba(36, 65, 71, 0.18)',
+                        }}
+                        inputStyle={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: '#1B3236',
+                            fontSize: '14px',
+                            outline: 'none',
+                        }}
+                    />
 
                     {/* Layered Reveal — results drop in as a layered list */}
                     <AnimatePresence>

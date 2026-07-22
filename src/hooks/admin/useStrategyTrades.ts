@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { AdminTrade, PaginatedResponse } from '@/src/types/admin'
 import { fetchStrategyTrades } from '@/src/services/admin/adminApi'
+import { useDebounce } from '@/src/hooks/useDebounce'
 
 type Status = 'loading' | 'ready' | 'error'
 
@@ -10,30 +11,42 @@ export function useStrategyTrades(strategyId: string) {
     const [status, setStatus] = useState<Status>('loading')
     const [page, setPage] = useState(1)
     const [search, setSearch] = useState('')
+    const debouncedSearch = useDebounce(search, 400)
+    const activeSearch = search === '' ? '' : debouncedSearch
+
     const [action, setAction] = useState<'all' | 'BUY' | 'SELL'>('all')
     const [tradeStatus, setTradeStatus] = useState<'all' | 'completed' | 'cancelled' | 'rejected'>('all')
 
+    const requestVersionRef = useRef(0)
+
     const load = useCallback(() => {
         if (!strategyId) return
+        const currentVersion = ++requestVersionRef.current
         setStatus('loading')
         fetchStrategyTrades(strategyId, {
             page,
             pageSize: 5,
-            search,
+            search: activeSearch,
             action,
             status: tradeStatus
         })
             .then((res: PaginatedResponse<AdminTrade>) => {
-                setTrades(res.data)
-                setTotal(res.total)
-                setStatus('ready')
+                if (currentVersion === requestVersionRef.current) {
+                    setTrades(res.data)
+                    setTotal(res.total)
+                    setStatus('ready')
+                }
             })
-            .catch(() => setStatus('error'))
-    }, [strategyId, page, search, action, tradeStatus])
+            .catch(() => {
+                if (currentVersion === requestVersionRef.current) {
+                    setStatus('error')
+                }
+            })
+    }, [strategyId, page, activeSearch, action, tradeStatus])
 
     useEffect(() => {
         setPage(1)
-    }, [search, action, tradeStatus])
+    }, [activeSearch, action, tradeStatus])
 
     useEffect(() => {
         load()

@@ -1,8 +1,7 @@
 import Chip from './Chip'
-import { Search } from 'lucide-react'
+import SearchBar from '@/src/components/dashboard/ui/SearchBar'
 import type { JobFiltersProps } from '../../types/careers'
 import { TYPE_OPTIONS, DEPT_OPTIONS } from '../../data/jobs'
-
 
 export default function JobFilters({
     query,
@@ -14,15 +13,26 @@ export default function JobFilters({
 }: JobFiltersProps) {
     return (
         <div className="flex flex-col gap-5">
-            <div className="search-field relative flex items-center rounded-full px-5 py-3">
-                <Search className="h-4 w-4 flex-shrink-0 text-[#244147]/60" />
-                <input
-                    value={query}
-                    onChange={(e) => onQueryChange(e.target.value)}
-                    placeholder="Search open roles..."
-                    className="ml-3 w-full bg-transparent text-sm text-[#1B3236] outline-none placeholder:text-[#244147]/45"
-                />
-            </div>
+            <SearchBar
+                value={query}
+                onChange={onQueryChange}
+                placeholder="Search open roles..."
+                variant="pill"
+                iconColor="rgba(36, 65, 71, 0.6)"
+                iconSize={16}
+                containerStyle={{
+                    background: 'rgba(184, 206, 194, 0.9)',
+                    border: '1px solid rgba(184, 206, 194, 1)',
+                    boxShadow: '0 2px 14px rgba(18, 33, 36, 0.2)',
+                }}
+                inputStyle={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#1B3236',
+                    fontSize: '14px',
+                    outline: 'none',
+                }}
+            />
 
             <div className="flex flex-wrap gap-2">
                 {TYPE_OPTIONS.map((opt) => (
@@ -35,11 +45,6 @@ export default function JobFilters({
             </div>
 
             <style>{`
-        .search-field {
-          background: rgba(184, 206, 194, 0.9);
-          border: 1px solid rgba(184, 206, 194, 1);
-          box-shadow: 0 2px 14px rgba(18, 33, 36, 0.2);
-        }
         .chip-active {
           background: #244147;
           color: #EAF1EC;

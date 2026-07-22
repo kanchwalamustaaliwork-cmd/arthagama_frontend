@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { AdminStrategy, AdminStrategyStatus, PaginatedResponse } from '@/src/types/admin'
 import { fetchAdminStrategies, updateStrategyStatus, toggleStrategyActive, deleteStrategy } from '@/src/services/admin/adminApi'
+import { useDebounce } from '@/src/hooks/useDebounce'
 
 type Status = 'loading' | 'ready' | 'error'
 
@@ -8,18 +9,33 @@ export function useAdminStrategies() {
     const [response, setResponse] = useState<PaginatedResponse<AdminStrategy> | null>(null)
     const [status, setStatus] = useState<Status>('loading')
     const [search, setSearch] = useState('')
+    const debouncedSearch = useDebounce(search, 400)
+    const activeSearch = search === '' ? '' : debouncedSearch
+
     const [filterStatus, setFilterStatus] = useState<AdminStrategyStatus | 'all'>('all')
     const [filterActive, setFilterActive] = useState<'all' | 'active' | 'inactive'>('all')
     const [filterCategory, setFilterCategory] = useState<string>('all')
     const [sortBy, setSortBy] = useState<string>('')
     const [localOverrides, setLocalOverrides] = useState<Record<string, Partial<AdminStrategy>>>({})
 
+    const requestVersionRef = useRef(0)
+
     const load = useCallback(() => {
+        const currentVersion = ++requestVersionRef.current
         setStatus('loading')
-        fetchAdminStrategies({ search, status: filterStatus, isActive: filterActive, sortBy, category: filterCategory })
-            .then(data => { setResponse(data); setStatus('ready') })
-            .catch(() => setStatus('error'))
-    }, [search, filterStatus, filterActive, sortBy, filterCategory])
+        fetchAdminStrategies({ search: activeSearch, status: filterStatus, isActive: filterActive, sortBy, category: filterCategory })
+            .then(data => {
+                if (currentVersion === requestVersionRef.current) {
+                    setResponse(data)
+                    setStatus('ready')
+                }
+            })
+            .catch(() => {
+                if (currentVersion === requestVersionRef.current) {
+                    setStatus('error')
+                }
+            })
+    }, [activeSearch, filterStatus, filterActive, sortBy, filterCategory])
 
     useEffect(() => { load() }, [load])
 
@@ -94,4 +110,3 @@ export function useAdminStrategies() {
         retry: load,
     }
 }
-

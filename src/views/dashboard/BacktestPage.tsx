@@ -12,11 +12,15 @@ import PerformanceChart from '@/src/components/dashboard/PerformanceChart'
 import Table from '@/src/components/dashboard/ui/Table'
 import { MOCK_STRATEGIES } from '@/src/data/dashboard/dashboard-mock'
 import { MOCK_TRADES, BACKTEST_METRICS, MONTHLY_RETURNS, TRADE_COLUMNS, DATE_RANGES } from '@/src/data/dashboard/back-test'
+import { useDebounce } from '@/src/hooks/useDebounce'
 
 export default function BacktestPage() {
     const router = useRouter()
     const [selectedStrategy, setSelectedStrategy] = useState<string>('')
     const [stockQuery, setStockQuery] = useState('')
+    const debouncedStockQuery = useDebounce(stockQuery, 300)
+    const activeStockQuery = stockQuery === '' ? '' : debouncedStockQuery
+
     const [dateRange, setDateRange] = useState('1y')
     const [capital, setCapital] = useState('500000')
     const [riskPct, setRiskPct] = useState('2')

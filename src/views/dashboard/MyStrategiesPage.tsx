@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, Search, Trash2, Layers } from 'lucide-react'
 import StrategyCard from '@/src/components/dashboard/StrategyCard'
@@ -11,6 +11,7 @@ import Button from '@/src/components/dashboard/ui/Button'
 import { MOCK_STRATEGIES } from '@/src/data/dashboard/dashboard-mock'
 import type { Strategy } from '@/src/components/dashboard/StrategyCard'
 import { StrategyFormData } from '@/src/types/dashboard'
+import { useDebounce } from '@/src/hooks/useDebounce'
 
 const FILTERS = [
     { label: 'All', value: 'all' },
@@ -27,17 +28,22 @@ const EMPTY_FORM: StrategyFormData = {
 export default function MyStrategiesPage() {
     const router = useRouter()
     const [search, setSearch] = useState('')
+    const debouncedSearch = useDebounce(search, 300)
+    const activeSearch = search === '' ? '' : debouncedSearch
+
     const [filter, setFilter] = useState('all')
     const [strategies, setStrategies] = useState<Strategy[]>(MOCK_STRATEGIES)
     const [showForm, setShowForm] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
     const [form, setForm] = useState<StrategyFormData>(EMPTY_FORM)
 
-    const filtered = strategies.filter(s => {
-        const matchFilter = filter === 'all' || s.status === filter
-        const matchSearch = s.name.toLowerCase().includes(search.toLowerCase())
-        return matchFilter && matchSearch
-    })
+    const filtered = useMemo(() => {
+        return strategies.filter(s => {
+            const matchFilter = filter === 'all' || s.status === filter
+            const matchSearch = s.name.toLowerCase().includes(activeSearch.toLowerCase())
+            return matchFilter && matchSearch
+        })
+    }, [strategies, filter, activeSearch])
 
     const handleCreate = () => {
         setEditingId(null)

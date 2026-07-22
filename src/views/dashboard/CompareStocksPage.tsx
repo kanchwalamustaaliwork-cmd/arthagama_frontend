@@ -1,20 +1,27 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Plus, X } from 'lucide-react'
 import SearchBar from '@/src/components/dashboard/ui/SearchBar'
 import FilterBar from '@/src/components/dashboard/ui/FilterBar'
 import Badge from '@/src/components/dashboard/ui/Badge'
 import { COMPARE_TABS, STOCK_DB, METRIC_DATA } from '@/src/data/dashboard/compare-stocks'
+import { useDebounce } from '@/src/hooks/useDebounce'
 
 export default function DashboardCompareStocksPage() {
     const [search, setSearch] = useState('')
+    const debouncedSearch = useDebounce(search, 300)
+    const activeSearch = search === '' ? '' : debouncedSearch
+
     const [selected, setSelected] = useState<string[]>(['RELIANCE', 'TCS'])
     const [tab, setTab] = useState('fundamentals')
 
-    const suggestions = Object.keys(STOCK_DB).filter(t =>
-        t.includes(search.toUpperCase()) || STOCK_DB[t].name.toLowerCase().includes(search.toLowerCase())
-    ).slice(0, 5)
+    const suggestions = useMemo(() => {
+        if (!activeSearch) return []
+        return Object.keys(STOCK_DB).filter(t =>
+            t.includes(activeSearch.toUpperCase()) || STOCK_DB[t].name.toLowerCase().includes(activeSearch.toLowerCase())
+        ).slice(0, 5)
+    }, [activeSearch])
 
     const addStock = (ticker: string) => {
         if (selected.length >= 3 || selected.includes(ticker)) return

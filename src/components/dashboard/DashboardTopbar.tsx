@@ -2,9 +2,10 @@
 
 import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { Bell, Search, ChevronDown, User, Settings, LogOut } from 'lucide-react'
+import { Bell, ChevronDown, User, Settings, LogOut } from 'lucide-react'
 import { useAuth } from '@/src/auth/AuthContext'
 import { PAGE_TITLES } from '@/src/data/dashboard/dashboard-mock'
+import SearchBar from '@/src/components/dashboard/ui/SearchBar'
 
 export default function DashboardTopbar() {
     const pathname = usePathname()
@@ -35,30 +36,13 @@ export default function DashboardTopbar() {
             </div>
 
             {/* Search */}
-            <div
-                style={{
-                    position: 'relative',
-                    display: 'flex',
-                    alignItems: 'center',
-                }}
-            >
-                <Search
-                    size={14}
-                    style={{
-                        position: 'absolute',
-                        left: '10px',
-                        color: 'var(--db-text-muted)',
-                        pointerEvents: 'none',
-                    }}
-                />
-                <input
-                    value={searchVal}
-                    onChange={e => setSearchVal(e.target.value)}
-                    placeholder="Search…"
-                    className="db-input"
-                    style={{ paddingLeft: '32px', width: '180px', height: '34px', fontSize: '12.5px' }}
-                />
-            </div>
+            <SearchBar
+                value={searchVal}
+                onChange={setSearchVal}
+                placeholder="Search…"
+                width="180px"
+                inputStyle={{ height: '34px', fontSize: '12.5px' }}
+            />
 
             {/* Notification bell */}
             <button

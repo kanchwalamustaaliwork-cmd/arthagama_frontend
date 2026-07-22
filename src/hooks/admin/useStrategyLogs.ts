@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, useRef } from 'react'
 import type { TerminalLogItem } from '@/src/types/admin'
 import { fetchStrategyLogs } from '@/src/services/admin/adminApi'
+import { useDebounce } from '@/src/hooks/useDebounce'
 
 export function useStrategyLogs(strategyId: string) {
     const [logs, setLogs] = useState<TerminalLogItem[]>([])
@@ -12,12 +13,17 @@ export function useStrategyLogs(strategyId: string) {
     const [hasPrevious, setHasPrevious] = useState(false)
     const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
     const [search, setSearch] = useState('')
+    const debouncedSearch = useDebounce(search, 400)
+    const activeSearch = search === '' ? '' : debouncedSearch
+
     const [level, setLevel] = useState('all')
 
     const fetchingRef = useRef(false)
+    const requestVersionRef = useRef(0)
 
     const loadPage = useCallback(async (pageNum: number, direction: 'append' | 'prepend' | 'reset') => {
         if (!strategyId || fetchingRef.current) return
+        const currentVersion = ++requestVersionRef.current
         fetchingRef.current = true
         setStatus('loading')
 
@@ -25,10 +31,12 @@ export function useStrategyLogs(strategyId: string) {
             const res = await fetchStrategyLogs(strategyId, {
                 page: pageNum,
                 pageSize: 100,
-                search,
+                search: activeSearch,
                 eventType: level,
                 status: level,
             })
+
+            if (currentVersion !== requestVersionRef.current) return
 
             const newItems = res.items
             const { total: totalCount, hasNext: nextExists, hasPrevious: prevExists } = res.pagination
@@ -69,16 +77,18 @@ export function useStrategyLogs(strategyId: string) {
             })
             setStatus('ready')
         } catch {
-            setStatus('error')
+            if (currentVersion === requestVersionRef.current) {
+                setStatus('error')
+            }
         } finally {
             fetchingRef.current = false
         }
-    }, [strategyId, search, level])
+    }, [strategyId, activeSearch, level])
 
     // Load page 1 on filter/search change
     useEffect(() => {
         loadPage(1, 'reset')
-    }, [strategyId, search, level])
+    }, [strategyId, activeSearch, level])
 
     const loadNext = useCallback(() => {
         if (hasNext && status !== 'loading') {
