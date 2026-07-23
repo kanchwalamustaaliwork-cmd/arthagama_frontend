@@ -23,6 +23,7 @@ import StrategyTabs from './StrategyTabs'
 import LoadingState from '@/src/components/dashboard/ui/LoadingState'
 import EmptyState from '@/src/components/dashboard/ui/EmptyState'
 import { useRouter } from 'next/navigation'
+import { useStrategyContext } from '@/src/context/StrategyContext'
 import {
     Play, Square, Edit2, Copy, Archive, User, Calendar, Tag,
     AlertCircle,
@@ -41,7 +42,7 @@ const STATUS_LABEL: Record<AdminStrategyStatus, string> = {
 }
 
 interface StrategyDetailLayoutProps {
-    strategy: AdminStrategy | null
+    strategy?: AdminStrategy | null
     loading?: boolean
     error?: boolean
     onStatusChange?: (action: 'start' | 'stop' | 'archive') => void
@@ -49,13 +50,19 @@ interface StrategyDetailLayoutProps {
 }
 
 export default function StrategyDetailLayout({
-    strategy,
-    loading,
-    error,
-    onStatusChange,
+    strategy: propStrategy,
+    loading: propLoading,
+    error: propError,
+    onStatusChange: propOnStatusChange,
     children,
 }: StrategyDetailLayoutProps) {
     const router = useRouter()
+    const ctx = useStrategyContext()
+
+    const strategy = propStrategy !== undefined ? propStrategy : ctx.strategy
+    const loading = propLoading !== undefined ? propLoading : ctx.status === 'loading'
+    const error = propError !== undefined ? propError : (ctx.status === 'error' || ctx.status === 'not_found')
+    const onStatusChange = propOnStatusChange || ctx.handleStatusChange
 
     if (loading) {
         return (

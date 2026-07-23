@@ -6,13 +6,14 @@ import ConfirmDialog from '@/src/components/admin/ConfirmDialog'
 import StrategyFormFields from '@/src/components/admin/stratergy/forms/StrategyFormFields'
 import { useStrategyForm, buildStrategyPayload } from '@/src/hooks/admin/useStrategyForm'
 import type { AdminStrategy, StrategyEditFormData } from '@/src/types/admin'
+import { useStrategyContext } from '@/src/context/StrategyContext'
 import { Save, CheckCircle, Trash2, Power } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 interface Props {
-    strategy: AdminStrategy
-    onSave: (data: StrategyEditFormData) => Promise<boolean>
-    saving: boolean
+    strategy?: AdminStrategy
+    onSave?: (data: StrategyEditFormData) => Promise<boolean>
+    saving?: boolean
     onToggleActive?: () => Promise<void>
     onDelete?: () => Promise<boolean>
 }
@@ -44,17 +45,36 @@ const toFormData = (strategy: AdminStrategy): StrategyEditFormData => ({
     assignedUserId: strategy.assignedUserId,
 })
 
-export default function StrategySettingsTab({ strategy, onSave, saving, onToggleActive, onDelete }: Props) {
+export default function StrategySettingsTab({
+    strategy: propStrategy,
+    onSave: propOnSave,
+    saving: propSaving,
+    onToggleActive: propOnToggleActive,
+    onDelete: propOnDelete,
+}: Props = {}) {
+    const ctx = useStrategyContext()
+    const strategy = propStrategy || ctx.strategy
+    const onSave = propOnSave || ctx.handleSave
+    const saving = propSaving !== undefined ? propSaving : ctx.saving
+    const onToggleActive = propOnToggleActive || ctx.handleToggleActive
+    const onDelete = propOnDelete || ctx.handleDelete
+
     const router = useRouter()
-    const { form, setForm, set, setIsActive } = useStrategyForm(toFormData(strategy))
+    const { form, setForm, set, setIsActive } = useStrategyForm(strategy ? toFormData(strategy) : {
+        name: '', description: '', summary: '', databaseName: '', universeName: '', universeType: 'default', instruments: '', category: 'Options', isActive: false, status: 'draft', assignedUserId: null
+    })
     const [saved, setSaved] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
     useEffect(() => {
-        setForm(toFormData(strategy))
+        if (strategy) {
+            setForm(toFormData(strategy))
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [strategy])
+
+    if (!strategy) return null
 
     const handleSave = async () => {
         const result = buildStrategyPayload(form)
@@ -92,7 +112,7 @@ export default function StrategySettingsTab({ strategy, onSave, saving, onToggle
                     <p style={{ fontSize: '11.5px', color: 'var(--db-text-muted)' }}>Manage state or remove strategy from platform</p>
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                    {onToggleActive && (
+                    {Boolean(onToggleActive) && (
                         <Button
                             variant={strategy.isActive ? 'secondary' : 'primary'}
                             size="sm"
@@ -102,7 +122,7 @@ export default function StrategySettingsTab({ strategy, onSave, saving, onToggle
                             <Power size={13} /> {strategy.isActive ? 'Deactivate' : 'Activate'}
                         </Button>
                     )}
-                    {onDelete && (
+                    {Boolean(onDelete) && (
                         <Button
                             variant="danger"
                             size="sm"

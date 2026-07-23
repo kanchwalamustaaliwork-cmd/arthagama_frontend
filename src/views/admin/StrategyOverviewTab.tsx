@@ -4,11 +4,16 @@ import StatCard from '@/src/components/dashboard/StatCard'
 import SectionHeader from '@/src/components/dashboard/SectionHeader'
 import PerformanceChart from '@/src/components/dashboard/PerformanceChart'
 import type { AdminStrategy } from '@/src/types/admin'
+import { useStrategyContext } from '@/src/context/StrategyContext'
 import { ShoppingCart, TrendingUp, TrendingDown, Layers, X, CheckCircle, Database, Globe, Percent, Calendar } from 'lucide-react'
 
-interface Props { strategy: AdminStrategy }
+interface Props { strategy?: AdminStrategy }
 
-export default function StrategyOverviewTab({ strategy }: Props) {
+export default function StrategyOverviewTab({ strategy: propStrategy }: Props = {}) {
+    const ctx = useStrategyContext()
+    const strategy = propStrategy || ctx.strategy
+
+    if (!strategy) return null
     const metrics = strategy.metrics || {
         totalReturn: 0,
         totalPnL: 0,

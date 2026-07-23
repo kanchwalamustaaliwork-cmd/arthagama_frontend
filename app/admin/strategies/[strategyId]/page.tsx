@@ -1,13 +1,7 @@
 'use client'
 
-import { use } from 'react'
-import StrategyDetailPage from '@/src/views/admin/StrategyDetailPage'
+import StrategyOverviewTab from '@/src/views/admin/StrategyOverviewTab'
 
-interface Props {
-    params: Promise<{ strategyId: string }>
-}
-
-export default function StrategyOverviewPage({ params }: Props) {
-    const { strategyId } = use(params)
-    return <StrategyDetailPage strategyId={strategyId} tab="overview" />
+export default function StrategyOverviewPage() {
+    return <StrategyOverviewTab />
 }

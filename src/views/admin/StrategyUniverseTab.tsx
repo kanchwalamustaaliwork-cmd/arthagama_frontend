@@ -1,13 +1,19 @@
 'use client'
 
 import type { AdminStrategy } from '@/src/types/admin'
+import { useStrategyContext } from '@/src/context/StrategyContext'
 import { Info, Globe, Cpu } from 'lucide-react'
 
 interface Props {
-    strategy: AdminStrategy
+    strategy?: AdminStrategy
 }
 
-export default function StrategyUniverseTab({ strategy }: Props) {
+export default function StrategyUniverseTab({ strategy: propStrategy }: Props = {}) {
+    const ctx = useStrategyContext()
+    const strategy = propStrategy || ctx.strategy
+
+    if (!strategy) return null
+
     const isCustom = strategy.universeType === 'custom'
     const instrumentsList = strategy.instruments
         ? strategy.instruments.split(',').map(s => s.trim()).filter(Boolean)

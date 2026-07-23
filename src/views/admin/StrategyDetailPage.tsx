@@ -3,8 +3,8 @@
 /**
  * src/views/admin/StrategyDetailPage.tsx
  *
- * Renders the shared StrategyDetailLayout with the appropriate tab content.
- * The `tab` prop is passed by the Next.js page based on the URL segment.
+ * Legacy wrapper for strategy detail page.
+ * Strategy detail sub-routes are now handled by Next.js persistent layout at app/admin/strategies/[strategyId]/layout.tsx.
  */
 
 import StrategyDetailLayout from '@/src/components/admin/StrategyDetailLayout'
@@ -16,7 +16,7 @@ import StrategyAnalysisTab from './StrategyAnalysisTab'
 import StrategySettingsTab from './StrategySettingsTab'
 import StrategyLogsTab from './StrategyLogsTab'
 import StrategyLtpTab from './StrategyLtpTab'
-import { useAdminStrategy } from '@/src/hooks/admin/useAdminStrategy'
+import { StrategyProvider } from '@/src/context/StrategyContext'
 
 export type StrategyTab = 'overview' | 'holdings' | 'trades' | 'logs' | 'universe' | 'ltp' | 'analysis' | 'settings'
 
@@ -26,31 +26,18 @@ interface Props {
 }
 
 export default function StrategyDetailPage({ strategyId, tab }: Props) {
-    const { strategy, status, saving, handleStatusChange, handleToggleActive, handleDelete, handleSave } = useAdminStrategy(strategyId)
-
     return (
-        <StrategyDetailLayout
-            strategy={strategy}
-            loading={status === 'loading'}
-            error={status === 'error' || status === 'not_found'}
-            onStatusChange={handleStatusChange}
-        >
-            {tab === 'overview'  && strategy && <StrategyOverviewTab strategy={strategy} />}
-            {tab === 'holdings' && <StrategyHoldingsTab strategyId={strategyId} />}
-            {tab === 'trades' && <StrategyTradesTab strategyId={strategyId} />}
-            {tab === 'universe' && strategy && <StrategyUniverseTab strategy={strategy} />}
-            {tab === 'ltp' && <StrategyLtpTab strategyId={strategyId} />}
-            {tab === 'analysis' && <StrategyAnalysisTab strategyId={strategyId} />}
-            {tab === 'settings' && strategy && (
-                <StrategySettingsTab 
-                    strategy={strategy} 
-                    onSave={handleSave} 
-                    saving={saving} 
-                    onToggleActive={handleToggleActive}
-                    onDelete={handleDelete}
-                />
-            )}
-            {tab === 'logs'     && <StrategyLogsTab strategyId={strategyId} />}
-        </StrategyDetailLayout>
+        <StrategyProvider strategyId={strategyId}>
+            <StrategyDetailLayout>
+                {tab === 'overview' && <StrategyOverviewTab />}
+                {tab === 'holdings' && <StrategyHoldingsTab strategyId={strategyId} />}
+                {tab === 'trades' && <StrategyTradesTab strategyId={strategyId} />}
+                {tab === 'universe' && <StrategyUniverseTab />}
+                {tab === 'ltp' && <StrategyLtpTab strategyId={strategyId} />}
+                {tab === 'analysis' && <StrategyAnalysisTab strategyId={strategyId} />}
+                {tab === 'settings' && <StrategySettingsTab />}
+                {tab === 'logs' && <StrategyLogsTab strategyId={strategyId} />}
+            </StrategyDetailLayout>
+        </StrategyProvider>
     )
 }

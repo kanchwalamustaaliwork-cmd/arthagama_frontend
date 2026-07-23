@@ -29,9 +29,12 @@ export default function StrategyTabs({ strategyId }: StrategyTabsProps) {
     return (
         <div style={{ display: 'flex', gap: '4px', borderBottom: '1px solid var(--db-border)', paddingBottom: '0' }}>
             {tabs.map(tab => {
+                const isSettingsTab = tab.href.endsWith('/settings')
                 const isActive = tab.href === `/admin/strategies/${strategyId}`
                     ? pathname === tab.href
-                    : pathname.startsWith(tab.href)
+                    : isSettingsTab
+                        ? (pathname.startsWith(tab.href) || pathname.startsWith(`/admin/strategies/${strategyId}/edit`))
+                        : pathname.startsWith(tab.href)
 
                 return (
                     <Link

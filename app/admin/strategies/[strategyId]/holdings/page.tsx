@@ -1,7 +1,7 @@
 'use client'
 
 import { use } from 'react'
-import StrategyDetailPage from '@/src/views/admin/StrategyDetailPage'
+import StrategyHoldingsTab from '@/src/views/admin/StrategyHoldingsTab'
 
 interface Props {
     params: Promise<{ strategyId: string }>
@@ -9,5 +9,5 @@ interface Props {
 
 export default function StrategyHoldingsPage({ params }: Props) {
     const { strategyId } = use(params)
-    return <StrategyDetailPage strategyId={strategyId} tab="holdings" />
+    return <StrategyHoldingsTab strategyId={strategyId} />
 }

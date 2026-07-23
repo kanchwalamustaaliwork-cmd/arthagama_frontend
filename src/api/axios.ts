@@ -88,8 +88,13 @@ axiosInstance.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
 
+        const isAuthEntryPoint =
+            originalRequest.url?.includes('/auth/login') ||
+            originalRequest.url?.includes('/auth/signup') ||
+            originalRequest.url?.includes('/auth/refresh')
+
         // Only attempt one refresh per request; skip non-401 errors
-        if (error.response?.status !== 401 || originalRequest._retry || originalRequest.url?.includes("/auth/refresh")) {
+        if (error.response?.status !== 401 || originalRequest._retry || isAuthEntryPoint) {
             return Promise.reject(error)
         }
 
