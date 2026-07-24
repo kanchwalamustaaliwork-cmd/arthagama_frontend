@@ -7,8 +7,8 @@ export interface RawHolding {
     symbol: string
     quantity: number
     avg_buy_price: number
-    STOPLOSS_TYPE: string | null
-    first_exit: boolean
+    // STOPLOSS_TYPE: string | null
+    // first_exit: boolean
     initial_quantity: number
     buying_date: string
     strategy_id: string
@@ -29,8 +29,8 @@ const COLUMNS = [
     'Qty',
     'Initial Qty',
     'Avg Buy Price',
-    'Stoploss Type',
-    'First Exit',
+    // 'Stoploss Type',
+    // 'First Exit',
     'Buy Date',
     'Duration',
 ]
@@ -61,14 +61,14 @@ export default function HoldingsTable({ holdings, emptyMessage = 'No holdings fo
                             <td style={{ fontWeight: 500 }}>{h.quantity.toLocaleString('en-IN')}</td>
                             <td>{h.initial_quantity.toLocaleString('en-IN')}</td>
                             <td>₹{h.avg_buy_price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                            <td>
+                            {/* <td>
                                 {h.STOPLOSS_TYPE ? h.STOPLOSS_TYPE : <span style={{ color: 'var(--db-text-muted)' }}>—</span>}
                             </td>
                             <td>
                                 <Badge variant={h.first_exit ? 'success' : 'neutral'} dot>
                                     {h.first_exit ? 'Yes' : 'No'}
                                 </Badge>
-                            </td>
+                            </td> */}
                             <td style={{ whiteSpace: 'nowrap' }}>
                                 {new Date(h.buying_date).toLocaleDateString('en-IN')}
                             </td>

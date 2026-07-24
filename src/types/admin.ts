@@ -87,7 +87,6 @@ export interface RawHolding {
     quantity: number
     avg_buy_price: number
     STOPLOSS_TYPE: string | null
-    first_exit: boolean
     initial_quantity: number
     buying_date: string
     strategy_id: string
