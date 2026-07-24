@@ -265,26 +265,48 @@ export default function SignUpPage() {
 
             {/* Phone Number Field */}
             <div className="space-y-1.5">
-              <label htmlFor="phoneNumber" className="block text-xs uppercase tracking-wider text-[hsl(var(--mint)/0.7)] font-medium">
+              <label
+                htmlFor="phoneNumber"
+                className="block text-xs uppercase tracking-wider text-[hsl(var(--mint)/0.7)] font-medium"
+              >
                 Phone Number
               </label>
+
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[hsl(var(--mint)/0.4)] pointer-events-none">
                   <FaPhone className="w-4 h-4" />
                 </span>
+
                 <input
                   id="phoneNumber"
                   type="tel"
                   value={phoneNumber}
                   onChange={(e) => {
-                    setPhoneNumber(e.target.value)
-                    if (errors.phoneNumber) setErrors(prev => ({ ...prev, phoneNumber: undefined }))
+                    let value = e.target.value;
+
+                    // Keep only digits and +
+                    value = value.replace(/[^\d+]/g, "");
+
+                    // Allow only one + and only at the beginning
+                    if (value.includes("+")) {
+                      value = "+" + value.replace(/\+/g, "").replace(/^\+/, "");
+                    }
+
+                    setPhoneNumber(value);
+
+                    if (errors.phoneNumber) {
+                      setErrors((prev) => ({
+                        ...prev,
+                        phoneNumber: undefined,
+                      }));
+                    }
                   }}
                   disabled={isLoading}
-                  placeholder="+1234567890"
+                  placeholder="+919876543210"
                   className={inputClass(!!errors.phoneNumber)}
                 />
               </div>
+
               <ErrorMsg msg={errors.phoneNumber} />
             </div>
 
