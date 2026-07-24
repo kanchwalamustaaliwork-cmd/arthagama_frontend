@@ -58,16 +58,16 @@ export interface AdminStrategy {
     universeType: 'default' | 'custom'
     instruments: string
     category: string // 'Options' | 'Futures' | 'Equity'
-    
+
     // Auditing / Ownership Info
     ownerAdminId: string
     ownerAdminName: string
     ownerAdminEmail: string
-    
+
     createdByAdminId: string
     createdByAdminName: string
     createdByAdminEmail: string
-    
+
     lastModifiedByAdminId: string
     lastModifiedByAdminName: string
     lastModifiedByAdminEmail: string
@@ -76,7 +76,7 @@ export interface AdminStrategy {
 
     createdAt: string          // ISO-8601
     updatedAt: string          // ISO-8601
-    
+
     metrics?: StrategyMetrics
 }
 
@@ -124,6 +124,7 @@ export interface LTPRecord {
     ticker: string
     latestPrice: number
     timestamp: string
+    isHolding: boolean
 }
 
 export interface TradeQueryParams {
