@@ -86,10 +86,11 @@ export interface RawHolding {
     symbol: string
     quantity: number
     avg_buy_price: number
-    STOPLOSS_TYPE: string | null
     initial_quantity: number
     buying_date: string
     strategy_id: string
+    // STOPLOSS_TYPE: string | null
+    // first_exit: boolean
 }
 
 export type AdminHolding = RawHolding
