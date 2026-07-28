@@ -4,12 +4,14 @@ import HoldingsTable from '@/src/components/admin/HoldingsTable'
 import LoadingState from '@/src/components/dashboard/ui/LoadingState'
 import EmptyState from '@/src/components/dashboard/ui/EmptyState'
 import { useStrategyHoldings } from '@/src/hooks/admin/useStrategyHoldings'
+import { useStrategyLTP } from '@/src/hooks/admin/useStrategyLTP'
 import { Briefcase } from 'lucide-react'
 
 interface Props { strategyId: string }
 
 export default function StrategyHoldingsTab({ strategyId }: Props) {
     const { holdings, status } = useStrategyHoldings(strategyId)
+    const { ltpRecords } = useStrategyLTP(strategyId)
 
     if (status === 'loading') return <LoadingState variant="skeleton-table" />
 
@@ -23,7 +25,7 @@ export default function StrategyHoldingsTab({ strategyId }: Props) {
                 <h2 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--db-text)' }}>Current Holdings</h2>
                 <span style={{ fontSize: '12px', color: 'var(--db-text-muted)' }}>{holdings.length} position{holdings.length !== 1 ? 's' : ''}</span>
             </div>
-            <HoldingsTable holdings={holdings} />
+            <HoldingsTable holdings={holdings} ltpMap={ltpRecords} />
         </div>
     )
 }

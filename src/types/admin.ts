@@ -138,6 +138,7 @@ export interface LTPRecord {
     latestPrice: number
     timestamp: string
     isHolding: boolean
+    pnl?: number | null
 }
 
 export interface TradeQueryParams {
