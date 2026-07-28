@@ -40,6 +40,8 @@ const toFormData = (strategy: AdminStrategy): StrategyEditFormData => ({
     universeType: getInitialUniverseType(strategy.category || 'Options', strategy.universeType),
     instruments: strategy.instruments || '',
     category: strategy.category || 'Options',
+    initialCapital: strategy.initialCapital ?? 0,
+    riskFreeRate: strategy.riskFreeRate ?? 0.06,
     isActive: strategy.isActive,
     status: strategy.status,
     assignedUserId: strategy.assignedUserId,
@@ -61,7 +63,7 @@ export default function StrategySettingsTab({
 
     const router = useRouter()
     const { form, setForm, set, setIsActive } = useStrategyForm(strategy ? toFormData(strategy) : {
-        name: '', description: '', summary: '', databaseName: '', universeName: '', universeType: 'default', instruments: '', category: 'Options', isActive: false, status: 'draft', assignedUserId: null
+        name: '', description: '', summary: '', databaseName: '', universeName: '', universeType: 'default', instruments: '', category: 'Options', initialCapital: 0, riskFreeRate: 0.06, isActive: false, status: 'draft', assignedUserId: null
     })
     const [saved, setSaved] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)

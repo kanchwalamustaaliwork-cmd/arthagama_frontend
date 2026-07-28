@@ -29,6 +29,8 @@ export default function StrategyCreatePage() {
         universeType: 'custom', // category default Options requires custom
         instruments: '',
         category: 'Options',
+        initialCapital: 1000000,
+        riskFreeRate: 0.06,
         isActive: true,
         status: 'draft',
         assignedUserId: null,

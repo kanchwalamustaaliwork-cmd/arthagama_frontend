@@ -28,18 +28,27 @@ export interface AdminCustomer {
 // ─── Strategy Metrics ─────────────────────────────────────────────────────────
 
 export interface StrategyMetrics {
-    id: string
+    id?: string
     strategyId: string
-    totalReturn: number
+    createdAt?: string
+    updatedAt?: string
+
+    // Static Metrics (cached)
     totalPnL: number
-    todayPnL: number
-    activeHoldings: number
+    todayPnLRealized: number
+    totalTrades: number
+    winningTrades: number
+    losingTrades: number
     winRate: number
     sharpeRatio: number
     averageHoldingTime: number
     lastTradeTimestamp: string | null
-    createdAt: string
-    updatedAt: string
+
+    // Dynamic Metrics (live)
+    portfolioValue: number
+    unrealizedPnL: number
+    activeHoldings: number
+    totalReturn: number
 }
 
 // ─── Strategy (Admin view) ────────────────────────────────────────────────────
@@ -58,6 +67,10 @@ export interface AdminStrategy {
     universeType: 'default' | 'custom'
     instruments: string
     category: string // 'Options' | 'Futures' | 'Equity'
+
+    // Risk / Capital Configuration
+    initialCapital?: number
+    riskFreeRate?: number
 
     // Auditing / Ownership Info
     ownerAdminId: string
@@ -210,6 +223,8 @@ export interface StrategyEditFormData {
     universeType: 'default' | 'custom'
     instruments: string
     category: string // 'Options' | 'Futures' | 'Equity'
+    initialCapital: number
+    riskFreeRate: number
     isActive: boolean
     status: AdminStrategyStatus
     assignedUserId: string | null

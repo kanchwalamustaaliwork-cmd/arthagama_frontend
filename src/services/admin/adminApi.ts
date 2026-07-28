@@ -42,11 +42,6 @@ import {
 import {
     ADMIN_PLATFORM_STATS,
     MOCK_CUSTOMERS,
-    MOCK_ADMIN_STRATEGIES,
-    MOCK_STRATEGY_HOLDINGS,
-    MOCK_STRATEGY_LOGS,
-    MOCK_STRATEGY_ANALYSIS,
-    MOCK_STRATEGY_TRADES,
 } from '@/src/data/admin/admin-mock'
 
 // Simulate network delay for realistic loading states
@@ -261,7 +256,7 @@ export async function fetchStrategyAnalysis(strategyId: string): Promise<Strateg
         const metrics = strategy.metrics || {
             totalReturn: 0,
             totalPnL: 0,
-            todayPnL: 0,
+            todayPnLRealized: 0,
             activeHoldings: 0,
             winRate: 0,
             sharpeRatio: 0,
@@ -290,8 +285,39 @@ export async function fetchStrategyAnalysis(strategyId: string): Promise<Strateg
 // ─── Metrics ──────────────────────────────────────────────────────────────────
 
 export async function fetchStrategyMetrics(strategyId: string): Promise<StrategyMetrics> {
-    const response = await apiGet<StrategyMetrics>(`/admin/strategies/${strategyId}/metrics`)
-    return response.data
+    const response = await apiGet<Record<string, any>>(`/admin/strategies/${strategyId}/metrics`)
+    const raw = response.data || {}
+    return {
+        id: raw.id,
+        strategyId: raw.strategy_id ?? raw.strategyId ?? strategyId,
+        createdAt: raw.created_at ?? raw.createdAt,
+        updatedAt: raw.updated_at ?? raw.updatedAt,
+
+        // Static Metrics
+        totalPnL: Number(raw.total_pnl ?? raw.totalPnL ?? 0),
+        todayPnLRealized: Number(raw.today_pnl_realized ?? raw.todayPnLRealized ?? 0),
+        winRate: Number(raw.win_rate ?? raw.winRate ?? 0),
+        sharpeRatio: Number(raw.sharpe_ratio ?? raw.sharpeRatio ?? 0),
+        averageHoldingTime: Number(raw.average_holding_time ?? raw.averageHoldingTime ?? 0),
+        lastTradeTimestamp: raw.last_trade_timestamp ?? raw.lastTradeTimestamp ?? null,
+        totalTrades: Number(raw.total_trades ?? raw.totalTrades ?? 0),
+        winningTrades: Number(raw.winning_trades ?? raw.winningTrades ?? 0),
+        losingTrades: Number(raw.losing_trades ?? raw.losingTrades ?? 0),
+
+        // Dynamic Metrics
+        portfolioValue: Number(raw.portfolio_value ?? raw.portfolioValue ?? 0),
+        unrealizedPnL: Number(raw.unrealized_pnl ?? raw.unrealizedPnL ?? 0),
+        activeHoldings: Number(raw.active_holdings ?? raw.activeHoldings ?? 0),
+        totalReturn: Number(raw.total_return ?? raw.totalReturn ?? 0),
+    }
+}
+
+export async function getStrategyMetrics(strategyId: string): Promise<StrategyMetrics> {
+    return fetchStrategyMetrics(strategyId)
+}
+
+export async function recalculateStrategyMetrics(strategyId: string): Promise<void> {
+    await apiPost(`/admin/strategies/${strategyId}/metrics/recalculate`)
 }
 
 export async function updateStrategyMetrics(strategyId: string, data: Partial<StrategyMetrics>): Promise<StrategyMetrics> {

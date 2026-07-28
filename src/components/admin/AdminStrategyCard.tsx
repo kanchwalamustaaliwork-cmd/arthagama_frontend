@@ -35,13 +35,20 @@ export default function AdminStrategyCard({ strategy, onStatusChange, onToggleAc
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
     const metrics = strategy.metrics || {
+        strategyId: strategy.id,
         totalReturn: 0,
         totalPnL: 0,
-        todayPnL: 0,
+        todayPnLRealized: 0,
+        portfolioValue: 0,
+        unrealizedPnL: 0,
         activeHoldings: 0,
+        totalTrades: 0,
+        winningTrades: 0,
+        losingTrades: 0,
         winRate: 0,
         sharpeRatio: 0,
         averageHoldingTime: 0,
+        lastTradeTimestamp: null,
     }
     const netPnl = metrics.totalPnL
     const isProfit = netPnl >= 0
@@ -132,12 +139,12 @@ export default function AdminStrategyCard({ strategy, onStatusChange, onToggleAc
             {/* Metrics grid - 2 rows x 3 columns */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                 {[
-                    { label: 'Net P&L', value: fmtCurrency(netPnl), color: isProfit ? 'var(--db-profit)' : 'var(--db-loss)' },
-                    { label: 'Return', value: `${metrics.totalReturn?.toFixed(1)}%`, color: metrics.totalReturn >= 0 ? 'var(--db-profit)' : 'var(--db-loss)' },
+                    { label: 'Total Realized P&L', value: fmtCurrency(netPnl), color: isProfit ? 'var(--db-profit)' : 'var(--db-loss)' },
+                    { label: 'Total Return (%)', value: `${metrics.totalReturn?.toFixed(1)}%`, color: metrics.totalReturn >= 0 ? 'var(--db-profit)' : 'var(--db-loss)' },
                     { label: 'Win Rate', value: `${metrics.winRate?.toFixed(1)}%`, color: 'var(--db-text)' },
-                    { label: 'Holdings', value: String(metrics.activeHoldings), color: 'var(--db-text)' },
+                    { label: 'Active Holdings', value: String(metrics.activeHoldings), color: 'var(--db-text)' },
                     { label: 'Sharpe Ratio', value: metrics.sharpeRatio?.toFixed(2), color: 'var(--db-text)' },
-                    { label: 'Today\'s P&L', value: fmtCurrency(metrics.todayPnL), color: metrics.todayPnL >= 0 ? 'var(--db-profit)' : 'var(--db-loss)' }
+                    { label: 'Today\'s Realized P&L', value: fmtCurrency(metrics.todayPnLRealized ?? 0), color: (metrics.todayPnLRealized ?? 0) >= 0 ? 'var(--db-profit)' : 'var(--db-loss)' }
                 ].map(m => (
                     <div key={m.label} style={{ background: 'var(--db-elevated)', borderRadius: '8px', padding: '6px 8px', border: '1px solid var(--db-border)' }}>
                         <div style={{ fontSize: '9px', color: 'var(--db-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.label}</div>

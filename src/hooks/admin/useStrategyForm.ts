@@ -60,6 +60,14 @@ export function buildStrategyPayload(
         payload.instruments = '' // clear instruments for default universe
     }
 
+    if (isNaN(payload.initialCapital) || payload.initialCapital < 0) {
+        return { error: 'Initial Capital must be a valid non-negative number' }
+    }
+
+    if (isNaN(payload.riskFreeRate) || payload.riskFreeRate < 0) {
+        return { error: 'Risk-Free Rate must be a valid non-negative number' }
+    }
+
     return { payload }
 }
 
@@ -67,7 +75,15 @@ export function useStrategyForm(initial: StrategyEditFormData) {
     const [form, setForm] = useState<StrategyEditFormData>(initial)
 
     const set = (k: keyof StrategyEditFormData) => (e: FieldEvent) => {
-        const val = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value
+        let val: unknown
+        if (e.target.type === 'checkbox') {
+            val = (e.target as HTMLInputElement).checked
+        } else if (e.target.type === 'number') {
+            const rawVal = e.target.value
+            val = rawVal === '' ? 0 : parseFloat(rawVal)
+        } else {
+            val = e.target.value
+        }
         setForm(prev => applyFieldSideEffects(prev, k, val as never))
     }
 

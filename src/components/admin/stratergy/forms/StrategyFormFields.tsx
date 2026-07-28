@@ -138,6 +138,40 @@ export default function StrategyFormFields({
 
             <div style={gridTwoColStyle()}>
                 <div>
+                    <label style={labelStyle}>Initial Capital (₹)</label>
+                    <input
+                        type="number"
+                        step="1000"
+                        min="0"
+                        value={form.initialCapital}
+                        onChange={set('initialCapital')}
+                        placeholder="e.g. 1000000"
+                        style={inputStyle}
+                    />
+                    <span style={{ fontSize: '11px', color: 'var(--db-text-muted)', display: 'block', marginTop: '4px' }}>
+                        Used by Metrics service to compute Total Return %
+                    </span>
+                </div>
+                <div>
+                    <label style={labelStyle}>Risk-Free Rate (Annualized)</label>
+                    <input
+                        type="number"
+                        step="0.001"
+                        min="0"
+                        max="1"
+                        value={form.riskFreeRate}
+                        onChange={set('riskFreeRate')}
+                        placeholder="e.g. 0.06 for 6%"
+                        style={inputStyle}
+                    />
+                    <span style={{ fontSize: '11px', color: 'var(--db-text-muted)', display: 'block', marginTop: '4px' }}>
+                        Used by Metrics service to compute Sharpe Ratio (e.g. 0.06 = 6%)
+                    </span>
+                </div>
+            </div>
+
+            <div style={gridTwoColStyle()}>
+                <div>
                     <label style={labelStyle}>Status</label>
                     <select value={form.status} onChange={set('status')} style={selectStyle}>
                         {statusOptions.map(opt => (
