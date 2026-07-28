@@ -105,6 +105,25 @@ export const MOCK_CUSTOMERS: AdminCustomer[] = [
 ]
 
 
+// ─── Logs ─────────────────────────────────────────────────────────────────────
+
+export const MOCK_STRATEGY_LOGS: AdminLog[] = [
+    { id: 'l001', timestamp: '2026-07-15T09:15:34Z', eventType: 'order_executed', description: 'BUY 50 RELIANCE @ ₹2,847.00 executed successfully', status: 'success', strategyAction: 'ENTRY', strategyId: 'as001' },
+    { id: 'l002', timestamp: '2026-07-15T09:10:12Z', eventType: 'signal_generated', description: 'BUY signal generated for RELIANCE — EMA crossover + RSI(58) above threshold', status: 'success', strategyAction: 'SIGNAL', strategyId: 'as001' },
+    { id: 'l003', timestamp: '2026-07-14T15:45:00Z', eventType: 'order_executed', description: 'SELL 40 TCS @ ₹3,540.00 — Target hit (+8.2%)', status: 'success', strategyAction: 'EXIT', strategyId: 'as001' },
+    { id: 'l004', timestamp: '2026-07-14T10:30:22Z', eventType: 'order_placed', description: 'SELL order placed for BAJFINANCE — Stop-loss triggered at ₹6,540', status: 'success', strategyAction: 'STOP_LOSS', strategyId: 'as001' },
+    { id: 'l005', timestamp: '2026-07-13T14:20:00Z', eventType: 'error', description: 'Order rejected: WIPRO — Insufficient position size for current allocation', status: 'failed', strategyAction: 'ENTRY', strategyId: 'as001' },
+    { id: 'l006', timestamp: '2026-07-13T09:05:00Z', eventType: 'strategy_started', description: 'Strategy resumed after 2-day pause — all parameters validated', status: 'success', strategyAction: 'RESUME', strategyId: 'as001' },
+    { id: 'l007', timestamp: '2026-07-11T16:30:00Z', eventType: 'strategy_stopped', description: 'Strategy paused by user — market volatility threshold exceeded', status: 'warning', strategyAction: 'PAUSE', strategyId: 'as001' },
+    { id: 'l008', timestamp: '2026-07-11T09:45:00Z', eventType: 'order_executed', description: 'BUY 80 HDFCBANK @ ₹1,580.00 executed successfully', status: 'success', strategyAction: 'ENTRY', strategyId: 'as001' },
+    { id: 'l009', timestamp: '2026-07-10T11:00:00Z', eventType: 'info', description: 'Portfolio rebalancing check completed — no adjustments required', status: 'success', strategyAction: 'REBALANCE', strategyId: 'as001' },
+    { id: 'l010', timestamp: '2026-07-09T09:30:00Z', eventType: 'order_cancelled', description: 'Buy order for SUNPHARMA cancelled — price limit not met within session', status: 'warning', strategyAction: 'CANCEL', strategyId: 'as001' },
+    { id: 'l011', timestamp: '2026-07-08T09:20:00Z', eventType: 'order_executed', description: 'BUY 100 ICICIBANK @ ₹1,095.00 executed successfully', status: 'success', strategyAction: 'ENTRY', strategyId: 'as001' },
+    { id: 'l012', timestamp: '2026-07-07T14:15:00Z', eventType: 'signal_generated', description: 'SELL signal for TCS — RSI divergence detected on 4H chart', status: 'success', strategyAction: 'SIGNAL', strategyId: 'as001' },
+]
+
+
+
 // ─── Admin Navigation ─────────────────────────────────────────────────────────
 
 export const ADMIN_NAV_ITEMS = [
