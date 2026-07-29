@@ -57,7 +57,7 @@ export default function TerminalLogViewer({
                 onSearchChange={onSearchChange}
             />
 
-            <div className="terminal-window">
+            <div className="terminal-window" data-lenis-prevent>
                 <TerminalHeader />
                 <TerminalBody
                     logs={logs}
