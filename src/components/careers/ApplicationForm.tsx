@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Send } from 'lucide-react'
 import type { ApplicationPayload, ApplicationFormProps } from '../../types/careers'
-import { submitApplication } from '../../services/careersApi'
+import { submitApplication } from '../../lib/cms/careers'
 import { BRAND_ON_LIGHT } from '@/src/utils/brand'
 
 const FIELD_CLASS =

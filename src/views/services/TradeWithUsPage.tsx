@@ -12,7 +12,15 @@ const FEATURES = [
     { icon: TrendingUp, title: 'Transparent reporting', body: 'Live performance dashboards, updated continuously, always visible to you.' },
 ]
 
-export default function TradeWithUsPage() {
+import type { CMSServicePage } from '../../types/cms'
+
+interface TradeWithUsPageProps {
+    cmsService?: CMSServicePage | null
+}
+
+export default function TradeWithUsPage({ cmsService }: TradeWithUsPageProps) {
+    const title = cmsService?.hero?.title ?? cmsService?.title ?? 'Trade'
+    const subtitle = cmsService?.hero?.subtitle ?? cmsService?.shortDescription ?? 'Let our systematic strategies trade on your behalf through a fully automated, broker-integrated execution pipeline — while you stay in full view of every position.'
     return (
         <div className="relative min-h-screen w-full overflow-hidden pb-24 pt-32 sm:pt-36">
             <div className="mx-auto max-w-[1100px] px-5 sm:px-6">

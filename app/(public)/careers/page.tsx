@@ -1,3 +1,7 @@
-import CareersPage from '@/src/views/CareersPage'
+import { getJobs } from '@/src/lib/cms/careers'
+import CareersPageView from '@/src/views/CareersPage'
 
-export default CareersPage
+export default async function CareersPage() {
+  const initialJobs = await getJobs()
+  return <CareersPageView initialJobs={initialJobs} />
+}

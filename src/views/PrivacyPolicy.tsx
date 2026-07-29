@@ -2,15 +2,29 @@
 
 import LegalPageLayout from '../components/legal/LegalPageLayout'
 import { privacyPolicy } from '../data/legal'
+import type { CMSLegalPage } from '../types/cms'
 
-export default function PrivacyPolicyPage() {
-    return (
-        <LegalPageLayout
-            eyebrow="Legal"
-            title="Privacy Policy"
-            lastUpdated="July 1, 2026"
-            intro="How Arthagama collects, uses, and protects information across our website and trading services."
-            sections={privacyPolicy}
-        />
-    )
+interface PrivacyPolicyPageProps {
+  cmsLegal?: CMSLegalPage | null
+}
+
+export default function PrivacyPolicyPage({ cmsLegal }: PrivacyPolicyPageProps) {
+  const title = cmsLegal?.title ?? 'Privacy Policy'
+  const lastUpdated = cmsLegal?.lastUpdated
+    ? new Date(cmsLegal.lastUpdated).toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    : 'July 1, 2026'
+
+  return (
+    <LegalPageLayout
+      eyebrow="Legal"
+      title={title}
+      lastUpdated={lastUpdated}
+      intro="How Arthagama collects, uses, and protects information across our website and trading services."
+      sections={privacyPolicy}
+    />
+  )
 }

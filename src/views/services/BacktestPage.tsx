@@ -28,7 +28,15 @@ function StatCounter({ target, decimals, label, suffix }: (typeof STATS)[number]
 
 const CHART_PATH = 'M0,140 C40,130 60,110 90,115 C130,120 150,80 190,85 C230,90 250,50 290,55 C330,60 350,20 400,15'
 
-export default function BacktestPage() {
+import type { CMSServicePage } from '../../types/cms'
+
+interface BacktestPageProps {
+    cmsService?: CMSServicePage | null
+}
+
+export default function BacktestPage({ cmsService }: BacktestPageProps) {
+    const title = cmsService?.hero?.title ?? cmsService?.title ?? 'Backtest your'
+    const subtitle = cmsService?.hero?.subtitle ?? cmsService?.shortDescription ?? "Before a strategy ever touches live capital, it's run against years of historical data — cost-aware, slippage-modeled, and stress-tested across market regimes."
     return (
         <div className="relative min-h-screen w-full pb-24 pt-32 sm:pt-36">
             <div className="mx-auto max-w-[1000px] px-5 sm:px-6">
@@ -41,10 +49,10 @@ export default function BacktestPage() {
                         Service
                     </span>
                     <h1 className="text-shadow-soft mb-5 max-w-xl font-body text-4xl font-light leading-[1.1] text-[#EAF1EC] sm:text-5xl">
-                        Backtest your <em className="font-display italic">edge</em>
+                        {title} <em className="font-display italic">edge</em>
                     </h1>
                     <p className="text-shadow-soft max-w-lg text-sm leading-relaxed text-[#DCE7E1]/85 sm:text-base">
-                        Before a strategy ever touches live capital, it's run against years of historical data — cost-aware, slippage-modeled, and stress-tested across market regimes.
+                        {subtitle}
                     </p>
                 </motion.div>
 

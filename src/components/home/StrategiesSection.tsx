@@ -3,8 +3,16 @@ import { motion } from 'framer-motion'
 import StrategyCard from '../ui/StrategyCard'
 import { viewMotion } from '../../constans/animation'
 import { STRATEGIES } from '../../data/stratergy'
+import type { CMSHomePage } from '../../types/cms'
 
-export default function StrategiesSection() {
+interface StrategiesSectionProps {
+  cmsData?: CMSHomePage['strategiesSection'] | null
+}
+
+export default function StrategiesSection({ cmsData }: StrategiesSectionProps) {
+  const heading = cmsData?.heading ?? 'Strategies'
+  const headingBold = 'Deployed'
+  const description = cmsData?.description ?? 'Research-driven systematic modules running continuously across global markets.'
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   return (
@@ -16,10 +24,10 @@ export default function StrategiesSection() {
         {/* Header — slide up reveal */}
         <motion.div className="flex flex-col mb-10 sm:mb-12 md:mb-16" {...viewMotion}>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-body font-light text-[#EAF1EC]">
-            Strategies <em className=" font-bold text-[#EAF1EC]">Deployed</em>
+            {heading} <em className=" font-bold text-[#EAF1EC]">{headingBold}</em>
           </h2>
           <p className="text-sm text-[#DCE7E1]/85 mt-3 max-w-sm">
-            Research-driven systematic modules running continuously across global markets.
+            {description}
           </p>
         </motion.div>
 

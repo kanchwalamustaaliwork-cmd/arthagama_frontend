@@ -2,6 +2,11 @@ import { useMemo } from 'react'
 import { motion, type Transition } from 'framer-motion'
 import { easing } from '../../constans/animation'
 import { formatBrandWord, BRAND_ON_LIGHT } from '@/src/utils/brand'
+import type { CMSHomePage } from '../../types/cms'
+
+interface WhatWeDoSectionProps {
+  cmsData?: CMSHomePage['whatWeDo'] | null
+}
 
 // ─── Shared motion presets ───────────────────────────────────────────────────
 const sectionTransition: Transition = { duration: 1, ease: easing }
@@ -102,7 +107,9 @@ function BlurRevealParagraph({ text }: { text: string }) {
   )
 }
 
-export default function WhatWeDoSection() {
+export default function WhatWeDoSection({ cmsData }: WhatWeDoSectionProps) {
+  const heading = cmsData?.heading ?? 'What we do'
+  const description = cmsData?.subheading ?? 'Arthagama is an algorithmic trading firm based in Mumbai that researches, develops, and deploys systematic trading strategies using technology, quantitative analysis, and market data. We combine automation, disciplined execution, and robust risk management to identify opportunities across financial markets and generate sustainable, data-driven returns.'
   return (
     <section id="about" className="relative py-16 sm:py-20 md:py-24 overflow-hidden">
       {/* ---------------- Ambient aurora blobs ---------------- */}
@@ -138,7 +145,7 @@ export default function WhatWeDoSection() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 md:gap-16 items-start">
           {/* Left Column: Heading */}
           <motion.div className="md:col-span-5" {...sectionMotion}>
-            <MaskRevealHeading text="What we do" />
+          <MaskRevealHeading text={heading} />
           </motion.div>
 
           {/* Right Column: Description Text (mint glass card) */}
@@ -149,7 +156,7 @@ export default function WhatWeDoSection() {
           >
             <div className="mint-card rounded-3xl p-6 sm:p-8">
               <BlurRevealParagraph
-                text="Arthagama is an algorithmic trading firm based in Mumbai that researches, develops, and deploys systematic trading strategies using technology, quantitative analysis, and market data. We combine automation, disciplined execution, and robust risk management to identify opportunities across financial markets and generate sustainable, data-driven returns."
+                text={description}
               />
             </div>
           </motion.div>

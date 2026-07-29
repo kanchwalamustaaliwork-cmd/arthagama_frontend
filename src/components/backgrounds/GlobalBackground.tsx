@@ -5,8 +5,13 @@ import { useRef } from 'react'
 const VIDEO_URL =
     'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260315_073750_51473149-4350-4920-ae24-c8214286f323.mp4'
 
-export default function GlobalBackground() {
+interface GlobalBackgroundProps {
+    videoUrl?: string | null
+}
+
+export default function GlobalBackground({ videoUrl }: GlobalBackgroundProps) {
     const videoRef = useRef<HTMLVideoElement>(null)
+    const activeVideoUrl = videoUrl || VIDEO_URL
 
     return (
         <div className="fixed inset-0 z-0 h-screen w-full overflow-hidden">
@@ -18,7 +23,7 @@ export default function GlobalBackground() {
                 playsInline
                 className="absolute inset-0 h-full w-full object-cover"
             >
-                <source src={VIDEO_URL} type="video/mp4" />
+                <source src={activeVideoUrl} type="video/mp4" />
             </video>
 
             {/* Teal tint over video to lock the palette */}

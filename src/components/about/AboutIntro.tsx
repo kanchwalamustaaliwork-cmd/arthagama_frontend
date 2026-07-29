@@ -69,7 +69,18 @@ function BlurParagraph({ text }: { text: string }) {
     )
 }
 
-export default function AboutIntro() {
+import type { CMSAboutPage } from '../../types/cms'
+
+interface AboutIntroProps {
+    cmsAbout?: CMSAboutPage['missionVision'] | null
+}
+
+export default function AboutIntro({ cmsAbout }: AboutIntroProps) {
+    const visionHeading = cmsAbout?.visionHeading ?? 'Our Vision'
+    const visionText = cmsAbout?.vision ?? `Arthagama was founded with a simple yet disciplined vision: to manage capital through systematic, rule-based investing driven by data, research, and technology rather than emotion. By developing and continuously refining quantitative trading strategies, we have built a strong foundation focused on consistency, risk management, and long-term performance.`
+    const missionHeading = cmsAbout?.missionHeading ?? 'Our Mission'
+    const missionText = cmsAbout?.mission ?? `Today, Arthagama partners with traders, investors, and institutions to transform their ideas into robust algorithmic trading solutions. We specialize in designing custom strategies tailored to each client's objectives, supported by comprehensive historical data, rigorous backtesting, and reliable server infrastructure for development, testing, and deployment. Our philosophy is straightforward—every strategy should be measurable, every decision should be data-driven, and every solution should be built with precision, transparency, and scalability at its core.`
+
     return (
         <section className="relative overflow-hidden px-4 py-16 sm:px-6 sm:py-20 md:px-10 md:py-24 lg:px-16">
             <div className="section-backing absolute inset-x-4 inset-y-6 -z-10 rounded-3xl sm:inset-x-6" />
@@ -97,21 +108,17 @@ export default function AboutIntro() {
                     {/* Vision */}
                     <motion.div variants={cardItem} className="mint-card rounded-3xl p-6 sm:p-8">
                         <p className="mb-3 text-xs uppercase tracking-[0.25em] text-[#1B3236]/70">
-                            Our Vision
+                            {visionHeading}
                         </p>
-                        <BlurParagraph
-                            text={`Arthagama was founded with a simple yet disciplined vision: to manage capital through systematic, rule-based investing driven by data, research, and technology rather than emotion. By developing and continuously refining quantitative trading strategies, we have built a strong foundation focused on consistency, risk management, and long-term performance.`}
-                        />
+                        <BlurParagraph text={visionText} />
                     </motion.div>
 
                     {/* Mission */}
                     <motion.div variants={cardItem} className="mint-card rounded-3xl p-6 sm:p-8">
                         <p className="mb-3 text-xs uppercase tracking-[0.25em] text-[#1B3236]/70">
-                            Our Mission
+                            {missionHeading}
                         </p>
-                        <BlurParagraph
-                            text={`Today, Arthagama partners with traders, investors, and institutions to transform their ideas into robust algorithmic trading solutions. We specialize in designing custom strategies tailored to each client's objectives, supported by comprehensive historical data, rigorous backtesting, and reliable server infrastructure for development, testing, and deployment. Our philosophy is straightforward—every strategy should be measurable, every decision should be data-driven, and every solution should be built with precision, transparency, and scalability at its core.`}
-                        />
+                        <BlurParagraph text={missionText} />
                     </motion.div>
                 </motion.div>
             </div>

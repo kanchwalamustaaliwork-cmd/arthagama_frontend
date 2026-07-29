@@ -13,7 +13,15 @@ const STEPS = [
     { title: 'Deploy & monitor', body: 'Once approved, it runs live with continuous monitoring and risk oversight from our team.' },
 ]
 
-export default function CustomStrategyBuilderPage() {
+import type { CMSServicePage } from '../../types/cms'
+
+interface CustomStrategyBuilderPageProps {
+    cmsService?: CMSServicePage | null
+}
+
+export default function CustomStrategyBuilderPage({ cmsService }: CustomStrategyBuilderPageProps) {
+    const title = cmsService?.hero?.title ?? cmsService?.title ?? 'Custom Strategy'
+    const subtitle = cmsService?.hero?.subtitle ?? cmsService?.shortDescription ?? 'A trading strategy designed around you — your capital, your risk tolerance, your market view — built and validated by our research desk from day one.'
     return (
         <div className="relative min-h-screen w-full pb-24 pt-32 sm:pt-36">
             <div className="mx-auto max-w-[900px] px-5 sm:px-6">

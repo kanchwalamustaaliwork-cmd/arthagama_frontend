@@ -1,14 +1,37 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { TEAM } from '../../data/team'
+import { TEAM, type TeamMember } from '../../data/team'
 import TeamCard from './TeamCard'
 import EmployeeProfile from './EmployeeProfile'
+import type { CMSTeamMember } from '../../types/cms'
 
 const easing: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 
-export default function TeamSection() {
+interface TeamSectionProps {
+  cmsTeam?: CMSTeamMember[]
+}
+
+/** Convert a CMS team member to the legacy TeamMember shape expected by TeamCard */
+function cmsToTeamMember(m: CMSTeamMember): TeamMember {
+  return {
+    id: m.id,
+    name: m.name,
+    designation: m.designation,
+    // photo is a CMSMedia object — use url, fallback to placeholder
+    photo: m.photo?.url ?? `https://i.pravatar.cc/500?u=${m.id}`,
+    linkedin: m.linkedin ?? 'https://linkedin.com/in/',
+    intro: m.intro ?? '',
+    specialization: m.specialization ?? '',
+    role: m.roleDescription ?? '',
+  }
+}
+export default function TeamSection({ cmsTeam }: TeamSectionProps) {
+    const members: TeamMember[] = cmsTeam && cmsTeam.length > 0
+        ? cmsTeam.map(cmsToTeamMember)
+        : TEAM
+
     const [selectedId, setSelectedId] = useState<string | null>(null)
-    const selectedMember = TEAM.find((m) => m.id === selectedId) ?? null
+    const selectedMember = members.find((m) => m.id === selectedId) ?? null
 
     return (
         <section className="relative overflow-hidden px-4 py-16 sm:px-6 sm:py-20 md:px-10 md:py-24 lg:px-16">
@@ -31,7 +54,7 @@ export default function TeamSection() {
                 </motion.div>
 
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-                    {TEAM.map((member, i) => (
+                    {members.map((member, i) => (
                         <TeamCard key={member.id} member={member} index={i} onSelect={() => setSelectedId(member.id)} />
                     ))}
                 </div>

@@ -9,7 +9,15 @@ import CompareChart from '../../components/services/compare/CompareChart'
 import MetricsComparisonTable from '../../components/services/compare/MetricsComparisonTable'
 import { easing } from '../../constans/animation'
 
-export default function CompareStocksPage() {
+import type { CMSServicePage } from '../../types/cms'
+
+interface CompareStocksPageProps {
+    cmsService?: CMSServicePage | null
+}
+
+export default function CompareStocksPage({ cmsService }: CompareStocksPageProps) {
+    const title = cmsService?.hero?.title ?? cmsService?.title ?? 'Compare'
+    const subtitle = cmsService?.hero?.subtitle ?? cmsService?.shortDescription ?? `Pick up to 3 stocks and compare their historical performance and key risk metrics side by side.`
     const { selected, availableResults, query, setQuery, addStock, removeStock, canAddMore, maxSelected } =
         useStockCompare()
 

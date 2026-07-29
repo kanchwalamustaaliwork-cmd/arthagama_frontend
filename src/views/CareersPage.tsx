@@ -9,11 +9,15 @@ import JobFilters from '../components/careers/JobFilters'
 import JobList from '../components/careers/JobList'
 import JobDetailDrawer from '../components/careers/JobDetailDrawer'
 
-export default function CareersPage() {
+interface CareersPageViewProps {
+  initialJobs?: JobListing[]
+}
+
+export default function CareersPage({ initialJobs }: CareersPageViewProps) {
   const {
     jobs, totalCount, status, retry,
     query, setQuery, typeFilter, setTypeFilter, deptFilter, setDeptFilter,
-  } = useJobs()
+  } = useJobs(initialJobs)
 
   const [selectedJob, setSelectedJob] = useState<JobListing | null>(null)
 

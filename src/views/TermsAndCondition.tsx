@@ -2,15 +2,29 @@
 
 import LegalPageLayout from '../components/legal/LegalPageLayout'
 import { termsAndConditions } from '../data/legal'
+import type { CMSLegalPage } from '../types/cms'
 
-export default function TermsConditionsPage() {
-    return (
-        <LegalPageLayout
-            eyebrow="Legal"
-            title="Terms & Conditions"
-            lastUpdated="July 1, 2026"
-            intro="The terms governing your access to Arthagama's website and systematic trading services."
-            sections={termsAndConditions}
-        />
-    )
+interface TermsAndConditionPageProps {
+  cmsLegal?: CMSLegalPage | null
+}
+
+export default function TermsAndConditionPage({ cmsLegal }: TermsAndConditionPageProps) {
+  const title = cmsLegal?.title ?? 'Terms & Conditions'
+  const lastUpdated = cmsLegal?.lastUpdated
+    ? new Date(cmsLegal.lastUpdated).toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    : 'July 1, 2026'
+
+  return (
+    <LegalPageLayout
+      eyebrow="Legal"
+      title={title}
+      lastUpdated={lastUpdated}
+      intro="The terms governing your access to Arthagama's website and systematic trading services."
+      sections={termsAndConditions}
+    />
+  )
 }

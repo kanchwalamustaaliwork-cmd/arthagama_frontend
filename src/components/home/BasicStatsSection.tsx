@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { motion, useInView, useMotionValue, useSpring, type Transition } from 'framer-motion'
 
+import type { CMSStatistic } from '../../types/cms'
+
 interface StatItem {
   value: number
   suffix: string
@@ -14,6 +16,11 @@ const STATS: StatItem[] = [
   { value: 5, suffix: '+', decimals: 0, label: 'Years of Research' },
   { value: 99.9, suffix: '%', decimals: 1, label: 'System Uptime' },
 ]
+
+interface BasicStatsSectionProps {
+  /** CMS-provided statistics. Falls back to hardcoded STATS when undefined. */
+  cmsStats?: CMSStatistic[]
+}
 
 
 // Pop In: overshoot scale spring
@@ -51,7 +58,15 @@ function AnimatedNumber({ target, suffix, decimals }: { target: number; suffix: 
   return <span ref={ref}>0{suffix}</span>
 }
 
-export default function BasicStatsSection() {
+export default function BasicStatsSection({ cmsStats }: BasicStatsSectionProps) {
+  const stats: StatItem[] = cmsStats && cmsStats.length > 0
+    ? cmsStats.map((s) => ({
+        value: parseFloat(s.number.replace(/[^0-9.]/g, '')) || 0,
+        suffix: s.suffix ?? '',
+        decimals: s.number.includes('.') ? 1 : 0,
+        label: s.title,
+      }))
+    : STATS
   return (
     <section id="basic-stats" className="relative py-12 sm:py-14 md:py-16 overflow-hidden">
       {/* Mint-toned backing panel replaces solid bg — video shows through as a soft light-mint wash */}
@@ -59,7 +74,7 @@ export default function BasicStatsSection() {
 
       <div className="relative z-10 max-w-[1200px] mx-auto px-5 sm:px-6 md:px-10 lg:px-16">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-          {STATS.map((stat, i) => (
+          {stats.map((stat, i) => (
             <motion.div
               key={i}
               className="stat-card-mint relative rounded-2xl p-5 sm:p-6 md:p-8 flex flex-col gap-2 sm:gap-3 overflow-hidden group cursor-default"

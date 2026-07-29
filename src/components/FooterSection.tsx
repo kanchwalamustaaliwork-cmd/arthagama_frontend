@@ -24,9 +24,18 @@ const cascadeItem = {
 }
 
 
-export default function FooterSection() {
+import type { CMSFooter } from '@/src/types/cms'
+
+interface FooterSectionProps {
+  cmsFooter?: CMSFooter | null
+}
+
+export default function FooterSection({ cmsFooter }: FooterSectionProps) {
   const [emailHovered, setEmailHovered] = useState(false)
   const emailBtnRef = useRef<HTMLDivElement>(null)
+
+  const copyrightText = cmsFooter?.copyright ?? '© 2026 ARTHAGAMA. All rights reserved.'
+  const disclaimerText = cmsFooter?.disclaimer ?? 'Trading and investing in financial markets involves risk, including the potential loss of principal. Past performance is not indicative of future results. Nothing on this site constitutes financial advice.'
 
   // Magnetic hover for the email button
   const handleMagneticMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -168,9 +177,7 @@ export default function FooterSection() {
                 Disclaimer:
               </p>
               <p className="text-[11px] leading-relaxed text-[#DCE7E1]/85">
-                Trading and investing in financial markets involves risk, including
-                the potential loss of principal. Past performance is not indicative
-                of future results. Nothing on this site constitutes financial advice.
+                {disclaimerText}
               </p>
             </motion.div>
           </motion.div>
@@ -206,7 +213,7 @@ export default function FooterSection() {
             viewport={{ once: true, margin: '-100px' }}
           >
             <p className="text-xs text-[#B8CEC2]/50">
-              © 2026 <strong className={BRAND_ON_DARK}>ARTHAGAMA</strong>. All rights reserved.
+              {copyrightText}
             </p>
             <div className="flex items-center gap-6">
               {SOCIALS.map((s) => {

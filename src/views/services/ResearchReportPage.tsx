@@ -46,7 +46,15 @@ function AccordionItem({
     )
 }
 
-export default function ResearchReportPage() {
+import type { CMSServicePage } from '../../types/cms'
+
+interface ResearchReportPageProps {
+    cmsService?: CMSServicePage | null
+}
+
+export default function ResearchReportPage({ cmsService }: ResearchReportPageProps) {
+    const title = cmsService?.hero?.title ?? cmsService?.title ?? 'Research Report'
+    const subtitle = cmsService?.hero?.subtitle ?? cmsService?.shortDescription ?? 'Data-driven research on market regimes, factor performance, and strategy viability — published monthly by our research desk.'
     const [openIndex, setOpenIndex] = useState(0)
     const [activeImage, setActiveImage] = useState(0)
 

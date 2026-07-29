@@ -22,8 +22,20 @@ const THEME_VARS = {
   '--mint-soft': '135 14% 88%',
 } as React.CSSProperties
 
-export default function Navbar() {
+import type { CMSNavigation } from '@/src/types/cms'
+
+interface NavbarProps {
+  cmsNav?: CMSNavigation | null
+}
+
+export default function Navbar({ cmsNav }: NavbarProps) {
   const pathname = usePathname()
+
+  const navLinks = cmsNav?.navLinks && cmsNav.navLinks.length > 0
+    ? cmsNav.navLinks
+        .filter((l) => l.visible)
+        .map((l) => ({ label: l.label, to: l.url ?? '#' }))
+    : NAV_LINKS
 
   const isActive = (to: string) => {
     if (to === '/') return pathname === '/'
@@ -39,7 +51,7 @@ export default function Navbar() {
        * for space on phones.
        * ========================================================== */}
       <div className="hidden min-[769px]:block">
-        <DesktopPillNav navLinks={NAV_LINKS} isActive={isActive} />
+        <DesktopPillNav navLinks={navLinks} isActive={isActive} />
       </div>
 
       {/* ============================================================
@@ -47,7 +59,7 @@ export default function Navbar() {
        * open/close panel. Only rendered below `md`.
        * ========================================================== */}
       <div className="min-[769px]:hidden">
-        <MobileMenu navLinks={NAV_LINKS} isActive={isActive} />
+        <MobileMenu navLinks={navLinks} isActive={isActive} />
       </div>
     </div>
   )

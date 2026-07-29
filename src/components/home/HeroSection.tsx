@@ -5,9 +5,21 @@ import gsap from 'gsap'
 import Link from 'next/link'
 import { SOCIALS } from '../../data/footer-links'
 import BrandPanel from '../ui/BrandPanel'
+import type { CMSHeroSection } from '../../types/cms'
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  /** Optional CMS hero data. Falls back to hardcoded text when absent. */
+  cmsHero?: CMSHeroSection | null
+}
+
+export default function HeroSection({ cmsHero }: HeroSectionProps) {
   const sectionRef = useRef<HTMLElement>(null)
+
+  // Resolved values — CMS wins, hardcoded is fallback
+  const titleBold = cmsHero?.titleBold ?? 'Precision'
+  const titleEmphasis = cmsHero?.titleEmphasis ?? 'systems'
+  const titleSuffix = cmsHero?.titleSuffix ?? 'for modern markets.'
+  const subtitle = cmsHero?.subtitle ?? 'Harnessing quantitative analysis, machine learning, and disciplined execution to identify opportunities and generate sustainable returns across diverse market conditions.'
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -37,17 +49,15 @@ export default function HeroSection() {
 
           <div className="relative z-10 flex h-full min-h-screen flex-col justify-center px-6 py-8 lg:px-12 lg:py-10">
             <h1 className="blur-in mb-6 max-w-lg font-body text-3xl font-light leading-tight text-[hsl(var(--mint-soft))] sm:text-4xl lg:text-5xl">
-              <span className="font-bold">Precision</span> built{" "}
+              <span className="font-bold">{titleBold}</span> built{" "}
               <em className="font-bold text-[hsl(var(--mint-soft))]">
-                systems
+                {titleEmphasis}
               </em>{" "}
-              for modern markets.
+              {titleSuffix}
             </h1>
 
             <p className="blur-in mb-10 max-w-md text-sm leading-relaxed text-[hsl(var(--mint)/0.75)] md:text-base">
-              Harnessing quantitative analysis, machine learning, and disciplined
-              execution to identify opportunities and generate sustainable returns
-              across diverse market conditions.
+              {subtitle}
             </p>
 
             <div className="blur-in flex items-center gap-3">

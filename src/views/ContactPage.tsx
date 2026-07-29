@@ -6,16 +6,20 @@ import ContactInfoCards from '../components/contact/ContactInfoCards'
 import ContactForm from '../components/contact/ContactForm'
 import ContactMap from '../components/contact/ContactMap'
 import { easing } from '../constans/animation'
+import type { ContactInfoItem } from '../data/contactInfo'
 
+interface ContactPageProps {
+  cmsContactCards?: ContactInfoItem[]
+}
 
-export default function ContactPage() {
+export default function ContactPage({ cmsContactCards }: ContactPageProps) {
   return (
     <div className="relative min-h-screen w-full pb-24">
       <ContactHero />
 
       <section className="cv-section relative px-5 pb-14 sm:px-6 md:px-10 lg:px-16">
         <div className="mx-auto max-w-[1200px]">
-          <ContactInfoCards />
+          <ContactInfoCards contactCards={cmsContactCards} />
         </div>
       </section>
 

@@ -1,15 +1,22 @@
 import { motion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
-import { CONTACT_INFO } from '../../data/contactInfo'
+import { CONTACT_INFO, type ContactInfoItem } from '../../data/contactInfo'
 import { PhoneIcon, MailIcon, PinIcon } from './icons'
 import { easing } from '../../constans/animation'
 
 const ICONS = { phone: PhoneIcon, mail: MailIcon, pin: PinIcon }
 
-export default function ContactInfoCards() {
+interface ContactInfoCardsProps {
+    /** CMS-provided contact cards. Falls back to CONTACT_INFO if undefined. */
+    contactCards?: ContactInfoItem[]
+}
+
+export default function ContactInfoCards({ contactCards }: ContactInfoCardsProps) {
+    const items = contactCards ?? CONTACT_INFO
+
     return (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-5">
-            {CONTACT_INFO.map((item, i) => {
+            {items.map((item, i) => {
                 const Icon = ICONS[item.icon]
                 return (
                     <motion.a

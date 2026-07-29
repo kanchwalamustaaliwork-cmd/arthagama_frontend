@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { JobListing, JobType, Department } from '../types/careers'
-import { fetchJobs } from '../services/careersApi'
+import { getJobs } from '../lib/cms/careers'
 import { useDebounce } from './useDebounce'
 
-export function useJobs() {
-    const [jobs, setJobs] = useState<JobListing[]>([])
-    const [status, setStatus] = useState<'loading' | 'error' | 'ready'>('loading')
+export function useJobs(initialJobs?: JobListing[]) {
+    const [jobs, setJobs] = useState<JobListing[]>(initialJobs ?? [])
+    const [status, setStatus] = useState<'loading' | 'error' | 'ready'>(
+        initialJobs && initialJobs.length > 0 ? 'ready' : 'loading'
+    )
     const [query, setQuery] = useState('')
     const debouncedQuery = useDebounce(query, 300)
     const activeQuery = query === '' ? '' : debouncedQuery
@@ -15,9 +17,14 @@ export function useJobs() {
 
     useEffect(() => {
         let cancelled = false
+        // If initialJobs were provided by server component, we are already ready
+        if (initialJobs && initialJobs.length > 0) {
+            return
+        }
+
         setStatus('loading')
 
-        fetchJobs()
+        getJobs()
             .then((data) => {
                 if (!cancelled) {
                     setJobs(data)
@@ -46,7 +53,7 @@ export function useJobs() {
 
     const retry = () => {
         setStatus('loading')
-        fetchJobs()
+        getJobs()
             .then((data) => {
                 setJobs(data)
                 setStatus('ready')
