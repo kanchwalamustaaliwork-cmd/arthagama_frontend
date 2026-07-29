@@ -25,7 +25,7 @@ export default function TerminalBody({
     onScroll,
 }: TerminalBodyProps) {
     return (
-        <div className="terminal-body" ref={containerRef} onScroll={onScroll}>
+        <div className="terminal-body" ref={containerRef} onScroll={onScroll} data-lenis-prevent>
             {status === 'loading' && hasPrevious && (
                 <StatusIndicator label="Fetching previous events..." />
             )}
