@@ -3,16 +3,29 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import Link from 'next/link'
+import { FaTwitter, FaLinkedinIn, FaGithub, FaInstagram, FaFacebook, FaYoutube } from 'react-icons/fa6'
 import { SOCIALS } from '../../data/footer-links'
 import BrandPanel from '../ui/BrandPanel'
-import type { CMSHeroSection } from '../../types/cms'
+import type { CMSHeroSection, CMSSocialLink } from '../../types/cms'
+
+function renderSocialIcon(platform: string) {
+  const p = platform.toLowerCase()
+  if (p.includes('twitter') || p.includes('x')) return <FaTwitter className="h-4 w-4" />
+  if (p.includes('linkedin')) return <FaLinkedinIn className="h-4 w-4" />
+  if (p.includes('github')) return <FaGithub className="h-4 w-4" />
+  if (p.includes('instagram')) return <FaInstagram className="h-4 w-4" />
+  if (p.includes('facebook')) return <FaFacebook className="h-4 w-4" />
+  if (p.includes('youtube')) return <FaYoutube className="h-4 w-4" />
+  return <FaLinkedinIn className="h-4 w-4" />
+}
 
 interface HeroSectionProps {
   /** Optional CMS hero data. Falls back to hardcoded text when absent. */
   cmsHero?: CMSHeroSection | null
+  socialLinks?: CMSSocialLink[] | null
 }
 
-export default function HeroSection({ cmsHero }: HeroSectionProps) {
+export default function HeroSection({ cmsHero, socialLinks }: HeroSectionProps) {
   const sectionRef = useRef<HTMLElement>(null)
 
   // Resolved values — CMS wins, hardcoded is fallback
@@ -49,7 +62,8 @@ export default function HeroSection({ cmsHero }: HeroSectionProps) {
 
           <div className="relative z-10 flex h-full min-h-screen flex-col justify-center px-6 py-8 lg:px-12 lg:py-10">
             <h1 className="blur-in mb-6 max-w-lg font-body text-3xl font-light leading-tight text-[hsl(var(--mint-soft))] sm:text-4xl lg:text-5xl">
-              <span className="font-bold">{titleBold}</span> built{" "}
+              <span className="font-bold">{titleBold}</span> {" "}
+              <br />
               <em className="font-bold text-[hsl(var(--mint-soft))]">
                 {titleEmphasis}
               </em>{" "}
@@ -62,19 +76,34 @@ export default function HeroSection({ cmsHero }: HeroSectionProps) {
 
             <div className="blur-in flex items-center gap-3">
               <div className="liquid-glass flex items-center gap-4 rounded-full px-5 py-2.5">
-                {SOCIALS.map((s) => {
-                  const Icon = s.icon
-                  return (
-                    <Link
-                      key={s.label}
-                      href={s.href}
-                      aria-label={s.label}
+                {socialLinks && socialLinks.length > 0 ? (
+                  socialLinks.map((s) => (
+                    <a
+                      key={s.id || s.platform}
+                      href={s.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={s.platform}
                       className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.2em] hover:text-[#EAF1EC] transition-colors duration-200"
                     >
-                      <Icon className="h-4 w-4" />
-                    </Link>
-                  )
-                })}
+                      {renderSocialIcon(s.platform)}
+                    </a>
+                  ))
+                ) : (
+                  SOCIALS.map((s) => {
+                    const Icon = s.icon
+                    return (
+                      <Link
+                        key={s.label}
+                        href={s.href}
+                        aria-label={s.label}
+                        className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.2em] hover:text-[#EAF1EC] transition-colors duration-200"
+                      >
+                        <Icon className="h-4 w-4" />
+                      </Link>
+                    )
+                  })
+                )}
               </div>
             </div>
           </div>

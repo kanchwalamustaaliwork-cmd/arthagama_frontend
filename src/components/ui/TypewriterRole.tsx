@@ -1,13 +1,18 @@
 import { useEffect, useState } from 'react'
 import { ROLES } from '../../data/jobs'
 
-export default function TypewriterRole() {
+interface TypewriterRoleProps {
+  roles?: string[]
+}
+
+export default function TypewriterRole({ roles }: TypewriterRoleProps) {
+    const roleList = roles && roles.length > 0 ? roles : ROLES
     const [roleIndex, setRoleIndex] = useState(0)
     const [displayed, setDisplayed] = useState('')
     const [deleting, setDeleting] = useState(false)
 
     useEffect(() => {
-        const currentWord = ROLES[roleIndex]
+        const currentWord = roleList[roleIndex % roleList.length] || 'Engineering'
         const speed = deleting ? 40 : 80
 
         const timeout = setTimeout(() => {
@@ -22,13 +27,13 @@ export default function TypewriterRole() {
                     setDisplayed(displayed.slice(0, -1))
                 } else {
                     setDeleting(false)
-                    setRoleIndex((i) => (i + 1) % ROLES.length)
+                    setRoleIndex((i) => (i + 1) % roleList.length)
                 }
             }
         }, speed)
 
         return () => clearTimeout(timeout)
-    }, [displayed, deleting, roleIndex])
+    }, [displayed, deleting, roleIndex, roleList])
 
     return (
         <span className="font-display italic text-[#EAF1EC]">

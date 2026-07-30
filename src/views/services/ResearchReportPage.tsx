@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowLeft, ChevronDown } from 'lucide-react'
-
 import { easing } from '../../constans/animation'
+import type { CMSServicePage } from '../../types/cms'
 
 const TOPICS = [
     { title: 'Market Regime Analysis', body: 'A monthly breakdown of prevailing volatility, trend, and correlation regimes across major indices.' },
@@ -46,8 +46,6 @@ function AccordionItem({
     )
 }
 
-import type { CMSServicePage } from '../../types/cms'
-
 interface ResearchReportPageProps {
     cmsService?: CMSServicePage | null
 }
@@ -57,6 +55,15 @@ export default function ResearchReportPage({ cmsService }: ResearchReportPagePro
     const subtitle = cmsService?.hero?.subtitle ?? cmsService?.shortDescription ?? 'Data-driven research on market regimes, factor performance, and strategy viability — published monthly by our research desk.'
     const [openIndex, setOpenIndex] = useState(0)
     const [activeImage, setActiveImage] = useState(0)
+
+    const topicsList = cmsService?.faqSection?.faqs && cmsService.faqSection.faqs.length > 0
+        ? cmsService.faqSection.faqs.map((f) => ({ title: f.question, body: f.answer }))
+        : TOPICS
+
+    const ctaHeading = cmsService?.pageCtaSection?.heading ?? 'Get the report in your inbox'
+    const ctaSubtitle = cmsService?.pageCtaSection?.subtitle
+    const ctaLabel = cmsService?.pageCtaSection?.ctaLabel ?? 'Subscribe'
+    const ctaUrl = cmsService?.pageCtaSection?.ctaUrl ?? '/contact'
 
     return (
         <div className="relative min-h-screen w-full pb-24 pt-32 sm:pt-36">
@@ -70,10 +77,10 @@ export default function ResearchReportPage({ cmsService }: ResearchReportPagePro
                         Service
                     </span>
                     <h1 className="text-shadow-soft mb-5 max-w-xl font-body text-4xl font-light leading-[1.1] text-[#EAF1EC] sm:text-5xl">
-                        Research <em className="font-display italic">Report</em>
+                        {title}
                     </h1>
                     <p className="text-shadow-soft max-w-lg text-sm leading-relaxed text-[#DCE7E1]/85 sm:text-base">
-                        Data-driven research on market regimes, factor performance, and strategy viability — published monthly by our research desk.
+                        {subtitle}
                     </p>
                 </motion.div>
 
@@ -85,10 +92,11 @@ export default function ResearchReportPage({ cmsService }: ResearchReportPagePro
                         viewport={{ once: true }}
                         className="flex flex-col gap-3"
                     >
-                        {TOPICS.map((topic, i) => (
+                        {topicsList.map((topic, i) => (
                             <AccordionItem
-                                key={topic.title}
-                                {...topic}
+                                key={topic.title + i}
+                                title={topic.title}
+                                body={topic.body}
                                 isOpen={openIndex === i}
                                 onToggle={() => setOpenIndex(openIndex === i ? -1 : i)}
                             />
@@ -137,14 +145,15 @@ export default function ResearchReportPage({ cmsService }: ResearchReportPagePro
                     className="cta-card mt-16 rounded-3xl p-8 text-center sm:p-10"
                 >
                     <h2 className="mb-3 text-xl font-body font-semibold text-[#1B3236] sm:text-2xl">
-                        Get the report in your inbox
+                        {ctaHeading}
                     </h2>
+                    {ctaSubtitle && <p className="mb-4 text-sm text-[#244147]/80">{ctaSubtitle}</p>}
                     <Link
-                        href="/contact"
+                        href={ctaUrl}
                         scroll={false}
                         className="mt-2 inline-flex items-center gap-2 rounded-full bg-[#244147] px-6 py-3 text-sm font-medium text-[#EAF1EC] transition-transform hover:scale-105"
                     >
-                        Subscribe
+                        {ctaLabel}
                     </Link>
                 </motion.div>
             </div>

@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
 import StrategyCard from '../ui/StrategyCard'
-import { viewMotion } from '../../constans/animation'
+import SectionHeading from '../ui/SectionHeading'
 import { STRATEGIES } from '../../data/stratergy'
 import type { CMSHomePage } from '../../types/cms'
 
@@ -11,9 +10,12 @@ interface StrategiesSectionProps {
 
 export default function StrategiesSection({ cmsData }: StrategiesSectionProps) {
   const heading = cmsData?.heading ?? 'Strategies'
-  const headingBold = 'Deployed'
   const description = cmsData?.description ?? 'Research-driven systematic modules running continuously across global markets.'
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+
+  const strategiesList = cmsData?.cards && cmsData.cards.length > 0
+    ? cmsData.cards.map((c) => ({ name: c.name, description: c.description ?? '' }))
+    : STRATEGIES
 
   return (
     <section id="strategies" className="relative py-16 sm:py-20 md:py-24 overflow-hidden">
@@ -21,19 +23,17 @@ export default function StrategiesSection({ cmsData }: StrategiesSectionProps) {
       <div className="section-backing absolute inset-x-4 inset-y-6 -z-10 rounded-3xl sm:inset-x-6" />
 
       <div className="relative z-10 max-w-[1200px] mx-auto px-5 sm:px-6 md:px-10 lg:px-16">
-        {/* Header — slide up reveal */}
-        <motion.div className="flex flex-col mb-10 sm:mb-12 md:mb-16" {...viewMotion}>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-body font-light text-[#EAF1EC]">
-            {heading} <em className=" font-bold text-[#EAF1EC]">{headingBold}</em>
-          </h2>
-          <p className="text-sm text-[#DCE7E1]/85 mt-3 max-w-sm">
-            {description}
-          </p>
-        </motion.div>
+        {/* Header */}
+        <SectionHeading
+          title={heading}
+          subtitle={description}
+          align="left"
+          className="mb-10 sm:mb-12 md:mb-16"
+        />
 
         {/* Strategies Grid — stagger reveal via per-card delay */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-          {STRATEGIES.map((strategy, i) => (
+          {strategiesList.map((strategy, i) => (
             <StrategyCard
               key={i}
               strategy={strategy}

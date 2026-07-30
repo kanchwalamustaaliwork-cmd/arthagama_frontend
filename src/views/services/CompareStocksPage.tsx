@@ -8,7 +8,6 @@ import StockSearchPicker from '../../components/services/compare/StockSearchPick
 import CompareChart from '../../components/services/compare/CompareChart'
 import MetricsComparisonTable from '../../components/services/compare/MetricsComparisonTable'
 import { easing } from '../../constans/animation'
-
 import type { CMSServicePage } from '../../types/cms'
 
 interface CompareStocksPageProps {
@@ -16,10 +15,15 @@ interface CompareStocksPageProps {
 }
 
 export default function CompareStocksPage({ cmsService }: CompareStocksPageProps) {
-    const title = cmsService?.hero?.title ?? cmsService?.title ?? 'Compare'
+    const title = cmsService?.hero?.title ?? cmsService?.title ?? 'Compare stocks'
     const subtitle = cmsService?.hero?.subtitle ?? cmsService?.shortDescription ?? `Pick up to 3 stocks and compare their historical performance and key risk metrics side by side.`
     const { selected, availableResults, query, setQuery, addStock, removeStock, canAddMore, maxSelected } =
         useStockCompare()
+
+    const ctaHeading = cmsService?.pageCtaSection?.heading ?? 'Want this analysis run on your own watchlist?'
+    const ctaSubtitle = cmsService?.pageCtaSection?.subtitle
+    const ctaLabel = cmsService?.pageCtaSection?.ctaLabel ?? 'Talk to us'
+    const ctaUrl = cmsService?.pageCtaSection?.ctaUrl ?? '/contact'
 
     return (
         <div className="relative min-h-screen w-full pb-24 pt-32 sm:pt-36">
@@ -28,7 +32,6 @@ export default function CompareStocksPage({ cmsService }: CompareStocksPageProps
                     <ArrowLeft className="h-3.5 w-3.5" /> Back to Services
                 </Link>
 
-                {/* Split Content Reveal — label and heading enter from opposite directions */}
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:items-end">
                     <motion.span
                         initial={{ opacity: 0, x: -20 }}
@@ -54,7 +57,7 @@ export default function CompareStocksPage({ cmsService }: CompareStocksPageProps
                     transition={{ duration: 0.8, ease: easing, delay: 0.1 }}
                     className="text-shadow-soft mb-5 mt-4 max-w-xl font-body text-4xl font-light leading-[1.1] text-[#EAF1EC] sm:text-5xl"
                 >
-                    Compare <em className="font-display italic">stocks</em>
+                    {title}
                 </motion.h1>
                 <motion.p
                     initial={{ opacity: 0, y: 20 }}
@@ -62,7 +65,7 @@ export default function CompareStocksPage({ cmsService }: CompareStocksPageProps
                     transition={{ duration: 0.8, ease: easing, delay: 0.2 }}
                     className="text-shadow-soft max-w-lg text-sm leading-relaxed text-[#DCE7E1]/85 sm:text-base"
                 >
-                    Pick up to {maxSelected} stocks and compare their historical performance and key risk metrics side by side.
+                    {subtitle}
                 </motion.p>
 
                 <div className="mt-14 flex flex-col gap-8">
@@ -93,14 +96,15 @@ export default function CompareStocksPage({ cmsService }: CompareStocksPageProps
                     className="cta-card mt-16 rounded-3xl p-8 text-center sm:p-10"
                 >
                     <h2 className="mb-3 text-xl font-body font-semibold text-[#1B3236] sm:text-2xl">
-                        Want this analysis run on your own watchlist?
+                        {ctaHeading}
                     </h2>
+                    {ctaSubtitle && <p className="mb-4 text-sm text-[#244147]/80">{ctaSubtitle}</p>}
                     <Link
-                        href="/contact"
+                        href={ctaUrl}
                         scroll={false}
                         className="mt-2 inline-flex items-center gap-2 rounded-full bg-[#244147] px-6 py-3 text-sm font-medium text-[#EAF1EC] transition-transform hover:scale-105"
                     >
-                        Talk to us
+                        {ctaLabel}
                     </Link>
                 </motion.div>
             </div>

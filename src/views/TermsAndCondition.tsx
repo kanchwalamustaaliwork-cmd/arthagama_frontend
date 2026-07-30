@@ -18,13 +18,17 @@ export default function TermsAndConditionPage({ cmsLegal }: TermsAndConditionPag
       })
     : 'July 1, 2026'
 
+  const sections = cmsLegal?.sections && cmsLegal.sections.length > 0
+    ? cmsLegal.sections
+    : termsAndConditions
+
   return (
     <LegalPageLayout
       eyebrow="Legal"
       title={title}
       lastUpdated={lastUpdated}
       intro="The terms governing your access to Arthagama's website and systematic trading services."
-      sections={termsAndConditions}
+      sections={sections}
     />
   )
 }

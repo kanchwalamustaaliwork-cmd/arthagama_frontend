@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { motion, type Transition } from 'framer-motion'
 import { easing } from '../../constans/animation'
 import { formatBrandWord, BRAND_ON_LIGHT } from '@/src/utils/brand'
+import SectionHeading from '../ui/SectionHeading'
 import type { CMSHomePage } from '../../types/cms'
 
 interface WhatWeDoSectionProps {
@@ -144,9 +145,9 @@ export default function WhatWeDoSection({ cmsData }: WhatWeDoSectionProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 md:gap-16 items-start">
           {/* Left Column: Heading */}
-          <motion.div className="md:col-span-5" {...sectionMotion}>
-          <MaskRevealHeading text={heading} />
-          </motion.div>
+          <div className="md:col-span-5">
+            <SectionHeading title={heading} align="left" />
+          </div>
 
           {/* Right Column: Description Text (mint glass card) */}
           <motion.div

@@ -26,8 +26,13 @@ export interface CMSSeo {
   metaDescription: string | null
   keywords: string | null
   canonicalUrl: string | null
+  ogTitle: string | null
+  ogDescription: string | null
   ogImage: CMSMedia | null
   twitterCard: 'summary' | 'summary_large_image'
+  twitterTitle: string | null
+  twitterDescription: string | null
+  twitterImage: CMSMedia | null
   noindex: boolean
   noSitemap: boolean
 }
@@ -84,12 +89,22 @@ export interface CMSNavLink {
   dropdown: CMSNavDropdownItem[]
 }
 
+export interface CMSSocialLink {
+  id: string
+  platform: string
+  url: string
+  icon: string | null
+  visible: boolean
+  order: number
+}
+
 export interface CMSNavigation {
   logo: CMSMedia | null
   navLinks: CMSNavLink[]
   ctaButton: { label: string | null; url: string | null; visible: boolean } | null
   loginButton: { label: string; url: string; visible: boolean } | null
   signupButton: { label: string; url: string; visible: boolean } | null
+  heroSocialLinks?: CMSSocialLink[]
 }
 
 // ── Footer ─────────────────────────────────────────────────
@@ -105,17 +120,18 @@ export interface CMSFooterColumn {
   links: CMSFooterLink[]
 }
 
-export interface CMSSocialLink {
-  id: string
-  platform: string
-  url: string
-  icon: string | null
-  visible: boolean
-  order: number
-}
-
 export interface CMSFooter {
+  companyDescription?: string | null
+  footerCtaHeading?: string | null
+  footerCtaLabel?: string | null
+  footerCtaUrl?: string | null
+  contactInfo?: {
+    email: string | null
+    phone: string | null
+    address: string | null
+  } | null
   columns: CMSFooterColumn[]
+  bottomLinks?: CMSFooterLink[]
   newsletter: {
     visible: boolean
     heading: string | null
@@ -152,6 +168,25 @@ export interface CMSServiceCard {
   ctaUrl: string | null
 }
 
+export interface CMSTestimonial {
+  id: string
+  name: string
+  testimonialRole: string | null
+  company: string | null
+  quote: string
+  photo: CMSMedia | null
+  rating: number | null
+  order?: number
+}
+
+export interface CMSPartner {
+  id: string
+  name: string
+  logo: CMSMedia | null
+  url: string | null
+  order?: number
+}
+
 export interface CMSHomePage {
   id: string
   title: string
@@ -168,11 +203,27 @@ export interface CMSHomePage {
     description: string | null
     ctaLabel: string | null
     ctaUrl: string | null
+    cards?: Array<{ name: string; description: string | null }>
+  }
+  homeFaq?: {
+    heading: string | null
+    faqs: CMSFAQ[]
+  }
+  homeTestimonials?: {
+    heading: string | null
+    visible: boolean
+    testimonials: CMSTestimonial[]
   }
   partnersSection: {
     heading: string | null
     visible: boolean
-    partners: Array<{ id: string; name: string; logo: CMSMedia | null; url: string | null }>
+    partners: CMSPartner[]
+  }
+  homeCta?: {
+    heading: string | null
+    subtitle: string | null
+    ctaLabel: string | null
+    ctaUrl: string | null
   }
   showLatestNews: boolean
   updatedAt: string
@@ -203,7 +254,49 @@ export interface CMSAboutPage {
     events: Array<{ year: string; title: string; description: string | null }>
   }
   companyNumbers: Array<{ number: string; label: string }>
+  teamSectionHeading?: string | null
+  teamSectionSubtext?: string | null
   cta: { heading: string | null; subtext: string | null; label: string | null; url: string | null }
+  updatedAt: string
+}
+
+// ── Careers Page ───────────────────────────────────────────
+
+export interface CMSCareersPage {
+  id: string
+  title: string
+  slug: string
+  seo: CMSSeo
+  careersHero: {
+    heading: string | null
+    subtitle: string | null
+  }
+  careersIntro: {
+    heading: string | null
+    body: string | null
+  }
+  culturePoints: Array<{ title: string; body: string }>
+  typewriterRoles: string[]
+  careersBenefits: {
+    heading: string | null
+    items: Array<{ title: string; description: string | null }>
+  }
+  hiringProcess: {
+    heading: string | null
+    steps: Array<{ stepNumber: number | null; title: string; description: string | null }>
+  }
+  openRolesHeading?: string | null
+  teamDescription?: string | null
+  careersEmptyState: {
+    heading: string | null
+    body: string | null
+  }
+  careersCta: {
+    heading: string | null
+    subtitle: string | null
+    ctaLabel: string | null
+    ctaUrl: string | null
+  }
   updatedAt: string
 }
 
@@ -224,6 +317,18 @@ export interface CMSTeamMember {
 }
 
 // ── Service Pages ──────────────────────────────────────────
+
+export interface CMSServiceLandingPage {
+  id: string
+  title: string
+  slug: string
+  seo: CMSSeo
+  servicesHero: {
+    heading: string | null
+    subtitle: string | null
+  }
+  updatedAt: string
+}
 
 export interface CMSServicePage {
   id: string
@@ -255,6 +360,12 @@ export interface CMSServicePage {
   faqSection: {
     heading: string | null
     faqs: Array<{ question: string; answer: string }>
+  }
+  pageCtaSection?: {
+    heading: string | null
+    subtitle: string | null
+    ctaLabel: string | null
+    ctaUrl: string | null
   }
   seo: CMSSeo
   updatedAt: string
@@ -316,16 +427,29 @@ export interface CMSContactPage {
     workingHours: string | null
   }
   contactCards: CMSContactCard[]
+  contactCta?: {
+    heading: string | null
+    subtitle: string | null
+    ctaLabel: string | null
+    ctaUrl: string | null
+  }
   seo: CMSSeo
 }
 
 // ── Legal Pages ────────────────────────────────────────────
 
+export interface CMSLegalSection {
+  id: string
+  heading: string
+  paragraphs: string[]
+}
+
 export interface CMSLegalPage {
   id: string
   title: string
   slug: string
-  // Lexical rich text — passed to a renderer component
+  sections?: CMSLegalSection[]
+  // Lexical rich text fallback
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   content: any | null
   lastUpdated: string | null

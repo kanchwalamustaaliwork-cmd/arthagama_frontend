@@ -1,7 +1,14 @@
 import { fetchCMS } from './client'
-import type { CMSJob } from '@/src/types/cms'
+import type { CMSJob, CMSCareersPage } from '@/src/types/cms'
 import type { JobListing, ApplicationPayload } from '@/src/types/careers'
 import { STATIC_JOBS } from '@/src/data/jobs'
+
+export async function getCareersPage(): Promise<CMSCareersPage | null> {
+  return fetchCMS<CMSCareersPage>('/pages/careers', {
+    tags: ['careers', 'pages'],
+    revalidate: 3600,
+  })
+}
 
 export async function getJobs(): Promise<JobListing[]> {
   const cmsJobs = await fetchCMS<CMSJob[]>('/jobs', {

@@ -3,24 +3,34 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowLeft, TrendingUp, ShieldCheck, Zap } from 'lucide-react'
-
 import { easing } from '../../constans/animation'
+import type { CMSServicePage } from '../../types/cms'
 
-const FEATURES = [
+const DEFAULT_FEATURES = [
     { icon: Zap, title: 'Automated execution', body: 'Orders route directly to your broker via low-latency APIs — no manual intervention.' },
     { icon: ShieldCheck, title: 'Risk-managed', body: 'Every strategy runs within predefined exposure and drawdown limits.' },
     { icon: TrendingUp, title: 'Transparent reporting', body: 'Live performance dashboards, updated continuously, always visible to you.' },
 ]
-
-import type { CMSServicePage } from '../../types/cms'
 
 interface TradeWithUsPageProps {
     cmsService?: CMSServicePage | null
 }
 
 export default function TradeWithUsPage({ cmsService }: TradeWithUsPageProps) {
-    const title = cmsService?.hero?.title ?? cmsService?.title ?? 'Trade'
+    const title = cmsService?.hero?.title ?? cmsService?.title ?? 'Trade with us'
     const subtitle = cmsService?.hero?.subtitle ?? cmsService?.shortDescription ?? 'Let our systematic strategies trade on your behalf through a fully automated, broker-integrated execution pipeline — while you stay in full view of every position.'
+
+    const featuresList = cmsService?.featuresSection?.features && cmsService.featuresSection.features.length > 0
+        ? cmsService.featuresSection.features.map((f, i) => ({
+            icon: [Zap, ShieldCheck, TrendingUp][i % 3],
+            title: f.title,
+            body: f.description ?? '',
+          }))
+        : DEFAULT_FEATURES
+
+    const ctaLabel = cmsService?.hero?.cta?.label ?? cmsService?.pageCtaSection?.ctaLabel ?? 'Start trading with us'
+    const ctaUrl = cmsService?.hero?.cta?.url ?? cmsService?.pageCtaSection?.ctaUrl ?? '/contact'
+
     return (
         <div className="relative min-h-screen w-full overflow-hidden pb-24 pt-32 sm:pt-36">
             <div className="mx-auto max-w-[1100px] px-5 sm:px-6">
@@ -34,10 +44,10 @@ export default function TradeWithUsPage({ cmsService }: TradeWithUsPageProps) {
                             Service
                         </span>
                         <h1 className="text-shadow-soft mb-5 font-body text-4xl font-light leading-[1.1] text-[#EAF1EC] sm:text-5xl">
-                            Trade <em className="font-display italic">with us</em>
+                            {title}
                         </h1>
                         <p className="text-shadow-soft max-w-md text-sm leading-relaxed text-[#DCE7E1]/85 sm:text-base">
-                            Let our systematic strategies trade on your behalf through a fully automated, broker-integrated execution pipeline — while you stay in full view of every position.
+                            {subtitle}
                         </p>
 
                         {/* CTA Pulse — subtle */}
@@ -47,11 +57,11 @@ export default function TradeWithUsPage({ cmsService }: TradeWithUsPageProps) {
                             transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
                         >
                             <Link
-                                href="/contact"
+                                href={ctaUrl}
                                 scroll={false}
                                 className="inline-flex items-center gap-2 rounded-full bg-[#244147] px-6 py-3.5 text-sm font-medium text-[#EAF1EC] transition-transform hover:scale-105"
                             >
-                                Start trading with us
+                                {ctaLabel}
                             </Link>
                         </motion.div>
                     </motion.div>
@@ -96,9 +106,9 @@ export default function TradeWithUsPage({ cmsService }: TradeWithUsPageProps) {
                 </div>
 
                 <div className="mt-20 grid grid-cols-1 gap-5 sm:grid-cols-3">
-                    {FEATURES.map((f, i) => (
+                    {featuresList.map((f, i) => (
                         <motion.div
-                            key={f.title}
+                            key={f.title + i}
                             initial={{ opacity: 0, y: 24 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, ease: easing, delay: i * 0.1 }}

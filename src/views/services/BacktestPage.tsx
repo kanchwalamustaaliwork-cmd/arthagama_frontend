@@ -4,8 +4,8 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { useCountUp } from '../../hooks/useCountUp'
-
 import { easing } from '../../constans/animation'
+import type { CMSServicePage } from '../../types/cms'
 
 const STATS = [
     { target: 1.84, decimals: 2, label: 'Avg. Sharpe Ratio', suffix: '' },
@@ -28,15 +28,19 @@ function StatCounter({ target, decimals, label, suffix }: (typeof STATS)[number]
 
 const CHART_PATH = 'M0,140 C40,130 60,110 90,115 C130,120 150,80 190,85 C230,90 250,50 290,55 C330,60 350,20 400,15'
 
-import type { CMSServicePage } from '../../types/cms'
-
 interface BacktestPageProps {
     cmsService?: CMSServicePage | null
 }
 
 export default function BacktestPage({ cmsService }: BacktestPageProps) {
-    const title = cmsService?.hero?.title ?? cmsService?.title ?? 'Backtest your'
+    const title = cmsService?.hero?.title ?? cmsService?.title ?? 'Backtest your edge'
     const subtitle = cmsService?.hero?.subtitle ?? cmsService?.shortDescription ?? "Before a strategy ever touches live capital, it's run against years of historical data — cost-aware, slippage-modeled, and stress-tested across market regimes."
+    
+    const ctaHeading = cmsService?.pageCtaSection?.heading ?? 'Want to see your idea backtested?'
+    const ctaSubtitle = cmsService?.pageCtaSection?.subtitle
+    const ctaLabel = cmsService?.pageCtaSection?.ctaLabel ?? 'Request a backtest'
+    const ctaUrl = cmsService?.pageCtaSection?.ctaUrl ?? '/contact'
+
     return (
         <div className="relative min-h-screen w-full pb-24 pt-32 sm:pt-36">
             <div className="mx-auto max-w-[1000px] px-5 sm:px-6">
@@ -49,7 +53,7 @@ export default function BacktestPage({ cmsService }: BacktestPageProps) {
                         Service
                     </span>
                     <h1 className="text-shadow-soft mb-5 max-w-xl font-body text-4xl font-light leading-[1.1] text-[#EAF1EC] sm:text-5xl">
-                        {title} <em className="font-display italic">edge</em>
+                        {title}
                     </h1>
                     <p className="text-shadow-soft max-w-lg text-sm leading-relaxed text-[#DCE7E1]/85 sm:text-base">
                         {subtitle}
@@ -92,14 +96,15 @@ export default function BacktestPage({ cmsService }: BacktestPageProps) {
                     className="cta-card mt-16 rounded-3xl p-8 text-center sm:p-10"
                 >
                     <h2 className="mb-3 text-xl font-body font-semibold text-[#1B3236] sm:text-2xl">
-                        Want to see your idea backtested?
+                        {ctaHeading}
                     </h2>
+                    {ctaSubtitle && <p className="mb-4 text-sm text-[#244147]/80">{ctaSubtitle}</p>}
                     <Link
-                        href="/contact"
+                        href={ctaUrl}
                         scroll={false}
                         className="mt-2 inline-flex items-center gap-2 rounded-full bg-[#244147] px-6 py-3 text-sm font-medium text-[#EAF1EC] transition-transform hover:scale-105"
                     >
-                        Request a backtest
+                        {ctaLabel}
                     </Link>
                 </motion.div>
             </div>

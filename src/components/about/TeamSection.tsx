@@ -9,6 +9,8 @@ const easing: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 
 interface TeamSectionProps {
   cmsTeam?: CMSTeamMember[]
+  heading?: string | null
+  subtext?: string | null
 }
 
 /** Convert a CMS team member to the legacy TeamMember shape expected by TeamCard */
@@ -17,7 +19,6 @@ function cmsToTeamMember(m: CMSTeamMember): TeamMember {
     id: m.id,
     name: m.name,
     designation: m.designation,
-    // photo is a CMSMedia object — use url, fallback to placeholder
     photo: m.photo?.url ?? `https://i.pravatar.cc/500?u=${m.id}`,
     linkedin: m.linkedin ?? 'https://linkedin.com/in/',
     intro: m.intro ?? '',
@@ -25,13 +26,17 @@ function cmsToTeamMember(m: CMSTeamMember): TeamMember {
     role: m.roleDescription ?? '',
   }
 }
-export default function TeamSection({ cmsTeam }: TeamSectionProps) {
+
+export default function TeamSection({ cmsTeam, heading, subtext }: TeamSectionProps) {
     const members: TeamMember[] = cmsTeam && cmsTeam.length > 0
         ? cmsTeam.map(cmsToTeamMember)
         : TEAM
 
     const [selectedId, setSelectedId] = useState<string | null>(null)
     const selectedMember = members.find((m) => m.id === selectedId) ?? null
+
+    const sectionTitle = heading ?? 'Meet the team'
+    const sectionSubtext = subtext ?? 'A small, focused team spanning research, engineering, and risk.'
 
     return (
         <section className="relative overflow-hidden px-4 py-16 sm:px-6 sm:py-20 md:px-10 md:py-24 lg:px-16">
@@ -46,10 +51,10 @@ export default function TeamSection({ cmsTeam }: TeamSectionProps) {
                     viewport={{ once: true, margin: '-100px' }}
                 >
                     <h2 className="text-3xl font-body font-light text-[#EAF1EC] sm:text-4xl md:text-5xl">
-                        Meet the <em className="font-display italic text-[#EAF1EC]">team</em>
+                        {sectionTitle}
                     </h2>
                     <p className="mt-3 max-w-sm text-sm text-[#DCE7E1]/80">
-                        A small, focused team spanning research, engineering, and risk.
+                        {sectionSubtext}
                     </p>
                 </motion.div>
 

@@ -4,8 +4,11 @@ import type { JobListProps } from '../../types/careers'
 import JobCard from './JobCard'
 import SkeletonCard from '../ui/SkeletonCard'
 
+interface ExtendedJobListProps extends JobListProps {
+  emptyState?: { heading: string | null; body: string | null } | null
+}
 
-export default function JobList({ jobs, status, onRetry, onSelectJob }: JobListProps) {
+export default function JobList({ jobs, status, onRetry, onSelectJob, emptyState }: ExtendedJobListProps) {
     if (status === 'loading') {
         return (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -44,6 +47,8 @@ export default function JobList({ jobs, status, onRetry, onSelectJob }: JobListP
     }
 
     if (jobs.length === 0) {
+        const emptyHeading = emptyState?.heading ?? 'No positions open right now.'
+        const emptyBody = emptyState?.body ?? 'No roles match your filters right now.'
         return (
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -51,7 +56,8 @@ export default function JobList({ jobs, status, onRetry, onSelectJob }: JobListP
                 className="error-state flex flex-col items-center gap-3 rounded-2xl p-10 text-center"
             >
                 <SearchX className="h-6 w-6 text-[#244147]/60" />
-                <p className="text-sm text-[#1B3236]">No roles match your filters right now.</p>
+                <h4 className="text-base font-semibold text-[#1B3236]">{emptyHeading}</h4>
+                <p className="text-sm text-[#244147]/80 max-w-sm">{emptyBody}</p>
                 <style>{`
           .error-state {
             background: rgba(184, 206, 194, 0.9);

@@ -3,9 +3,17 @@
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Clock } from 'lucide-react'
+import type { CMSServicePage } from '../types/cms'
 
-export default function ComingSoonPage() {
+interface ComingSoonPageProps {
+  cmsService?: CMSServicePage | null
+}
+
+export default function ComingSoonPage({ cmsService }: ComingSoonPageProps) {
     const router = useRouter()
+
+    const title = cmsService?.hero?.title ?? cmsService?.title ?? 'Coming Soon'
+    const subtitle = cmsService?.hero?.subtitle ?? cmsService?.shortDescription ?? "We're working hard to bring this feature to life. Stay tuned — it'll be worth the wait."
 
     return (
         <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-6">
@@ -85,21 +93,9 @@ export default function ComingSoonPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
                     className="mb-6 font-body font-light leading-[1.1] tracking-tight text-[#EAF1EC]"
-                    style={{ fontSize: 'clamp(3.5rem, 10vw, 8rem)' }}
+                    style={{ fontSize: 'clamp(3rem, 8vw, 6rem)' }}
                 >
-                    Coming
-                    <br />
-                    <span
-                        style={{
-                            background:
-                                'linear-gradient(135deg, #B8CEC2 0%, #8AADA0 40%, #B8CEC2 100%)',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            backgroundClip: 'text',
-                        }}
-                    >
-                        Soon
-                    </span>
+                    {title}
                 </motion.h1>
 
                 {/* Subtitle */}
@@ -107,11 +103,9 @@ export default function ComingSoonPage() {
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.7, delay: 0.35 }}
-                    className="max-w-md text-base leading-relaxed text-[#DCE7E1]/50"
+                    className="max-w-md text-base leading-relaxed text-[#DCE7E1]/70"
                 >
-                    We're working hard to bring this feature to life.
-                    <br />
-                    Stay tuned — it'll be worth the wait.
+                    {subtitle}
                 </motion.p>
 
                 {/* Divider line */}
@@ -126,13 +120,6 @@ export default function ComingSoonPage() {
                     }}
                 />
             </div>
-
-            <style>{`
-                @keyframes floatOrb {
-                    0%, 100% { transform: translate(-50%, -50%) scale(1); }
-                    50% { transform: translate(-50%, -54%) scale(1.06); }
-                }
-            `}</style>
         </div>
     )
 }

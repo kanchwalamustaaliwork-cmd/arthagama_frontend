@@ -4,12 +4,22 @@ import { BRAND_ON_DARK } from '@/src/utils/brand'
 
 const easing: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 
-export default function ContactMap() {
+interface ContactMapProps {
+  googleMapsUrl?: string | null
+  address?: string | null
+}
+
+const DEFAULT_MAP_URL = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d224.20651296696133!2d72.83394676667447!3d18.929597385341136!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7d1c49a6c18cf%3A0x71863ed25762cd9f!2skhattau%20Buildings!5e1!3m2!1sen!2sin!4v1783054214237!5m2!1sen!2sin"
+
+export default function ContactMap({ googleMapsUrl, address }: ContactMapProps) {
     const cardRef = useRef<HTMLDivElement>(null)
     const mouseX = useMotionValue(0.5)
     const mouseY = useMotionValue(0.5)
 
-    // Depth Hover — subtle tilt + parallax pin, much gentler than the strategy-card tilt
+    const mapSrc = googleMapsUrl ?? DEFAULT_MAP_URL
+    const addressLabel = address ?? 'Grd Flr, Khatau BLg 8/10 A D Modi, Stock Exchange, Mumbai'
+
+    // Depth Hover
     const rotateX = useSpring(useTransform(mouseY, [0, 1], [3, -3]), { stiffness: 150, damping: 20 })
     const rotateY = useSpring(useTransform(mouseX, [0, 1], [-3, 3]), { stiffness: 150, damping: 20 })
     const pinX = useSpring(useTransform(mouseX, [0, 1], [-6, 6]), { stiffness: 150, damping: 20 })
@@ -41,14 +51,14 @@ export default function ContactMap() {
             >
                 <iframe
                     title="ARTHAGAMA office location"
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d224.20651296696133!2d72.83394676667447!3d18.929597385341136!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7d1c49a6c18cf%3A0x71863ed25762cd9f!2skhattau%20Buildings!5e1!3m2!1sen!2sin!4v1783054214237!5m2!1sen!2sin"
+                    src={mapSrc}
                     className="h-[320px] w-full grayscale-[15%] sm:h-[380px] md:h-[440px]"
                     style={{ border: 0 }}
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
                 />
 
-                {/* Floating pin badge, parallaxed slightly against cursor */}
+                {/* Floating pin badge */}
                 <motion.div
                     className="pointer-events-none absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
                     style={{ x: pinX, y: pinY }}
@@ -61,7 +71,7 @@ export default function ContactMap() {
                 </motion.div>
 
                 <div className="pointer-events-none absolute bottom-4 left-4 rounded-full bg-[#122124]/70 px-4 py-2 text-xs text-[#EAF1EC] backdrop-blur-sm">
-                    <strong className={BRAND_ON_DARK}>ARTHAGAMA</strong> HQ · Grd Flr, Khatau BLg 8/10 A D Modi, Stock Exchange, Mumbai
+                    <strong className={BRAND_ON_DARK}>ARTHAGAMA</strong> HQ · {addressLabel}
                 </div>
             </motion.div>
 

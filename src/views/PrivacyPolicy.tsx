@@ -18,13 +18,17 @@ export default function PrivacyPolicyPage({ cmsLegal }: PrivacyPolicyPageProps) 
       })
     : 'July 1, 2026'
 
+  const sections = cmsLegal?.sections && cmsLegal.sections.length > 0
+    ? cmsLegal.sections
+    : privacyPolicy
+
   return (
     <LegalPageLayout
       eyebrow="Legal"
       title={title}
       lastUpdated={lastUpdated}
       intro="How Arthagama collects, uses, and protects information across our website and trading services."
-      sections={privacyPolicy}
+      sections={sections}
     />
   )
 }

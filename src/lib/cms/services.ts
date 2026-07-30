@@ -1,5 +1,12 @@
 import { fetchCMS } from './client'
-import type { CMSServicePage } from '@/src/types/cms'
+import type { CMSServicePage, CMSServiceLandingPage } from '@/src/types/cms'
+
+export async function getServicesLanding(): Promise<CMSServiceLandingPage | null> {
+  return fetchCMS<CMSServiceLandingPage>('/pages/services', {
+    tags: ['services-landing', 'pages'],
+    revalidate: 3600,
+  })
+}
 
 export async function getServices(): Promise<CMSServicePage[]> {
   const data = await fetchCMS<CMSServicePage[]>('/services', {

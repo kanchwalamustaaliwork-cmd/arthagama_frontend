@@ -4,10 +4,11 @@ import { useRef, useState } from 'react'
 import Link from 'next/link'
 import gsap from 'gsap'
 import { motion } from 'framer-motion'
+import { FaTwitter, FaLinkedinIn, FaGithub, FaInstagram, FaFacebook, FaYoutube } from 'react-icons/fa6'
 import { easing, viewMotion } from '../constans/animation'
 import { QUICK_LINKS, ACCOUNT_LINKS, IMPORTANT_LINKS, SOCIALS } from '../data/footer-links'
 import TiltImage from './ui/TiltImage'
-import { BRAND_ON_DARK } from '@/src/utils/brand'
+import type { CMSFooter, CMSSocialLink } from '@/src/types/cms'
 
 const cascadeContainer = {
   hidden: {},
@@ -23,8 +24,16 @@ const cascadeItem = {
   },
 }
 
-
-import type { CMSFooter } from '@/src/types/cms'
+function renderSocialIcon(platform: string) {
+  const p = platform.toLowerCase()
+  if (p.includes('twitter') || p.includes('x')) return <FaTwitter className="h-4 w-4" />
+  if (p.includes('linkedin')) return <FaLinkedinIn className="h-4 w-4" />
+  if (p.includes('github')) return <FaGithub className="h-4 w-4" />
+  if (p.includes('instagram')) return <FaInstagram className="h-4 w-4" />
+  if (p.includes('facebook')) return <FaFacebook className="h-4 w-4" />
+  if (p.includes('youtube')) return <FaYoutube className="h-4 w-4" />
+  return <FaLinkedinIn className="h-4 w-4" />
+}
 
 interface FooterSectionProps {
   cmsFooter?: CMSFooter | null
@@ -34,8 +43,26 @@ export default function FooterSection({ cmsFooter }: FooterSectionProps) {
   const [emailHovered, setEmailHovered] = useState(false)
   const emailBtnRef = useRef<HTMLDivElement>(null)
 
+  const ctaHeading = cmsFooter?.footerCtaHeading ?? "Let's work together"
+  const ctaLabel = cmsFooter?.footerCtaLabel ?? 'Contact us'
+  const ctaUrl = cmsFooter?.footerCtaUrl ?? '/contact'
   const copyrightText = cmsFooter?.copyright ?? '© 2026 ARTHAGAMA. All rights reserved.'
   const disclaimerText = cmsFooter?.disclaimer ?? 'Trading and investing in financial markets involves risk, including the potential loss of principal. Past performance is not indicative of future results. Nothing on this site constitutes financial advice.'
+  const companyDesc = cmsFooter?.companyDescription
+
+  // Columns from CMS or fallback
+  const pagesCol = cmsFooter?.columns?.[0]?.links?.map((l) => ({ label: l.label, to: l.url })) ?? QUICK_LINKS
+  const accountCol = cmsFooter?.columns?.[1]?.links?.map((l) => ({ label: l.label, to: l.url })) ?? ACCOUNT_LINKS
+  const pagesHeading = cmsFooter?.columns?.[0]?.heading ?? 'Pages'
+  const accountHeading = cmsFooter?.columns?.[1]?.heading ?? 'Account'
+
+  // Bottom links
+  const bottomLinks = cmsFooter?.bottomLinks?.map((l) => ({ label: l.label, to: l.url })) ?? IMPORTANT_LINKS
+
+  // Social links
+  const socialLinks = cmsFooter?.socialLinks && cmsFooter.socialLinks.length > 0
+    ? cmsFooter.socialLinks
+    : null
 
   // Magnetic hover for the email button
   const handleMagneticMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -57,18 +84,12 @@ export default function FooterSection({ cmsFooter }: FooterSectionProps) {
       <motion.footer
         id="contact"
         {...viewMotion}
-        className="footer-backing relative pt-14 sm:pt-16 md:pt-20 pb-8 md:pb-12 overflow-hidden
-               md:rounded-[2rem] lg:rounded-[2.5rem]"
+        className="footer-backing relative pt-14 sm:pt-16 md:pt-20 pb-8 md:pb-12 overflow-hidden md:rounded-[2rem] lg:rounded-[2.5rem]"
       >
-        {/* Main Footer Content */}
         <div className="max-w-[1200px] mx-auto px-5 sm:px-6 md:px-10 lg:px-16">
           {/* CTA */}
           <motion.div className="text-center mb-14 sm:mb-16 md:mb-20" {...viewMotion}>
-            <Link
-              href={"/contact"}
-              scroll={false}
-            >
-
+            <Link href={ctaUrl} scroll={false}>
               <motion.div
                 className="flex justify-center mb-6"
                 initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
@@ -90,10 +111,9 @@ export default function FooterSection({ cmsFooter }: FooterSectionProps) {
                 transition={{ duration: 1, ease: easing }}
                 viewport={{ once: true, margin: '-100px' }}
               >
-                Let's work together
+                {ctaHeading}
               </motion.h2>
 
-              {/* Email Button — mint pill, dark teal text, magnetic hover + glow */}
               <div
                 className="inline-block relative"
                 onMouseEnter={() => setEmailHovered(true)}
@@ -113,7 +133,7 @@ export default function FooterSection({ cmsFooter }: FooterSectionProps) {
                   whileTap={{ scale: 0.97 }}
                   className="email-pill-mint relative z-10 flex items-center gap-3 text-xs sm:text-sm font-medium text-[#1B3236] rounded-full px-6 sm:px-8 py-3.5 sm:py-4"
                 >
-                  <span>Contact us</span>
+                  <span>{ctaLabel}</span>
                   <motion.span
                     className="text-[#244147]/70"
                     animate={{ x: emailHovered ? 3 : 0, y: emailHovered ? -3 : 0 }}
@@ -126,7 +146,7 @@ export default function FooterSection({ cmsFooter }: FooterSectionProps) {
             </Link>
           </motion.div>
 
-          {/* Quick Links Grid — cascade reveal */}
+          {/* Quick Links Grid */}
           <motion.div
             className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-8 sm:gap-8 mb-10 sm:mb-12 pb-10 sm:pb-12 border-b border-[#B8CEC2]/15"
             variants={cascadeContainer}
@@ -134,11 +154,11 @@ export default function FooterSection({ cmsFooter }: FooterSectionProps) {
             whileInView="visible"
             viewport={{ once: true, margin: '-100px' }}
           >
-            {/* Pages */}
+            {/* Pages Column */}
             <motion.div variants={cascadeItem}>
-              <p className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.25em] mb-4">Pages</p>
+              <p className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.25em] mb-4">{pagesHeading}</p>
               <ul className="flex flex-col gap-2.5">
-                {QUICK_LINKS.map((link) => (
+                {pagesCol.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.to}
@@ -153,11 +173,11 @@ export default function FooterSection({ cmsFooter }: FooterSectionProps) {
               </ul>
             </motion.div>
 
-            {/* Account */}
+            {/* Account Column */}
             <motion.div variants={cascadeItem}>
-              <p className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.25em] mb-4">Account</p>
+              <p className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.25em] mb-4">{accountHeading}</p>
               <ul className="flex flex-col gap-2.5">
-                {ACCOUNT_LINKS.map((link) => (
+                {accountCol.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.to}
@@ -171,6 +191,24 @@ export default function FooterSection({ cmsFooter }: FooterSectionProps) {
                 ))}
               </ul>
             </motion.div>
+
+            {/* Contact Info or Company Description */}
+            <motion.div variants={cascadeItem}>
+              <p className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.25em] mb-4">Contact Info</p>
+              <div className="text-xs text-[#DCE7E1]/80 space-y-2 leading-relaxed">
+                {cmsFooter?.contactInfo?.email && <p>Email: {cmsFooter.contactInfo.email}</p>}
+                {cmsFooter?.contactInfo?.phone && <p>Phone: {cmsFooter.contactInfo.phone}</p>}
+                {cmsFooter?.contactInfo?.address && <p>Address: {cmsFooter.contactInfo.address}</p>}
+                {!cmsFooter?.contactInfo && (
+                  <>
+                    <p>Email: info@arthagama.com</p>
+                    <p>Phone: +91 22 4001 5566</p>
+                  </>
+                )}
+                {companyDesc && <p className="pt-2 text-[11px] text-[#DCE7E1]/70">{companyDesc}</p>}
+              </div>
+            </motion.div>
+
             {/* Disclaimer */}
             <motion.div variants={cascadeItem}>
               <p className="text-xs text-[#B8CEC2] uppercase tracking-[0.25em] mb-4 font-medium">
@@ -182,7 +220,7 @@ export default function FooterSection({ cmsFooter }: FooterSectionProps) {
             </motion.div>
           </motion.div>
 
-          {/* ===================== Horizontal Important Links ===================== */}
+          {/* Horizontal Bottom Links */}
           <motion.div
             className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 mb-8 sm:mb-10"
             variants={cascadeContainer}
@@ -190,7 +228,7 @@ export default function FooterSection({ cmsFooter }: FooterSectionProps) {
             whileInView="visible"
             viewport={{ once: true, margin: '-100px' }}
           >
-            {IMPORTANT_LINKS.map((link) => (
+            {bottomLinks.map((link) => (
               <motion.div key={link.label} variants={cascadeItem}>
                 <Link
                   href={link.to}
@@ -216,19 +254,34 @@ export default function FooterSection({ cmsFooter }: FooterSectionProps) {
               {copyrightText}
             </p>
             <div className="flex items-center gap-6">
-              {SOCIALS.map((s) => {
-                const Icon = s.icon
-                return (
-                  <Link
-                    key={s.label}
-                    href={s.href}
-                    aria-label={s.label}
+              {socialLinks ? (
+                socialLinks.map((s) => (
+                  <a
+                    key={s.id || s.platform}
+                    href={s.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={s.platform}
                     className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.2em] hover:text-[#EAF1EC] transition-colors duration-200"
                   >
-                    <Icon className="h-4 w-4" />
-                  </Link>
-                )
-              })}
+                    {renderSocialIcon(s.platform)}
+                  </a>
+                ))
+              ) : (
+                SOCIALS.map((s) => {
+                  const Icon = s.icon
+                  return (
+                    <Link
+                      key={s.label}
+                      href={s.href}
+                      aria-label={s.label}
+                      className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.2em] hover:text-[#EAF1EC] transition-colors duration-200"
+                    >
+                      <Icon className="h-4 w-4" />
+                    </Link>
+                  )
+                })
+              )}
             </div>
           </motion.div>
         </div>

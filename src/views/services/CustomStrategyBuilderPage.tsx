@@ -3,25 +3,33 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowLeft, Check } from 'lucide-react'
-
 import { easing } from '../../constans/animation'
+import type { CMSServicePage } from '../../types/cms'
 
-const STEPS = [
+const DEFAULT_STEPS = [
     { title: 'Tell us your objective', body: 'Share your risk appetite, capital, and target market — equities, derivatives, or multi-asset.' },
     { title: 'We design the strategy', body: 'Our quant team builds a systematic model tailored to your constraints, grounded in research, not guesswork.' },
     { title: 'Backtest & validate', body: 'The strategy is stress-tested across historical regimes before you ever see it deployed live.' },
     { title: 'Deploy & monitor', body: 'Once approved, it runs live with continuous monitoring and risk oversight from our team.' },
 ]
 
-import type { CMSServicePage } from '../../types/cms'
-
 interface CustomStrategyBuilderPageProps {
     cmsService?: CMSServicePage | null
 }
 
 export default function CustomStrategyBuilderPage({ cmsService }: CustomStrategyBuilderPageProps) {
-    const title = cmsService?.hero?.title ?? cmsService?.title ?? 'Custom Strategy'
+    const title = cmsService?.hero?.title ?? cmsService?.title ?? 'Custom Strategy Builder'
     const subtitle = cmsService?.hero?.subtitle ?? cmsService?.shortDescription ?? 'A trading strategy designed around you — your capital, your risk tolerance, your market view — built and validated by our research desk from day one.'
+
+    const stepsList = cmsService?.stepsSection?.steps && cmsService.stepsSection.steps.length > 0
+        ? cmsService.stepsSection.steps.map((s) => ({ title: s.title, body: s.description ?? '' }))
+        : DEFAULT_STEPS
+
+    const ctaHeading = cmsService?.pageCtaSection?.heading ?? 'Ready to build your strategy?'
+    const ctaSubtitle = cmsService?.pageCtaSection?.subtitle ?? 'Start a conversation with our research team — no commitment required.'
+    const ctaLabel = cmsService?.pageCtaSection?.ctaLabel ?? 'Get in touch'
+    const ctaUrl = cmsService?.pageCtaSection?.ctaUrl ?? '/contact'
+
     return (
         <div className="relative min-h-screen w-full pb-24 pt-32 sm:pt-36">
             <div className="mx-auto max-w-[900px] px-5 sm:px-6">
@@ -34,10 +42,10 @@ export default function CustomStrategyBuilderPage({ cmsService }: CustomStrategy
                         Service
                     </span>
                     <h1 className="text-shadow-soft mb-5 max-w-xl font-body text-4xl font-light leading-[1.1] text-[#EAF1EC] sm:text-5xl">
-                        Custom Strategy <em className="font-display italic">Builder</em>
+                        {title}
                     </h1>
                     <p className="text-shadow-soft max-w-lg text-sm leading-relaxed text-[#DCE7E1]/85 sm:text-base">
-                        A trading strategy designed around you — your capital, your risk tolerance, your market view — built and validated by our research desk from day one.
+                        {subtitle}
                     </p>
                 </motion.div>
 
@@ -52,9 +60,9 @@ export default function CustomStrategyBuilderPage({ cmsService }: CustomStrategy
                         viewport={{ once: true, margin: '-100px' }}
                     />
 
-                    {STEPS.map((step, i) => (
+                    {stepsList.map((step, i) => (
                         <motion.div
-                            key={step.title}
+                            key={step.title + i}
                             className="relative flex gap-6"
                             initial={{ opacity: 0, x: -30 }}
                             whileInView={{ opacity: 1, x: 0 }}
@@ -86,17 +94,17 @@ export default function CustomStrategyBuilderPage({ cmsService }: CustomStrategy
                     className="cta-card mt-20 rounded-3xl p-8 text-center sm:p-10"
                 >
                     <h2 className="mb-3 text-xl font-body font-semibold text-[#1B3236] sm:text-2xl">
-                        Ready to build your strategy?
+                        {ctaHeading}
                     </h2>
                     <p className="mx-auto mb-6 max-w-sm text-sm text-[#244147]/75">
-                        Start a conversation with our research team — no commitment required.
+                        {ctaSubtitle}
                     </p>
                     <Link
-                        href="/contact"
+                        href={ctaUrl}
                         scroll={false}
                         className="inline-flex items-center gap-2 rounded-full bg-[#244147] px-6 py-3 text-sm font-medium text-[#EAF1EC] transition-transform hover:scale-105"
                     >
-                        Get in touch
+                        {ctaLabel}
                     </Link>
                 </motion.div>
             </div>

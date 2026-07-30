@@ -4,9 +4,8 @@ import ServicesHero from '../components/services/ServicesHero'
 import ServiceContainer from '../components/services/ServiceContainer'
 import { SERVICES } from '../data/services'
 import type { ServiceSummary, ServiceVisualType } from '../types/services'
-import type { CMSServicePage } from '../types/cms'
+import type { CMSServicePage, CMSServiceLandingPage } from '../types/cms'
 
-// Mapping from service slug → visual widget type (interactive, not CMS-controlled)
 const VISUAL_MAP: Record<string, ServiceVisualType> = {
   'custom-strategy-builder': 'terminal',
   'backtest': 'backtest',
@@ -16,24 +15,22 @@ const VISUAL_MAP: Record<string, ServiceVisualType> = {
 }
 
 interface ServicesPageViewProps {
-  /** CMS service pages. Falls back to SERVICES static data when empty/unavailable. */
   cmsServices?: CMSServicePage[]
+  cmsLanding?: CMSServiceLandingPage | null
 }
 
-/** Convert a CMS service page to the ServiceSummary shape that ServiceContainer expects */
 function cmsToServiceSummary(svc: CMSServicePage): ServiceSummary {
   return {
     slug: svc.slug,
     title: svc.title,
     shortDescription: svc.shortDescription ?? '',
     highlights: svc.highlights ?? [],
-    // visual is not stored in CMS — it maps from slug to the interactive widget type
     visual: VISUAL_MAP[svc.slug] ?? 'terminal',
     ctaLabel: svc.hero?.cta?.label ?? 'View Details',
   }
 }
 
-export default function ServicesPageView({ cmsServices }: ServicesPageViewProps) {
+export default function ServicesPageView({ cmsServices, cmsLanding }: ServicesPageViewProps) {
   const services: ServiceSummary[] =
     cmsServices && cmsServices.length > 0
       ? cmsServices.map(cmsToServiceSummary)
@@ -41,7 +38,10 @@ export default function ServicesPageView({ cmsServices }: ServicesPageViewProps)
 
   return (
     <div className="relative min-h-screen w-full pb-24">
-      <ServicesHero />
+      <ServicesHero
+        heading={cmsLanding?.servicesHero?.heading}
+        subtitle={cmsLanding?.servicesHero?.subtitle}
+      />
       <section className="cv-section relative px-5 py-10 sm:px-6 md:px-10 lg:px-16">
         <div className="mx-auto flex max-w-[1200px] flex-col gap-20 sm:gap-24 md:gap-28">
           {services.map((service, i) => (

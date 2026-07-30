@@ -4,20 +4,13 @@ import { CULTURE_POINTS } from '../../data/jobs'
 import { BRAND_ON_DARK } from '@/src/utils/brand'
 import StackCard from './StackCard'
 
+interface CultureStackProps {
+  culturePoints?: Array<{ title: string; body: string }>
+}
 
-/**
- * Scroll-pinned stack of cards.
- *
- * The section is taller than the viewport (total * 85vh). Its inner content
- * is `position: sticky`, so the page visually "holds" on this section: the
- * user keeps scrolling but the screen doesn't move to whatever comes next
- * until they've scrolled through every card in the stack. Each unit of
- * scroll peels the front card away and reveals the next layer underneath —
- * all previous/upcoming cards stay visible, stacked and slightly offset,
- * the whole time. Works the same way on touch (native scroll) and desktop.
- */
-export default function CultureStack() {
-    const total = CULTURE_POINTS.length
+export default function CultureStack({ culturePoints }: CultureStackProps) {
+    const list = culturePoints && culturePoints.length > 0 ? culturePoints : CULTURE_POINTS
+    const total = list.length
     const containerRef = useRef<HTMLDivElement>(null)
     const [activeIndex, setActiveIndex] = useState(0)
 
@@ -26,8 +19,6 @@ export default function CultureStack() {
         offset: ['start start', 'end end'],
     })
 
-    // Maps overall scroll progress through this section (0-1) to a
-    // continuous "card position" from 0 to total-1.
     const currentFloat = useTransform(scrollYProgress, [0, 1], [0, total - 1])
 
     useEffect(() => {
@@ -45,7 +36,7 @@ export default function CultureStack() {
                 </p>
 
                 <div className="relative w-full max-w-xl sm:max-w-2xl" style={{ height: 340 }}>
-                    {CULTURE_POINTS.map((point, i) => (
+                    {list.map((point, i) => (
                         <StackCard
                             key={point.title}
                             point={point}
