@@ -240,7 +240,7 @@ export default function LegalPageLayout({
                                     <p className="text-xs text-[#244147]/60 leading-relaxed">
                                         Questions about this document? Reach us at{' '}
                                         <a href="mailto:hello@arthagama.com" className="underline hover:text-[#1B3236]">
-                                            info@arthagama.com
+                                            arthagama78@gmail.com
                                         </a>
                                         , or see our{' '}
                                         <Link href="/contact" scroll={false} className="underline hover:text-[#1B3236]">

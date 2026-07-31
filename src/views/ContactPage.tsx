@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from 'framer-motion'
-import ContactHero from '../components/contact/ContactHero'
+import Hero from '../components/ui/Hero'
 import ContactInfoCards from '../components/contact/ContactInfoCards'
 import ContactForm from '../components/contact/ContactForm'
 import ContactMap from '../components/contact/ContactMap'
@@ -18,9 +18,14 @@ interface ContactPageProps {
 export default function ContactPage({ cmsContactCards, cmsContactPage }: ContactPageProps) {
   return (
     <div className="relative min-h-screen w-full pb-24">
-      <ContactHero
-        title={cmsContactPage?.hero?.title}
-        subtitle={cmsContactPage?.hero?.subtitle}
+      <Hero
+        title={cmsContactPage?.hero?.title ?? "Let's start a conversation"}
+        titleHighlight={cmsContactPage?.hero?.titleHighlight ?? 'conversation'}
+        subtitle={
+          cmsContactPage?.hero?.subtitle ??
+          "Whether you're exploring strategies, evaluating a partnership, or just have a question — our team typically responds within one business day."
+        }
+        backgroundImage={cmsContactPage?.hero?.backgroundImage}
       />
 
       <section className="cv-section relative px-5 pb-14 sm:px-6 md:px-10 lg:px-16">

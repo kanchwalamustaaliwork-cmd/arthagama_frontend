@@ -37,56 +37,14 @@ export interface CMSSeo {
   noSitemap: boolean
 }
 
-// ── Site Settings ──────────────────────────────────────────
-
-export interface CMSSiteSettings {
-  siteName: string
-  tagline: string | null
-  logo: CMSMedia | null
-  logoDark: CMSMedia | null
-  logoLight: CMSMedia | null
-  favicon: CMSMedia | null
-  primaryColor: string | null
-  secondaryColor: string | null
-  backgroundVideo: CMSMedia | null
-  backgroundVideoUrl: string | null
-  email: string | null
-  supportEmail: string | null
-  salesEmail: string | null
-  phone: string | null
-  phonePretty: string | null
-  address: string | null
-  googleMapsUrl: string | null
-  workingHours: string | null
-  seoDefaults: {
-    metaTitle: string | null
-    metaDescription: string | null
-    ogImage: CMSMedia | null
-    twitterHandle: string | null
-  }
-  analytics: {
-    googleAnalyticsId: string | null
-    metaPixelId: string | null
-  }
-}
 
 // ── Navigation ─────────────────────────────────────────────
-
-export interface CMSNavDropdownItem {
-  label: string
-  url: string
-  description: string | null
-  icon: string | null
-  visible: boolean
-}
 
 export interface CMSNavLink {
   label: string
   url: string | null
-  openInNewTab: boolean
   visible: boolean
   order: number
-  dropdown: CMSNavDropdownItem[]
 }
 
 export interface CMSSocialLink {
@@ -101,9 +59,10 @@ export interface CMSSocialLink {
 export interface CMSNavigation {
   logo: CMSMedia | null
   navLinks: CMSNavLink[]
-  ctaButton: { label: string | null; url: string | null; visible: boolean } | null
   loginButton: { label: string; url: string; visible: boolean } | null
   signupButton: { label: string; url: string; visible: boolean } | null
+  dashboardButton: { label: string; url: string; visible: boolean } | null
+  logoutButton: { label: string; url: string; visible: boolean } | null
   heroSocialLinks?: CMSSocialLink[]
 }
 
@@ -112,7 +71,6 @@ export interface CMSNavigation {
 export interface CMSFooterLink {
   label: string
   url: string
-  openInNewTab: boolean
 }
 
 export interface CMSFooterColumn {
@@ -121,7 +79,6 @@ export interface CMSFooterColumn {
 }
 
 export interface CMSFooter {
-  companyDescription?: string | null
   footerCtaHeading?: string | null
   footerCtaLabel?: string | null
   footerCtaUrl?: string | null
@@ -132,18 +89,9 @@ export interface CMSFooter {
   } | null
   columns: CMSFooterColumn[]
   bottomLinks?: CMSFooterLink[]
-  newsletter: {
-    visible: boolean
-    heading: string | null
-    subtext: string | null
-    placeholder: string
-    buttonLabel: string
-  } | null
   socialLinks: CMSSocialLink[]
   copyright: string | null
   disclaimer: string | null
-  logo: CMSMedia | null
-  tagline: string | null
 }
 
 // ── Home Page ──────────────────────────────────────────────
@@ -154,10 +102,10 @@ export interface CMSHeroSection {
   titleEmphasis: string | null
   titleSuffix: string | null
   subtitle: string | null
-  backgroundImage: CMSMedia | null
-  heroIllustration: CMSMedia | null
-  primaryCta: CMSCta | null
-  secondaryCta: CMSCta | null
+  backgroundImage?: CMSMedia | null
+  heroIllustration?: CMSMedia | null
+  primaryCta?: CMSCta | null
+  secondaryCta?: CMSCta | null
 }
 
 export interface CMSServiceCard {
@@ -196,13 +144,13 @@ export interface CMSHomePage {
   whatWeDo: {
     heading: string | null
     subheading: string | null
-    cards: CMSServiceCard[]
+    cards?: CMSServiceCard[]
   }
   strategiesSection: {
     heading: string | null
     description: string | null
-    ctaLabel: string | null
-    ctaUrl: string | null
+    ctaLabel?: string | null
+    ctaUrl?: string | null
     cards?: Array<{ name: string; description: string | null }>
   }
   homeFaq?: {
@@ -214,7 +162,7 @@ export interface CMSHomePage {
     visible: boolean
     testimonials: CMSTestimonial[]
   }
-  partnersSection: {
+  partnersSection?: {
     heading: string | null
     visible: boolean
     partners: CMSPartner[]
@@ -237,10 +185,10 @@ export interface CMSAboutPage {
   slug: string
   seo: CMSSeo
   hero: {
-    eyebrow: string | null
     title: string | null
+    titleHighlight?: string | null
     subtitle: string | null
-    backgroundImage: CMSMedia | null
+    backgroundImage?: CMSMedia | null
   }
   missionVision: {
     missionHeading: string | null
@@ -248,12 +196,11 @@ export interface CMSAboutPage {
     visionHeading: string | null
     vision: string | null
   }
-  companyValues: Array<{ title: string; description: string | null; icon: string | null }>
+  companyValues: Array<{ title: string; description: string | null }>
   journey: {
     heading: string | null
     events: Array<{ year: string; title: string; description: string | null }>
   }
-  companyNumbers: Array<{ number: string; label: string }>
   teamSectionHeading?: string | null
   teamSectionSubtext?: string | null
   cta: { heading: string | null; subtext: string | null; label: string | null; url: string | null }
@@ -269,7 +216,9 @@ export interface CMSCareersPage {
   seo: CMSSeo
   careersHero: {
     heading: string | null
+    titleHighlight?: string | null
     subtitle: string | null
+    backgroundImage?: CMSMedia | null
   }
   careersIntro: {
     heading: string | null
@@ -325,51 +274,13 @@ export interface CMSServiceLandingPage {
   seo: CMSSeo
   servicesHero: {
     heading: string | null
+    titleHighlight?: string | null
     subtitle: string | null
+    backgroundImage?: CMSMedia | null
   }
   updatedAt: string
 }
 
-export interface CMSServicePage {
-  id: string
-  slug: string
-  title: string
-  shortDescription: string | null
-  visible: boolean
-  order: number
-  highlights: string[]
-  hero: {
-    title: string | null
-    subtitle: string | null
-    backgroundImage: CMSMedia | null
-    cta: CMSCta | null
-  }
-  featuresSection: {
-    heading: string | null
-    subheading: string | null
-    features: Array<{ icon: string | null; title: string; description: string | null }>
-  }
-  benefitsSection: {
-    heading: string | null
-    benefits: Array<{ title: string; description: string | null }>
-  }
-  stepsSection: {
-    heading: string | null
-    steps: Array<{ stepNumber: number | null; title: string; description: string | null; icon: string | null }>
-  }
-  faqSection: {
-    heading: string | null
-    faqs: Array<{ question: string; answer: string }>
-  }
-  pageCtaSection?: {
-    heading: string | null
-    subtitle: string | null
-    ctaLabel: string | null
-    ctaUrl: string | null
-  }
-  seo: CMSSeo
-  updatedAt: string
-}
 
 // ── Jobs ───────────────────────────────────────────────────
 
@@ -415,7 +326,12 @@ export interface CMSContactCard {
 
 export interface CMSContactPage {
   id: string
-  hero: { title: string | null; subtitle: string | null }
+  hero: {
+    title: string | null
+    titleHighlight?: string | null
+    subtitle: string | null
+    backgroundImage?: CMSMedia | null
+  }
   contactInfo: {
     phone: string | null
     phonePretty: string | null

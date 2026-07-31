@@ -6,7 +6,6 @@ import { easing } from '../../constans/animation'
 interface ValueItem {
   title: string
   description: string | null
-  icon: string | null
 }
 
 interface CompanyValuesSectionProps {
@@ -14,9 +13,9 @@ interface CompanyValuesSectionProps {
 }
 
 const DEFAULT_VALUES: ValueItem[] = [
-  { title: 'Data Over Emotion', description: 'Every strategy is grounded in systematic empirical research, removing psychological bias from execution.', icon: 'database' },
-  { title: 'Disciplined Risk Controls', description: 'Risk parameters are strictly programmed into our code, protecting capital across volatile market regimes.', icon: 'shield' },
-  { title: 'Institutional Scale', description: 'Built for high performance with robust server infrastructure and resilient broker API pipelines.', icon: 'cpu' },
+  { title: 'Data Over Emotion', description: 'Every strategy is grounded in systematic empirical research, removing psychological bias from execution.' },
+  { title: 'Disciplined Risk Controls', description: 'Risk parameters are strictly programmed into our code, protecting capital across volatile market regimes.' },
+  { title: 'Institutional Scale', description: 'Built for high performance with robust server infrastructure and resilient broker API pipelines.' },
 ]
 
 export default function CompanyValuesSection({ values }: CompanyValuesSectionProps) {

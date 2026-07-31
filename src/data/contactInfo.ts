@@ -17,8 +17,8 @@ export const CONTACT_INFO: ContactInfoItem[] = [
     {
         id: 'email',
         label: 'Email Us',
-        value: 'info@arthagama.com',
-        href: 'mailto:info@arthagama.com',
+        value: 'arthagama78@gmail.com',
+        href: 'mailto:arthagama78@gmail.com',
         icon: 'mail',
     },
     {

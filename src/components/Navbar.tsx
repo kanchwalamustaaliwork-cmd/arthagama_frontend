@@ -31,11 +31,13 @@ interface NavbarProps {
 export default function Navbar({ cmsNav }: NavbarProps) {
   const pathname = usePathname()
 
-  const navLinks = cmsNav?.navLinks && cmsNav.navLinks.length > 0
+  const filteredCmsLinks = cmsNav?.navLinks
     ? cmsNav.navLinks
-        .filter((l) => l.visible)
+        .filter((l) => l.visible === true)
         .map((l) => ({ label: l.label, to: l.url ?? '#' }))
-    : NAV_LINKS
+    : []
+
+  const navLinks = filteredCmsLinks.length > 0 ? filteredCmsLinks : NAV_LINKS
 
   const isActive = (to: string) => {
     if (to === '/') return pathname === '/'
@@ -44,22 +46,12 @@ export default function Navbar({ cmsNav }: NavbarProps) {
 
   return (
     <div style={THEME_VARS}>
-      {/* ============================================================
-       * DESKTOP / TABLET PILL — unchanged liquid-blob nav, now only
-       * rendered from `md` (≥768px) upward. Below that, the hamburger
-       * takes over entirely so the floating pill never has to fight
-       * for space on phones.
-       * ========================================================== */}
       <div className="hidden min-[769px]:block">
-        <DesktopPillNav navLinks={navLinks} isActive={isActive} />
+        <DesktopPillNav navLinks={navLinks} isActive={isActive} cmsNav={cmsNav} />
       </div>
 
-      {/* ============================================================
-       * MOBILE — floating hamburger, top-right, with a cloth-wrap
-       * open/close panel. Only rendered below `md`.
-       * ========================================================== */}
       <div className="min-[769px]:hidden">
-        <MobileMenu navLinks={navLinks} isActive={isActive} />
+        <MobileMenu navLinks={navLinks} isActive={isActive} cmsNav={cmsNav} />
       </div>
     </div>
   )

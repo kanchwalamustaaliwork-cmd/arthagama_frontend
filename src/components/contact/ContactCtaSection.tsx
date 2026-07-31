@@ -18,7 +18,7 @@ export default function ContactCtaSection({ cmsCta }: ContactCtaSectionProps) {
   const heading = cmsCta?.heading ?? 'Prefer a direct meeting or call?'
   const subtitle = cmsCta?.subtitle ?? 'Schedule a session with our quantitative team to discuss strategy development, infrastructure, or partnership options.'
   const label = cmsCta?.ctaLabel ?? 'Book a consultation'
-  const url = cmsCta?.ctaUrl ?? 'mailto:info@arthagama.com'
+  const url = cmsCta?.ctaUrl ?? 'mailto:arthagama78@gmail.com'
 
   return (
     <section className="relative px-4 py-12 sm:px-6 sm:py-16 md:px-10 lg:px-16 overflow-hidden">

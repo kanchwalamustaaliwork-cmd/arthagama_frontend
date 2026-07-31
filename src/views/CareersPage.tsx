@@ -5,7 +5,9 @@ import { useState } from 'react'
 import type { JobListing } from '../types/careers'
 import type { CMSCareersPage } from '../types/cms'
 import { useJobs } from '../hooks/useJobs'
-import CareersHero from '../components/careers/CareersHero'
+import Hero from '../components/ui/Hero'
+import TypewriterRole from '../components/ui/TypewriterRole'
+import CultureStack from '../components/careers/CultureStack'
 import CareersIntro from '../components/careers/CareersIntro'
 import CareersBenefits from '../components/careers/CareersBenefits'
 import HiringProcess from '../components/careers/HiringProcess'
@@ -32,12 +34,20 @@ export default function CareersPage({ initialJobs, cmsCareers }: CareersPageView
 
   return (
     <div className="relative min-h-screen w-full pb-24">
-      <CareersHero
-        heading={cmsCareers?.careersHero?.heading}
-        subtitle={cmsCareers?.careersHero?.subtitle}
-        culturePoints={cmsCareers?.culturePoints}
-        typewriterRoles={cmsCareers?.typewriterRoles}
+      <Hero
+        title={cmsCareers?.careersHero?.heading ?? "Don't just find a Job. Build what moves the markets."}
+        titleHighlight={cmsCareers?.careersHero?.titleHighlight ?? 'Job'}
+        subtitle={
+          cmsCareers?.careersHero?.subtitle ?? (
+            <>
+              "We're hiring across <TypewriterRole roles={cmsCareers?.typewriterRoles} /> — join a team that ships real systems, not slideware."
+            </>
+          )
+        }
+        backgroundImage={cmsCareers?.careersHero?.backgroundImage}
       />
+
+      <CultureStack culturePoints={cmsCareers?.culturePoints} />
 
       <CareersIntro
         heading={cmsCareers?.careersIntro?.heading}

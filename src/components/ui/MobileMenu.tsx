@@ -9,10 +9,12 @@ import {
 } from 'framer-motion'
 import { MobileNavAuthButtons } from './NavAuthButtons'
 
+import type { CMSNavigation } from '@/src/types/cms'
+
 /* ────────────────────────────────────────────────────────────────────────
  * Mobile menu — floating hamburger (top-right) + cloth-wrap panel
  * ──────────────────────────────────────────────────────────────────────── */
-export default function MobileMenu({ navLinks, isActive }: { navLinks: { label: string; to: string }[]; isActive: (to: string) => boolean }) {
+export default function MobileMenu({ navLinks, isActive, cmsNav }: { navLinks: { label: string; to: string }[]; isActive: (to: string) => boolean; cmsNav?: CMSNavigation | null }) {
     const [open, setOpen] = useState(false)
     const pathname = usePathname()
 
@@ -170,7 +172,7 @@ export default function MobileMenu({ navLinks, isActive }: { navLinks: { label: 
 
                                 {/* Auth buttons — shows Login+Signup or Logout depending on session */}
                                 <div className="flex flex-col gap-2 px-2 pb-1">
-                                    <MobileNavAuthButtons navLinksCount={navLinks.length} />
+                                    <MobileNavAuthButtons navLinksCount={navLinks.length} cmsNav={cmsNav} />
                                 </div>
                             </div>
                         </motion.div>

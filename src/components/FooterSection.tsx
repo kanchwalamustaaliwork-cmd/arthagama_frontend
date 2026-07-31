@@ -4,11 +4,11 @@ import { useRef, useState } from 'react'
 import Link from 'next/link'
 import gsap from 'gsap'
 import { motion } from 'framer-motion'
-import { FaTwitter, FaLinkedinIn, FaGithub, FaInstagram, FaFacebook, FaYoutube } from 'react-icons/fa6'
+import { FaTwitter, FaLinkedinIn, FaGithub, FaInstagram, FaFacebook, FaYoutube, FaShareNodes } from 'react-icons/fa6'
 import { easing, viewMotion } from '../constans/animation'
 import { QUICK_LINKS, ACCOUNT_LINKS, IMPORTANT_LINKS, SOCIALS } from '../data/footer-links'
 import TiltImage from './ui/TiltImage'
-import type { CMSFooter, CMSSocialLink } from '@/src/types/cms'
+import type { CMSFooter } from '@/src/types/cms'
 
 const cascadeContainer = {
   hidden: {},
@@ -32,12 +32,23 @@ function renderSocialIcon(platform: string) {
   if (p.includes('instagram')) return <FaInstagram className="h-4 w-4" />
   if (p.includes('facebook')) return <FaFacebook className="h-4 w-4" />
   if (p.includes('youtube')) return <FaYoutube className="h-4 w-4" />
-  return <FaLinkedinIn className="h-4 w-4" />
+  return <FaShareNodes className="h-4 w-4" />
 }
 
 interface FooterSectionProps {
   cmsFooter?: CMSFooter | null
 }
+
+const DEFAULT_COLUMNS = [
+  {
+    heading: 'Pages',
+    links: QUICK_LINKS.map((l) => ({ label: l.label, url: l.to })),
+  },
+  {
+    heading: 'Account',
+    links: ACCOUNT_LINKS.map((l) => ({ label: l.label, url: l.to })),
+  },
+]
 
 export default function FooterSection({ cmsFooter }: FooterSectionProps) {
   const [emailHovered, setEmailHovered] = useState(false)
@@ -47,22 +58,35 @@ export default function FooterSection({ cmsFooter }: FooterSectionProps) {
   const ctaLabel = cmsFooter?.footerCtaLabel ?? 'Contact us'
   const ctaUrl = cmsFooter?.footerCtaUrl ?? '/contact'
   const copyrightText = cmsFooter?.copyright ?? '© 2026 ARTHAGAMA. All rights reserved.'
-  const disclaimerText = cmsFooter?.disclaimer ?? 'Trading and investing in financial markets involves risk, including the potential loss of principal. Past performance is not indicative of future results. Nothing on this site constitutes financial advice.'
-  const companyDesc = cmsFooter?.companyDescription
+  const disclaimerText =
+    cmsFooter?.disclaimer ??
+    'Trading and investing in financial markets involves risk, including the potential loss of principal. Past performance is not indicative of future results. Nothing on this site constitutes financial advice.'
 
-  // Columns from CMS or fallback
-  const pagesCol = cmsFooter?.columns?.[0]?.links?.map((l) => ({ label: l.label, to: l.url })) ?? QUICK_LINKS
-  const accountCol = cmsFooter?.columns?.[1]?.links?.map((l) => ({ label: l.label, to: l.url })) ?? ACCOUNT_LINKS
-  const pagesHeading = cmsFooter?.columns?.[0]?.heading ?? 'Pages'
-  const accountHeading = cmsFooter?.columns?.[1]?.heading ?? 'Account'
+  // Dynamic columns support (0 to 4 columns max)
+  const rawColumns =
+    cmsFooter?.columns && cmsFooter.columns.length > 0 ? cmsFooter.columns : DEFAULT_COLUMNS
+  const columns = rawColumns.slice(0, 4)
 
-  // Bottom links
+  // Bottom legal links
   const bottomLinks = cmsFooter?.bottomLinks?.map((l) => ({ label: l.label, to: l.url })) ?? IMPORTANT_LINKS
 
-  // Social links
-  const socialLinks = cmsFooter?.socialLinks && cmsFooter.socialLinks.length > 0
-    ? cmsFooter.socialLinks
+  // Filter social links strictly by visible === true
+  const socialLinks = cmsFooter?.socialLinks
+    ? cmsFooter.socialLinks.filter((s) => s.visible === true)
     : null
+
+  // Calculate dynamic grid layout class based on total items (link columns + contact info + disclaimer)
+  const totalGridItems = columns.length + 2
+  const gridClass =
+    totalGridItems === 2
+      ? 'grid grid-cols-1 sm:grid-cols-2 max-w-3xl mx-auto gap-8 mb-10 sm:mb-12 pb-10 sm:pb-12 border-b border-[#B8CEC2]/15'
+      : totalGridItems === 3
+        ? 'grid grid-cols-1 sm:grid-cols-3 gap-8 mb-10 sm:mb-12 pb-10 sm:pb-12 border-b border-[#B8CEC2]/15'
+        : totalGridItems === 4
+          ? 'grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 sm:gap-8 mb-10 sm:mb-12 pb-10 sm:pb-12 border-b border-[#B8CEC2]/15'
+          : totalGridItems === 5
+            ? 'grid grid-cols-2 md:grid-cols-5 gap-x-6 gap-y-8 sm:gap-8 mb-10 sm:mb-12 pb-10 sm:pb-12 border-b border-[#B8CEC2]/15'
+            : 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-6 gap-y-8 sm:gap-8 mb-10 sm:mb-12 pb-10 sm:pb-12 border-b border-[#B8CEC2]/15'
 
   // Magnetic hover for the email button
   const handleMagneticMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -73,6 +97,7 @@ export default function FooterSection({ cmsFooter }: FooterSectionProps) {
     const y = e.clientY - rect.top - rect.height / 2
     gsap.to(el, { x: x * 0.25, y: y * 0.35, duration: 0.4, ease: 'power2.out' })
   }
+
   const handleMagneticLeave = () => {
     const el = emailBtnRef.current
     if (!el) return
@@ -146,77 +171,61 @@ export default function FooterSection({ cmsFooter }: FooterSectionProps) {
             </Link>
           </motion.div>
 
-          {/* Quick Links Grid */}
+          {/* Dynamic Grid Section */}
           <motion.div
-            className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-8 sm:gap-8 mb-10 sm:mb-12 pb-10 sm:pb-12 border-b border-[#B8CEC2]/15"
+            className={gridClass}
             variants={cascadeContainer}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-100px' }}
           >
-            {/* Pages Column */}
-            <motion.div variants={cascadeItem}>
-              <p className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.25em] mb-4">{pagesHeading}</p>
-              <ul className="flex flex-col gap-2.5">
-                {pagesCol.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.to}
-                      scroll={false}
-                      className="text-sm text-[#DCE7E1]/80 hover:text-[#EAF1EC] transition-colors duration-200 inline-flex items-center gap-1.5 group"
-                    >
-                      <span className="w-0 group-hover:w-2 h-px bg-[#EAF1EC] transition-all duration-200" />
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
+            {/* Render 0 to 4 dynamic link columns from CMS */}
+            {columns.map((col, idx) => (
+              <motion.div key={col.heading || idx} variants={cascadeItem}>
+                <p className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.25em] mb-4">
+                  {col.heading}
+                </p>
+                <ul className="flex flex-col gap-2.5">
+                  {col.links?.map((link) => (
+                    <li key={link.label}>
+                      <Link
+                        href={link.url}
+                        scroll={false}
+                        className="text-sm text-[#DCE7E1]/80 hover:text-[#EAF1EC] transition-colors duration-200 inline-flex items-center gap-1.5 group"
+                      >
+                        <span className="w-0 group-hover:w-2 h-px bg-[#EAF1EC] transition-all duration-200" />
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
 
-            {/* Account Column */}
+            {/* Contact Info Column */}
             <motion.div variants={cascadeItem}>
-              <p className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.25em] mb-4">{accountHeading}</p>
-              <ul className="flex flex-col gap-2.5">
-                {accountCol.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.to}
-                      scroll={false}
-                      className="text-sm text-[#DCE7E1]/80 hover:text-[#EAF1EC] transition-colors duration-200 inline-flex items-center gap-1.5 group"
-                    >
-                      <span className="w-0 group-hover:w-2 h-px bg-[#EAF1EC] transition-all duration-200" />
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-
-            {/* Contact Info or Company Description */}
-            <motion.div variants={cascadeItem}>
-              <p className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.25em] mb-4">Contact Info</p>
+              <p className="text-xs text-[#B8CEC2]/70 uppercase tracking-[0.25em] mb-4">
+                Contact Info
+              </p>
               <div className="text-xs text-[#DCE7E1]/80 space-y-2 leading-relaxed">
                 {cmsFooter?.contactInfo?.email && <p>Email: {cmsFooter.contactInfo.email}</p>}
                 {cmsFooter?.contactInfo?.phone && <p>Phone: {cmsFooter.contactInfo.phone}</p>}
                 {cmsFooter?.contactInfo?.address && <p>Address: {cmsFooter.contactInfo.address}</p>}
                 {!cmsFooter?.contactInfo && (
                   <>
-                    <p>Email: info@arthagama.com</p>
+                    <p>Email: arthagama78@gmail.com</p>
                     <p>Phone: +91 22 4001 5566</p>
                   </>
                 )}
-                {companyDesc && <p className="pt-2 text-[11px] text-[#DCE7E1]/70">{companyDesc}</p>}
               </div>
             </motion.div>
 
-            {/* Disclaimer */}
+            {/* Disclaimer Column */}
             <motion.div variants={cascadeItem}>
               <p className="text-xs text-[#B8CEC2] uppercase tracking-[0.25em] mb-4 font-medium">
                 Disclaimer:
               </p>
-              <p className="text-[11px] leading-relaxed text-[#DCE7E1]/85">
-                {disclaimerText}
-              </p>
+              <p className="text-[11px] leading-relaxed text-[#DCE7E1]/85">{disclaimerText}</p>
             </motion.div>
           </motion.div>
 
@@ -250,9 +259,7 @@ export default function FooterSection({ cmsFooter }: FooterSectionProps) {
             transition={{ duration: 0.8, ease: easing, delay: 0.2 }}
             viewport={{ once: true, margin: '-100px' }}
           >
-            <p className="text-xs text-[#B8CEC2]/50">
-              {copyrightText}
-            </p>
+            <p className="text-xs text-[#B8CEC2]/50">{copyrightText}</p>
             <div className="flex items-center gap-6">
               {socialLinks ? (
                 socialLinks.map((s) => (

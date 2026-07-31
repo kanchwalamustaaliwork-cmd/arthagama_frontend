@@ -8,22 +8,16 @@ import StockSearchPicker from '../../components/services/compare/StockSearchPick
 import CompareChart from '../../components/services/compare/CompareChart'
 import MetricsComparisonTable from '../../components/services/compare/MetricsComparisonTable'
 import { easing } from '../../constans/animation'
-import type { CMSServicePage } from '../../types/cms'
-
-interface CompareStocksPageProps {
-    cmsService?: CMSServicePage | null
-}
-
-export default function CompareStocksPage({ cmsService }: CompareStocksPageProps) {
-    const title = cmsService?.hero?.title ?? cmsService?.title ?? 'Compare stocks'
-    const subtitle = cmsService?.hero?.subtitle ?? cmsService?.shortDescription ?? `Pick up to 3 stocks and compare their historical performance and key risk metrics side by side.`
+export default function CompareStocksPage() {
+    const title = 'Compare stocks'
+    const subtitle = `Pick up to 3 stocks and compare their historical performance and key risk metrics side by side.`
     const { selected, availableResults, query, setQuery, addStock, removeStock, canAddMore, maxSelected } =
         useStockCompare()
 
-    const ctaHeading = cmsService?.pageCtaSection?.heading ?? 'Want this analysis run on your own watchlist?'
-    const ctaSubtitle = cmsService?.pageCtaSection?.subtitle
-    const ctaLabel = cmsService?.pageCtaSection?.ctaLabel ?? 'Talk to us'
-    const ctaUrl = cmsService?.pageCtaSection?.ctaUrl ?? '/contact'
+    const ctaHeading = 'Want this analysis run on your own watchlist?'
+    const ctaSubtitle = undefined
+    const ctaLabel = 'Talk to us'
+    const ctaUrl = '/contact'
 
     return (
         <div className="relative min-h-screen w-full pb-24 pt-32 sm:pt-36">

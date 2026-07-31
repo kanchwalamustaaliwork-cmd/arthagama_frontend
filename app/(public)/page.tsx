@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { getHomePage, getStatistics, getTestimonials, getPartners } from '@/src/lib/cms/home'
+import { getHomePage, getStatistics, getTestimonials } from '@/src/lib/cms/home'
 import { getNavigation } from '@/src/lib/cms/navigation'
 import HomePageView from '@/src/views/HomePage'
 
@@ -33,11 +33,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [cmsData, cmsStats, cmsTestimonials, cmsPartners, cmsNav] = await Promise.all([
+  const [cmsData, cmsStats, cmsTestimonials, cmsNav] = await Promise.all([
     getHomePage(),
     getStatistics(),
     getTestimonials(),
-    getPartners(),
     getNavigation(),
   ])
 
@@ -46,7 +45,6 @@ export default async function HomePage() {
       cmsData={cmsData}
       cmsStats={cmsStats}
       cmsTestimonials={cmsTestimonials}
-      cmsPartners={cmsPartners}
       cmsNav={cmsNav}
     />
   )

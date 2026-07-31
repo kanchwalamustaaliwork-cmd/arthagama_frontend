@@ -12,10 +12,12 @@ import {
 import NavLogo from './NavLogo'
 import { DesktopNavAuthButtons } from './NavAuthButtons'
 
+import type { CMSNavigation } from '@/src/types/cms'
+
 /* ────────────────────────────────────────────────────────────────────────
  * Desktop pill nav (original component, untouched logic/animation)
  * ──────────────────────────────────────────────────────────────────────── */
-export default function DesktopPillNav({ navLinks, isActive }: { navLinks: { label: string; to: string }[]; isActive: (to: string) => boolean }) {
+export default function DesktopPillNav({ navLinks, isActive, cmsNav }: { navLinks: { label: string; to: string }[]; isActive: (to: string) => boolean; cmsNav?: CMSNavigation | null }) {
     const [scrolled, setScrolled] = useState(false)
     const containerRef = useRef<HTMLDivElement>(null)
     const linkRefs = useRef<(HTMLAnchorElement | null)[]>([])
@@ -167,7 +169,7 @@ export default function DesktopPillNav({ navLinks, isActive }: { navLinks: { lab
                 <div className="w-px h-5 mx-1 hidden sm:block" style={{ background: 'hsl(var(--mint) / 0.25)' }} />
 
                 {/* Auth Buttons — shows Login+Signup when logged out, Logout when logged in */}
-                <DesktopNavAuthButtons />
+                <DesktopNavAuthButtons cmsNav={cmsNav} />
             </div>
         </nav>
     )

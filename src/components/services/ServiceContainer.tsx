@@ -13,12 +13,12 @@ export default function ServiceContainer({ service, reverse, index }: ServiceCon
     const router = useRouter()
 
     const handleCardClick = () => {
+        const dest = service.url || `/services/${service.slug}`
         if (!isAuthenticated) {
-            const dest = `/services/${service.slug}`
             setPendingRedirect(dest)
             router.push(`/login?redirectTo=${encodeURIComponent(dest)}`)
         } else {
-            router.push('/services/coming-soon')
+            router.push(dest)
         }
     }
 

@@ -5,8 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowLeft, ChevronDown } from 'lucide-react'
 import { easing } from '../../constans/animation'
-import type { CMSServicePage } from '../../types/cms'
-
 const TOPICS = [
     { title: 'Market Regime Analysis', body: 'A monthly breakdown of prevailing volatility, trend, and correlation regimes across major indices.' },
     { title: 'Factor Performance Review', body: 'How momentum, value, and volatility factors performed over the past month, and what it signals going forward.' },
@@ -46,24 +44,17 @@ function AccordionItem({
     )
 }
 
-interface ResearchReportPageProps {
-    cmsService?: CMSServicePage | null
-}
-
-export default function ResearchReportPage({ cmsService }: ResearchReportPageProps) {
-    const title = cmsService?.hero?.title ?? cmsService?.title ?? 'Research Report'
-    const subtitle = cmsService?.hero?.subtitle ?? cmsService?.shortDescription ?? 'Data-driven research on market regimes, factor performance, and strategy viability — published monthly by our research desk.'
+export default function ResearchReportPage() {
+    const title = 'Research Report'
+    const subtitle = 'Data-driven research on market regimes, factor performance, and strategy viability — published monthly by our research desk.'
     const [openIndex, setOpenIndex] = useState(0)
     const [activeImage, setActiveImage] = useState(0)
 
-    const topicsList = cmsService?.faqSection?.faqs && cmsService.faqSection.faqs.length > 0
-        ? cmsService.faqSection.faqs.map((f) => ({ title: f.question, body: f.answer }))
-        : TOPICS
-
-    const ctaHeading = cmsService?.pageCtaSection?.heading ?? 'Get the report in your inbox'
-    const ctaSubtitle = cmsService?.pageCtaSection?.subtitle
-    const ctaLabel = cmsService?.pageCtaSection?.ctaLabel ?? 'Subscribe'
-    const ctaUrl = cmsService?.pageCtaSection?.ctaUrl ?? '/contact'
+    const topicsList = TOPICS
+    const ctaHeading = 'Get the report in your inbox'
+    const ctaSubtitle = undefined
+    const ctaLabel = 'Subscribe'
+    const ctaUrl = '/contact'
 
     return (
         <div className="relative min-h-screen w-full pb-24 pt-32 sm:pt-36">

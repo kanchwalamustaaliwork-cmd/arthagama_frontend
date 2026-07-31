@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowLeft, Check } from 'lucide-react'
 import { easing } from '../../constans/animation'
-import type { CMSServicePage } from '../../types/cms'
+
 
 const DEFAULT_STEPS = [
     { title: 'Tell us your objective', body: 'Share your risk appetite, capital, and target market — equities, derivatives, or multi-asset.' },
@@ -13,22 +13,16 @@ const DEFAULT_STEPS = [
     { title: 'Deploy & monitor', body: 'Once approved, it runs live with continuous monitoring and risk oversight from our team.' },
 ]
 
-interface CustomStrategyBuilderPageProps {
-    cmsService?: CMSServicePage | null
-}
+export default function CustomStrategyBuilderPage() {
+    const title = 'Custom Strategy Builder'
+    const subtitle = 'A trading strategy designed around you — your capital, your risk tolerance, your market view — built and validated by our research desk from day one.'
 
-export default function CustomStrategyBuilderPage({ cmsService }: CustomStrategyBuilderPageProps) {
-    const title = cmsService?.hero?.title ?? cmsService?.title ?? 'Custom Strategy Builder'
-    const subtitle = cmsService?.hero?.subtitle ?? cmsService?.shortDescription ?? 'A trading strategy designed around you — your capital, your risk tolerance, your market view — built and validated by our research desk from day one.'
+    const stepsList = DEFAULT_STEPS
 
-    const stepsList = cmsService?.stepsSection?.steps && cmsService.stepsSection.steps.length > 0
-        ? cmsService.stepsSection.steps.map((s) => ({ title: s.title, body: s.description ?? '' }))
-        : DEFAULT_STEPS
-
-    const ctaHeading = cmsService?.pageCtaSection?.heading ?? 'Ready to build your strategy?'
-    const ctaSubtitle = cmsService?.pageCtaSection?.subtitle ?? 'Start a conversation with our research team — no commitment required.'
-    const ctaLabel = cmsService?.pageCtaSection?.ctaLabel ?? 'Get in touch'
-    const ctaUrl = cmsService?.pageCtaSection?.ctaUrl ?? '/contact'
+    const ctaHeading = 'Ready to build your strategy?'
+    const ctaSubtitle = 'Start a conversation with our research team — no commitment required.'
+    const ctaLabel = 'Get in touch'
+    const ctaUrl = '/contact'
 
     return (
         <div className="relative min-h-screen w-full pb-24 pt-32 sm:pt-36">

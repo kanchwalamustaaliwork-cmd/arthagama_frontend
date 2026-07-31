@@ -5,16 +5,14 @@ import WhatWeDoSection from '../components/home/WhatWeDoSection'
 import BasicStatsSection from '../components/home/BasicStatsSection'
 import StrategiesSection from '../components/home/StrategiesSection'
 import TestimonialsSection from '../components/home/TestimonialsSection'
-import PartnersSection from '../components/home/PartnersSection'
 import HomeFaqSection from '../components/home/HomeFaqSection'
 import HomeCtaSection from '../components/home/HomeCtaSection'
-import type { CMSHomePage, CMSStatistic, CMSTestimonial, CMSPartner, CMSNavigation } from '../types/cms'
+import type { CMSHomePage, CMSStatistic, CMSTestimonial, CMSNavigation } from '../types/cms'
 
 interface HomePageViewProps {
   cmsData?: CMSHomePage | null
   cmsStats?: CMSStatistic[]
   cmsTestimonials?: CMSTestimonial[]
-  cmsPartners?: CMSPartner[]
   cmsNav?: CMSNavigation | null
 }
 
@@ -22,16 +20,11 @@ export default function HomePageView({
   cmsData,
   cmsStats,
   cmsTestimonials,
-  cmsPartners,
   cmsNav,
 }: HomePageViewProps) {
   const testimonials = cmsData?.homeTestimonials?.testimonials && cmsData.homeTestimonials.testimonials.length > 0
     ? cmsData.homeTestimonials.testimonials
     : cmsTestimonials
-
-  const partners = cmsData?.partnersSection?.partners && cmsData.partnersSection.partners.length > 0
-    ? cmsData.partnersSection.partners
-    : cmsPartners
 
   return (
     <main>
@@ -41,9 +34,6 @@ export default function HomePageView({
       <StrategiesSection cmsData={cmsData?.strategiesSection} />
       {cmsData?.homeTestimonials?.visible !== false && (
         <TestimonialsSection testimonials={testimonials} heading={cmsData?.homeTestimonials?.heading} />
-      )}
-      {cmsData?.partnersSection?.visible !== false && (
-        <PartnersSection partners={partners} heading={cmsData?.partnersSection?.heading} />
       )}
       <HomeFaqSection faqs={cmsData?.homeFaq?.faqs} heading={cmsData?.homeFaq?.heading} />
       <HomeCtaSection cmsCta={cmsData?.homeCta} />

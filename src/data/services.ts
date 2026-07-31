@@ -14,6 +14,7 @@ export const SERVICES: ServiceSummary[] = [
         ],
         visual: 'terminal',
         ctaLabel: 'View Details',
+        url: '/services/custom-strategy-builder',
     },
     {
         slug: 'backtest',
@@ -23,25 +24,8 @@ export const SERVICES: ServiceSummary[] = [
         highlights: ['Multi-year historical data', 'Slippage & cost-aware modeling', 'Detailed performance breakdown'],
         visual: 'backtest',
         ctaLabel: 'View Details',
+        url: '/services/backtest',
     },
-    // {
-    //     slug: 'research-report',
-    //     title: 'Research Report',
-    //     shortDescription:
-    //         'In-depth, data-driven research on market regimes, factor performance, and strategy viability — delivered on a regular cadence.',
-    //     highlights: ['Published monthly', 'Written by our research desk', 'Actionable, not just academic'],
-    //     visual: 'research',
-    //     ctaLabel: 'View Details',
-    // },
-    // {
-    //     slug: 'trade-with-us',
-    //     title: 'Trade With Us',
-    //     shortDescription:
-    //         'Let our systematic strategies trade on your behalf through a fully automated, broker-integrated execution pipeline.',
-    //     highlights: ['Fully automated execution', 'Transparent live reporting', 'Broker-integrated, sub-5ms routing'],
-    //     visual: 'execution',
-    //     ctaLabel: 'View Details',
-    // },
     {
         slug: 'compare-stocks',
         title: 'Compare Stocks',
@@ -54,5 +38,6 @@ export const SERVICES: ServiceSummary[] = [
         ],
         visual: 'compare',
         ctaLabel: 'View Details',
+        url: '/services/compare-stocks',
     },
 ]

@@ -18,7 +18,7 @@ export default function CareersCtaSection({ cmsCta }: CareersCtaSectionProps) {
   const heading = cmsCta?.heading ?? "Don't see a role that fits?"
   const subtitle = cmsCta?.subtitle ?? 'We are always interested in connecting with exceptional engineers, quantitative researchers, and market specialists.'
   const label = cmsCta?.ctaLabel ?? 'Send us your CV'
-  const url = cmsCta?.ctaUrl ?? 'mailto:careers@arthagama.com'
+  const url = cmsCta?.ctaUrl ?? 'mailto:arthagama78@gmail.com'
 
   return (
     <section className="relative px-4 py-16 sm:px-6 sm:py-20 md:px-10 lg:px-16 overflow-hidden">

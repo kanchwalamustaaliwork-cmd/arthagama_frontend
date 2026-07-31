@@ -6,8 +6,9 @@ export interface ServiceSummary {
     title: string
     shortDescription: string
     highlights: string[]
-    visual: ServiceVisualType   // replaces `image`
+    visual: ServiceVisualType
     ctaLabel: string
+    url: string
 }
 
 export interface ServiceContainerProps {

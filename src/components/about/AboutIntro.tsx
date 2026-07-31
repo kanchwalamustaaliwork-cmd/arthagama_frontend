@@ -107,7 +107,7 @@ export default function AboutIntro({ cmsAbout }: AboutIntroProps) {
                 >
                     {/* Vision */}
                     <motion.div variants={cardItem} className="mint-card rounded-3xl p-6 sm:p-8">
-                        <p className="mb-3 text-xs uppercase tracking-[0.25em] text-[#1B3236]/70">
+                        <p className="mb-3 text-lg font-semibold text-[#1B3236] sm:text-xl">
                             {visionHeading}
                         </p>
                         <BlurParagraph text={visionText} />
@@ -115,7 +115,7 @@ export default function AboutIntro({ cmsAbout }: AboutIntroProps) {
 
                     {/* Mission */}
                     <motion.div variants={cardItem} className="mint-card rounded-3xl p-6 sm:p-8">
-                        <p className="mb-3 text-xs uppercase tracking-[0.25em] text-[#1B3236]/70">
+                        <p className="mb-3 text-lg font-semibold text-[#1B3236] sm:text-xl">
                             {missionHeading}
                         </p>
                         <BlurParagraph text={missionText} />

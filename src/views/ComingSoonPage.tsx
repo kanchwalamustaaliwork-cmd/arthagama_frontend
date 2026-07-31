@@ -3,17 +3,11 @@
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Clock } from 'lucide-react'
-import type { CMSServicePage } from '../types/cms'
-
-interface ComingSoonPageProps {
-  cmsService?: CMSServicePage | null
-}
-
-export default function ComingSoonPage({ cmsService }: ComingSoonPageProps) {
+export default function ComingSoonPage() {
     const router = useRouter()
 
-    const title = cmsService?.hero?.title ?? cmsService?.title ?? 'Coming Soon'
-    const subtitle = cmsService?.hero?.subtitle ?? cmsService?.shortDescription ?? "We're working hard to bring this feature to life. Stay tuned — it'll be worth the wait."
+    const title = 'Coming Soon'
+    const subtitle = "We're working hard to bring this feature to life. Stay tuned — it'll be worth the wait."
 
     return (
         <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-6">

@@ -4,7 +4,6 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowLeft, TrendingUp, ShieldCheck, Zap } from 'lucide-react'
 import { easing } from '../../constans/animation'
-import type { CMSServicePage } from '../../types/cms'
 
 const DEFAULT_FEATURES = [
     { icon: Zap, title: 'Automated execution', body: 'Orders route directly to your broker via low-latency APIs — no manual intervention.' },
@@ -12,24 +11,12 @@ const DEFAULT_FEATURES = [
     { icon: TrendingUp, title: 'Transparent reporting', body: 'Live performance dashboards, updated continuously, always visible to you.' },
 ]
 
-interface TradeWithUsPageProps {
-    cmsService?: CMSServicePage | null
-}
-
-export default function TradeWithUsPage({ cmsService }: TradeWithUsPageProps) {
-    const title = cmsService?.hero?.title ?? cmsService?.title ?? 'Trade with us'
-    const subtitle = cmsService?.hero?.subtitle ?? cmsService?.shortDescription ?? 'Let our systematic strategies trade on your behalf through a fully automated, broker-integrated execution pipeline — while you stay in full view of every position.'
-
-    const featuresList = cmsService?.featuresSection?.features && cmsService.featuresSection.features.length > 0
-        ? cmsService.featuresSection.features.map((f, i) => ({
-            icon: [Zap, ShieldCheck, TrendingUp][i % 3],
-            title: f.title,
-            body: f.description ?? '',
-          }))
-        : DEFAULT_FEATURES
-
-    const ctaLabel = cmsService?.hero?.cta?.label ?? cmsService?.pageCtaSection?.ctaLabel ?? 'Start trading with us'
-    const ctaUrl = cmsService?.hero?.cta?.url ?? cmsService?.pageCtaSection?.ctaUrl ?? '/contact'
+export default function TradeWithUsPage() {
+    const title = 'Trade with us'
+    const subtitle = 'Let our systematic strategies trade on your behalf through a fully automated, broker-integrated execution pipeline — while you stay in full view of every position.'
+    const featuresList = DEFAULT_FEATURES
+    const ctaLabel = 'Start trading with us'
+    const ctaUrl = '/contact'
 
     return (
         <div className="relative min-h-screen w-full overflow-hidden pb-24 pt-32 sm:pt-36">
