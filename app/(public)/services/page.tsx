@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
-import { getServices, getServicesLanding } from '@/src/lib/cms/services'
+import { getServices } from '@/src/lib/cms/services'
 import ServicesPageView from '@/src/views/ServicePage'
 
 export async function generateMetadata(): Promise<Metadata> {
-  const cmsLanding = await getServicesLanding()
+  const cmsLanding = await getServices()
   const seo = cmsLanding?.seo
 
   return {
@@ -32,6 +32,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ServicesPage() {
-  const [cmsServices, cmsLanding] = await Promise.all([getServices(), getServicesLanding()])
-  return <ServicesPageView cmsServices={cmsServices} cmsLanding={cmsLanding} />
+  const cmsData = await getServices()
+  return <ServicesPageView cmsServices={cmsData?.serviceCards} cmsLanding={cmsData} />
 }

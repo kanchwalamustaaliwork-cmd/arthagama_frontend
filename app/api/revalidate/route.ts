@@ -10,14 +10,15 @@ import { revalidatePath, revalidateTag } from 'next/cache'
  */
 
 const COLLECTION_TAG_MAP: Record<string, string[]> = {
-  pages: ['pages'],
+  pages: ['pages', 'services'],
+  'service-cards': ['services'],
   'service-pages': ['services'],
-  'team-members': ['team'],
-  jobs: ['jobs'],
-  testimonials: ['testimonials'],
-  partners: ['partners'],
-  statistics: ['statistics'],
-  faqs: ['faqs'],
+  'team-members': ['team', 'about'],
+  jobs: ['jobs', 'careers'],
+  testimonials: ['testimonials', 'home'],
+  partners: ['partners', 'home'],
+  statistics: ['statistics', 'home'],
+  faqs: ['faqs', 'home'],
   'social-links': ['footer', 'navigation'],
   global: ['navigation', 'footer', 'site-settings', 'announcements'],
 }
@@ -25,6 +26,8 @@ const COLLECTION_TAG_MAP: Record<string, string[]> = {
 const SLUG_PATH_MAP: Record<string, string> = {
   home: '/',
   about: '/about',
+  services: '/services',
+  careers: '/careers',
   contact: '/contact',
   'privacy-policy': '/privacy-policy',
   'terms-conditions': '/terms-conditions',

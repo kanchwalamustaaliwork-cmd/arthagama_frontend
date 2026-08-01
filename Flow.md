@@ -65,3 +65,425 @@ api/axios.ts
  │
  ▼
 Database
+
+
+
+
+I want you to perform a complete architectural review of my CMS and frontend caching system with scalability in mind.
+
+Do not immediately change code.
+
+First understand the complete request lifecycle, explain the current architecture, identify its strengths and limitations, and then propose an architecture suitable for future growth.
+
+The objective is not to optimize for today, but to design an architecture that can efficiently support large-scale production traffic while maintaining fast cache invalidation and fresh CMS content.
+
+Current Architecture
+
+The project consists of:
+
+Frontend
+
+Next.js App Router
+Deployed on Vercel
+
+CMS
+
+Payload CMS
+Deployed separately on Vercel
+
+Database
+
+MongoDB Atlas
+Current Request Flow
+
+Currently the architecture behaves like this.
+
+Initial Request
+Browser
+      │
+      ▼
+Next.js Frontend
+      │
+      ▼
+fetchCMS()
+      │
+      ▼
+Payload CMS Public API
+      │
+      ▼
+MongoDB Atlas
+      │
+      ▼
+Latest Content
+      │
+      ▼
+Frontend Rendering
+      │
+      ▼
+Browser
+
+The frontend is responsible for fetching CMS content.
+
+The CMS simply exposes public APIs.
+
+Current Update Flow
+
+When an administrator edits content:
+
+Payload Admin
+
+      │
+
+Save Document
+
+      │
+
+MongoDB Updated
+
+      │
+
+Payload afterChange Hook
+
+      │
+
+Webhook
+
+      │
+
+POST /api/revalidate
+
+      │
+
+Next.js
+
+      │
+
+revalidateTag()
+
+revalidatePath()
+
+      │
+
+Next Request
+
+      │
+
+Frontend fetches CMS again
+
+      │
+
+Latest data displayed
+Current Caching Strategy
+
+Currently:
+
+The frontend owns the cache.
+
+The CMS returns fresh responses.
+
+The frontend cache is invalidated through
+
+revalidateTag()
+revalidatePath()
+
+This means there is only one cache responsible for serving users.
+
+The CMS is no longer responsible for caching public API responses.
+
+Why This Architecture Was Chosen
+
+Previously the CMS also cached responses using HTTP Cache-Control headers.
+
+That created two independent caching layers.
+
+Browser
+
+↓
+
+Next.js Cache
+
+↓
+
+CMS Edge CDN Cache
+
+↓
+
+MongoDB
+
+Whenever the CMS updated content,
+
+the frontend cache was invalidated,
+
+but the CMS CDN cache still returned old API responses.
+
+This caused stale content to appear even after successful revalidation.
+
+To solve that problem,
+
+CMS response caching was removed,
+
+allowing the frontend to become the single caching layer.
+
+Current Advantages
+
+Explain the benefits of the current architecture.
+
+Examples to analyze:
+
+Single cache owner.
+Easier cache invalidation.
+No synchronization between frontend cache and CMS cache.
+Simpler debugging.
+Predictable request lifecycle.
+Easier development.
+Easier revalidation.
+
+Explain why this architecture works well for small and medium production workloads.
+
+Future Scalability Analysis
+
+Now assume the application grows significantly.
+
+Example scale:
+
+10,000 daily users
+50,000 daily users
+100,000 daily users
+Millions of page requests
+Multiple frontend instances
+Multiple CMS instances
+Global traffic
+Multi-region deployments
+
+Analyze how the current architecture behaves under increasing traffic.
+
+Specifically explain:
+
+How many requests eventually reach Payload CMS.
+How many requests reach MongoDB.
+Which layer becomes the bottleneck.
+Which components scale naturally.
+Which components require architectural improvements.
+Future Caching Strategy
+
+Without implementing code,
+
+design an ideal long-term caching architecture.
+
+Discuss topics such as:
+
+Frontend Data Cache
+Full Route Cache
+Browser Cache
+CDN Cache
+Edge Cache
+Origin Cache
+Database Load
+Cache Invalidation
+Cache Consistency
+Cache Ownership
+
+Explain where each cache should ideally exist.
+
+Explain which cache should be considered the source of truth.
+
+Explain how cache invalidation should propagate through the system.
+
+CMS Architecture Review
+
+Analyze whether the CMS should remain:
+
+Frontend
+
+↓
+
+Payload CMS
+
+↓
+
+MongoDB
+
+or whether future scaling would benefit from introducing additional layers such as:
+
+Frontend
+
+↓
+
+API Gateway
+
+↓
+
+Distributed Cache
+
+↓
+
+Payload CMS
+
+↓
+
+MongoDB
+
+or
+
+Frontend
+
+↓
+
+Edge Cache
+
+↓
+
+Payload CMS
+
+↓
+
+MongoDB
+
+Explain the advantages and trade-offs of each architecture.
+
+Database Scalability
+
+Analyze future MongoDB load.
+
+Explain:
+
+read-heavy workloads
+write-heavy workloads
+CMS editing frequency
+page view frequency
+cache hit ratios
+database query reduction
+
+Discuss whether MongoDB becomes the bottleneck or whether caching absorbs most traffic.
+
+Revalidation Strategy
+
+Review the current webhook-based revalidation.
+
+Explain:
+
+strengths
+limitations
+scaling behavior
+reliability
+failure scenarios
+retry strategies
+monitoring considerations
+
+Discuss whether the current approach remains suitable as the project grows.
+
+Future Architecture Roadmap
+
+Design an evolution path for the architecture.
+
+Instead of jumping directly to enterprise-scale infrastructure, explain how the system could evolve naturally.
+
+Example progression:
+
+Stage 1
+
+Small Website
+
+↓
+
+Frontend Cache
+
+↓
+
+Payload
+
+↓
+
+MongoDB
+
+↓
+
+Stage 2
+
+Growing Website
+
+↓
+
+Frontend Cache
+
+↓
+
+Payload
+
+↓
+
+MongoDB Replica
+
+↓
+
+Stage 3
+
+High Traffic
+
+↓
+
+Global CDN
+
+↓
+
+Frontend
+
+↓
+
+Distributed Cache
+
+↓
+
+Payload
+
+↓
+
+MongoDB Cluster
+
+↓
+
+Stage 4
+
+Enterprise Scale
+
+↓
+
+Global Edge
+
+↓
+
+Regional Frontends
+
+↓
+
+Distributed Cache
+
+↓
+
+API Layer
+
+↓
+
+Payload
+
+↓
+
+MongoDB Sharded Cluster
+
+Explain the purpose of each stage, when it becomes necessary, and what problems it solves.
+
+Expected Output
+
+Produce a complete architectural review document containing:
+
+Current request lifecycle.
+Current caching flow.
+Current strengths.
+Current weaknesses.
+Scalability analysis.
+Future bottlenecks.
+Long-term architecture recommendations.
+Suggested evolution roadmap.
+Trade-off analysis between simplicity, consistency, performance, and scalability.
+
+Focus on explaining the architecture, request flow, caching layers, and future evolution. Do not immediately modify the code unless explicitly requested.

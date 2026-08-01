@@ -265,6 +265,8 @@ export interface CMSTeamMember {
   order: number
 }
 
+import type { ServiceSummary } from './services'
+
 // ── Service Pages ──────────────────────────────────────────
 
 export interface CMSServiceLandingPage {
@@ -278,6 +280,7 @@ export interface CMSServiceLandingPage {
     subtitle: string | null
     backgroundImage?: CMSMedia | null
   }
+  serviceCards?: ServiceSummary[]
   updatedAt: string
 }
 
