@@ -25,7 +25,7 @@ export default function HomePageView({
   const testimonials = cmsData?.homeTestimonials?.testimonials && cmsData.homeTestimonials.testimonials.length > 0
     ? cmsData.homeTestimonials.testimonials
     : cmsTestimonials
-
+  console.log(cmsData)
   return (
     <main>
       <HeroSection cmsHero={cmsData?.hero} socialLinks={cmsNav?.heroSocialLinks} />
