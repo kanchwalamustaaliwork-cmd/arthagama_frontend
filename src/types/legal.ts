@@ -6,7 +6,6 @@ export interface LegalSection {
 }
 
 export interface LegalPageLayoutProps {
-    eyebrow: string
     title: string
     lastUpdated: string
     intro: string

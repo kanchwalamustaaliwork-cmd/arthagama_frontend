@@ -60,7 +60,6 @@ const paraItem = {
 }
 
 export default function LegalPageLayout({
-    eyebrow,
     title,
     lastUpdated,
     intro,

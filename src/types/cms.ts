@@ -367,10 +367,8 @@ export interface CMSLegalPage {
   id: string
   title: string
   slug: string
+  intro?: string | null
   sections?: CMSLegalSection[]
-  // Lexical rich text fallback
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  content: any | null
   lastUpdated: string | null
   seo: CMSSeo
 }
