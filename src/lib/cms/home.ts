@@ -23,11 +23,3 @@ export async function getTestimonials(): Promise<CMSTestimonial[]> {
   })
   return data ?? []
 }
-
-export async function getPartners(): Promise<CMSPartner[]> {
-  const data = await fetchCMS<CMSPartner[]>('/partners', {
-    tags: ['partners'],
-    revalidate: 3600,
-  })
-  return data ?? []
-}
