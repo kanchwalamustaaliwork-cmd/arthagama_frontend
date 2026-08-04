@@ -54,7 +54,7 @@ export default function AdminDashboardPage() {
             <section>
                 <SectionHeader title="Running Strategies" subtitle="Strategies currently active on the platform" actionLabel="View All" actionHref="/admin/strategies" />
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
-                    {strategies.filter(s => s.status === 'running').slice(0, 3).map(s => (
+                    {strategies.filter(s => s.status === 'running').slice(0, 8).map(s => (
                         <AdminStrategyCard key={s.id} strategy={s} onStatusChange={handleStatusChange} />
                     ))}
                 </div>
