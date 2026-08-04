@@ -33,11 +33,11 @@ export function formatPercentage(val: number | null | undefined, decimals: numbe
 /**
  * Formats duration in minutes (e.g. 125 mins or 125.5 mins).
  */
-export function formatMinutes(val: number | null | undefined): string {
-    if (val === null || val === undefined || isNaN(Number(val))) return '0 mins'
+export function formatDays(val: number | null | undefined): string {
+    if (val === null || val === undefined || isNaN(Number(val))) return '0 Days'
     const num = Number(val)
     const formatted = Number.isInteger(num) ? num.toString() : num.toFixed(1)
-    return `${formatted} mins`
+    return `${formatted} Days`
 }
 
 /**
@@ -48,7 +48,7 @@ export function formatTimestamp(isoStr: string | null | undefined): string {
     try {
         const date = new Date(isoStr)
         if (isNaN(date.getTime())) return 'No trades yet'
-        
+
         const day = date.toLocaleDateString('en-IN', { day: '2-digit' })
         const month = date.toLocaleDateString('en-IN', { month: 'short' })
         const year = date.toLocaleDateString('en-IN', { year: 'numeric' })
@@ -87,7 +87,7 @@ export function formatMetricValue(value: unknown, type: MetricValueType): string
     if (value === null || value === undefined) return '--'
     if (type === 'currency') return formatCurrency(Number(value))
     if (type === 'percentage') return formatPercentage(Number(value))
-    if (type === 'duration') return formatMinutes(Number(value))
+    if (type === 'duration') return formatDays(Number(value))
     if (type === 'timestamp') return formatTimestamp(String(value))
     if (type === 'number') return formatNumber(Number(value))
     return String(value)

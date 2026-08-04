@@ -138,7 +138,7 @@ export const METRICS_SECTIONS_CONFIG: MetricSectionConfig[] = [
                 type: 'duration',
                 colorType: 'neutral',
                 iconName: 'Timer',
-                tooltip: 'Average duration positions remain open prior to exit (in minutes)',
+                tooltip: 'Average duration positions remain open prior to exit (in days)',
                 accentColor: '#708482',
             },
             {
