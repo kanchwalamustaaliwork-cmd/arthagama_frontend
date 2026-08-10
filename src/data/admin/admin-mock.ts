@@ -130,6 +130,7 @@ export const ADMIN_NAV_ITEMS = [
     { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { label: 'Customers', href: '/admin/customers', icon: Users },
     { label: 'Strategies', href: '/admin/strategies', icon: Layers },
+    { label: 'Market Terminal', href: '/admin/terminal', icon: BarChart2 },
 ]
 
 // ─── Admin Page Titles ────────────────────────────────────────────────────────
@@ -138,6 +139,7 @@ export const ADMIN_PAGE_TITLES: Record<string, string> = {
     '/admin': 'Admin Dashboard',
     '/admin/customers': 'Customers',
     '/admin/strategies': 'Strategies',
+    '/admin/terminal': 'Market Data Terminal',
 }
 
 // ─── Trades (mock) ────────────────────────────────────────────────────────────

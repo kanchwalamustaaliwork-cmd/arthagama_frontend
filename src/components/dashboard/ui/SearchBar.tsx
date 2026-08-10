@@ -17,6 +17,10 @@ export interface SearchBarProps {
     iconSize?: number
     disabled?: boolean
     autoFocus?: boolean
+    onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void
+    onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
+    onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
+    id?: string
 }
 
 export default function SearchBar({
@@ -33,6 +37,10 @@ export default function SearchBar({
     iconSize = 14,
     disabled = false,
     autoFocus = false,
+    onFocus,
+    onBlur,
+    onKeyDown,
+    id,
 }: SearchBarProps) {
     const inputRef = useRef<HTMLInputElement>(null)
 
@@ -101,9 +109,13 @@ export default function SearchBar({
             />
             <input
                 ref={inputRef}
+                id={id}
                 type="text"
                 value={value}
                 onChange={e => onChange(e.target.value)}
+                onFocus={onFocus}
+                onBlur={onBlur}
+                onKeyDown={onKeyDown}
                 placeholder={placeholder}
                 disabled={disabled}
                 autoFocus={autoFocus}
