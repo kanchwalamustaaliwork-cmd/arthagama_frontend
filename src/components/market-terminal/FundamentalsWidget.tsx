@@ -129,7 +129,7 @@ export default function FundamentalsWidget() {
                                 fontSize: '11px',
                                 color: '#7d848c',
                                 lineHeight: '1.5',
-                                maxHeight: '100px',
+                                maxHeight: '200px',
                                 overflowY: 'auto',
                                 paddingRight: '4px',
                                 borderTop: '1px solid rgba(255,255,255,0.05)',

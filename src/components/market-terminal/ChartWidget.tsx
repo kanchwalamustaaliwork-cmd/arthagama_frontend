@@ -102,13 +102,14 @@ export default function ChartWidget() {
 
     return (
         <div
+            data-lenis-prevent
             style={{
                 borderRadius: '10px',
                 background: '#111417',
                 border: '1px solid var(--db-border, rgba(255,255,255,0.08))',
                 display: 'flex',
                 flexDirection: 'column',
-                height: '520px',
+                height: '100%',
                 overflow: 'hidden',
             }}
         >

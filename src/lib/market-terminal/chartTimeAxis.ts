@@ -36,61 +36,28 @@ export const CHART_TZ = 'Asia/Kolkata'
  *
  * The existing Interval values ('1m','5m','15m','1h','1d','1w') are a subset.
  */
-export type ChartInterval =
-  | '1m' | '3m' | '5m' | '15m' | '30m'   // intraday — sub-hour
-  | '1h' | '2h' | '4h'                    // intraday — hourly
-  | '1d' | '3d'                            // daily
-  | '1w' | '3w'                            // weekly
-  | '1M' | '3M'                            // monthly
-  | '1y'                                   // yearly
-
-// ─── Interval category ───────────────────────────────────────────────────────
+export type ChartInterval = string
 
 type IntervalCategory = 'intraday' | 'daily' | 'weekly' | 'monthly' | 'yearly'
 
-/**
- * Classify an interval into a calendar category.
- * This is the primary driver of granularity decisions — NOT intervalSeconds().
- */
 function categorize(interval: ChartInterval): IntervalCategory {
-  switch (interval) {
-    case '1m': case '3m': case '5m': case '15m': case '30m':
-    case '1h': case '2h': case '4h':
-      return 'intraday'
-    case '1d': case '3d':
-      return 'daily'
-    case '1w': case '3w':
-      return 'weekly'
-    case '1M': case '3M':
-      return 'monthly'
-    case '1y':
-      return 'yearly'
-  }
+  if (interval === '1d' || interval === '3d') return 'daily'
+  if (interval === '1w' || interval === '3w') return 'weekly'
+  if (interval === '1M' || interval === '3M' || interval === '6M' || interval === '12M') return 'monthly'
+  if (interval === '1y') return 'yearly'
+  return 'intraday'
 }
 
-/**
- * Approximate interval duration in seconds.
- * Used ONLY for pixel-spacing estimates — not as calendar truth.
- * Monthly/yearly values are intentionally approximate.
- */
 export function intervalSeconds(interval: ChartInterval): number {
-  switch (interval) {
-    case '1m': return 60
-    case '3m': return 180
-    case '5m': return 300
-    case '15m': return 900
-    case '30m': return 1800
-    case '1h': return 3600
-    case '2h': return 7200
-    case '4h': return 14400
-    case '1d': return 86400
-    case '3d': return 86400 * 3
-    case '1w': return 86400 * 7
-    case '3w': return 86400 * 21
-    case '1M': return 86400 * 30   // approximate only
-    case '3M': return 86400 * 91   // approximate only
-    case '1y': return 86400 * 365  // approximate only
-  }
+  if (interval.endsWith('s')) return parseInt(interval) || 1
+  if (interval.endsWith('m') && !interval.endsWith('M')) return (parseInt(interval) || 1) * 60
+  if (interval.endsWith('h')) return (parseInt(interval) || 1) * 3600
+  if (interval === '1d') return 86400
+  if (interval === '1w') return 86400 * 7
+  if (interval.endsWith('M')) return (parseInt(interval) || 1) * 86400 * 30
+  if (interval.endsWith('t')) return 1
+  if (interval.endsWith('r')) return 1
+  return 60
 }
 
 // ─── Granularity ─────────────────────────────────────────────────────────────

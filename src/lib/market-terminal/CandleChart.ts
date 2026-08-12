@@ -536,10 +536,15 @@ export class CandleChart {
 
   private onWheel = (e: WheelEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     const mx = this.localX(e);
     const idxUnder = this.idxAtX(mx);
-    const factor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
-    this.barW = Math.max(1.5, Math.min(40, this.barW * factor));
+
+    const rawDelta = e.deltaMode === 1 ? e.deltaY * 20 : e.deltaMode === 2 ? e.deltaY * 400 : e.deltaY;
+    const clampedDelta = Math.max(-120, Math.min(120, rawDelta));
+    const factor = Math.pow(1.0015, -clampedDelta);
+
+    this.barW = Math.max(1.5, Math.min(60, this.barW * factor));
     // keep the bar under the cursor pinned
     this.rightIdx = idxUnder + (this.plotW() - mx) / this.barW;
     this.draw();

@@ -17,9 +17,7 @@ function OptionChainButton() {
     const { instrument } = useInstrument()
     const { openChain } = useOptionChainContext()
 
-    // Show Option Chain button for underlying equities and indices
     const supportsOptions = ['equity', 'index'].includes(instrument.type)
-
     if (!supportsOptions) return null
 
     return (
@@ -30,7 +28,7 @@ function OptionChainButton() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                padding: '7px 14px',
+                padding: '6px 12px',
                 fontSize: '12px',
                 fontWeight: 600,
                 borderRadius: '6px',
@@ -39,7 +37,6 @@ function OptionChainButton() {
                 border: '1px solid rgba(168,85,247,0.35)',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
-                boxShadow: '0 2px 8px rgba(168,85,247,0.15)',
             }}
         >
             <span style={{ fontSize: '10px', background: 'rgba(168,85,247,0.3)', padding: '1px 5px', borderRadius: '3px' }}>
@@ -50,33 +47,80 @@ function OptionChainButton() {
     )
 }
 
+function GoLiveButton() {
+    return (
+        <button
+            id="terminal-go-live-button"
+            title="Live WebSocket market data (Phase 2 — Fyers WebSocket)"
+            style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                fontSize: '12px',
+                fontWeight: 600,
+                borderRadius: '6px',
+                background: 'rgba(38,166,91,0.12)',
+                color: '#26a65b',
+                border: '1px solid rgba(38,166,91,0.3)',
+                cursor: 'not-allowed',
+                opacity: 0.85,
+            }}
+        >
+            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#26a65b', display: 'inline-block' }} />
+            <span>Go Live</span>
+            <span style={{ fontSize: '9px', background: 'rgba(38,166,91,0.2)', padding: '1px 4px', borderRadius: '3px', color: '#26a65b' }}>
+                Phase 2
+            </span>
+        </button>
+    )
+}
+
 function TerminalLayoutContent() {
     const { instrument } = useInstrument()
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%' }}>
-            {/* Global Search + Terminal Action Buttons */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', padding: '12px', gap: '10px', overflow: 'hidden', boxSizing: 'border-box' }}>
+            {/* Top Toolbar — Search, Controls, Go Live Stub */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexShrink: 0 }}>
                 <InstrumentSearch />
-                <OptionChainButton />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <OptionChainButton />
+                    <GoLiveButton />
+                </div>
             </div>
 
-            <QuoteHeader />
+            {/* Quote Header */}
+            <div style={{ flexShrink: 0 }}>
+                <QuoteHeader />
+            </div>
 
-            {/* Main Terminal Grid — Two Columns */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 360px', gap: '16px', alignItems: 'start' }}>
-                {/* Left Column — Chart & Macro */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', minWidth: 0 }}>
-                    <ChartWidget />
-                    <MacroWidget />
+            {/* Main Terminal Viewport — Left Chart + Right Sidebar */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 340px', gap: '12px', flex: 1, minHeight: 0, overflow: 'hidden' }}>
+                {/* Left Column — Flexible Chart Viewport */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', height: '100%', minHeight: 0 }}>
+                    <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+                        <ChartWidget />
+                    </div>
                 </div>
 
-                {/* Right Column — Instrument Intelligence */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '360px' }}>
+                {/* Right Column — Modular Sidebar with dedicated scrolling */}
+                <div
+                    data-lenis-prevent
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '10px',
+                        height: '100%',
+                        overflowY: 'auto',
+                        paddingRight: '4px',
+                    }}
+                >
                     {instrument.type === 'futures' && <FuturesInfoWidget />}
+                    <WatchlistWidget />
                     <FundamentalsWidget />
                     <NewsWidget />
-                    <WatchlistWidget />
+                    <MacroWidget />
                 </div>
             </div>
 

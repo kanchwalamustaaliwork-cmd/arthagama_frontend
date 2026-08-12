@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react'
 import { Instrument, OptionChain, ContractRecord } from '@/src/types/terminal'
 import { optionsSdk, instrumentsSdk } from '@/src/lib/terminal-sdk'
 
+/** Configurable option chain auto-refresh interval (10 seconds default) */
+export const OPTION_CHAIN_REFRESH_INTERVAL_MS = 10_000
+
 /**
  * Hook for fetching option chain data (existing — unchanged signature).
  * Pass `enabled = false` to skip the API call entirely (lazy-loading).

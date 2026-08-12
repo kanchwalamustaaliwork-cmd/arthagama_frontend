@@ -93,7 +93,7 @@ export default function WatchlistWidget() {
             {loading ? (
                 <WatchlistSkeleton />
             ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontFamily: 'Consolas, monospace', fontSize: '11.5px' }}>
+                <div style={{ maxHeight: '300px', overflowY: 'auto', paddingRight: '4px', display: 'flex', flexDirection: 'column', gap: '4px', fontFamily: 'Consolas, monospace', fontSize: '11.5px' }}>
                     {quotes.map((q) => {
                         const isSelected = q.symbol === instrument.symbol
                         const isUnavailable = (q as any).available === false
