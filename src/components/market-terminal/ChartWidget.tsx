@@ -1,11 +1,11 @@
 'use client'
 
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState, useCallback } from 'react'
 import { useInstrument } from '@/src/context/InstrumentContext'
 import { useOptionChainContext } from '@/src/context/OptionChainContext'
 import { useOHLCV } from '@/src/hooks/terminal/useOHLCV'
 import { Interval } from '@/src/types/terminal'
-import { CandleChart, ChartTool } from '@/src/lib/market-terminal/CandleChart'
+import { Bar, CandleChart, ChartTool } from '@/src/lib/market-terminal/CandleChart'
 import type { ChartInterval } from '@/src/lib/market-terminal/chartTimeAxis'
 import IntervalSelector from './IntervalSelector'
 import DrawingToolbar from './DrawingToolbar'
@@ -17,67 +17,150 @@ export default function ChartWidget() {
     const { instrument } = useInstrument()
     const { openChain } = useOptionChainContext()
     const [interval, setInterval] = useState<Interval>('1d')
-    const { bars, loading, error } = useOHLCV(instrument, interval)
+    const { bars, loading, error, loadOlder, loadNewer } = useOHLCV(instrument, interval)
 
-    const containerRef = useRef<HTMLDivElement>(null)
-    const chartRef = useRef<CandleChart | null>(null)
+    const containerRef  = useRef<HTMLDivElement>(null)
+    const chartRef      = useRef<CandleChart | null>(null)
+
+    // Keep the latest loadOlder/loadNewer in a ref so the onReachLeft/Right
+    // callbacks always see the current version without being recreated on
+    // every render (avoids re-attaching to the CandleChart options object).
+    const loadOlderRef = useRef(loadOlder)
+    const loadNewerRef = useRef(loadNewer)
+    useEffect(() => { loadOlderRef.current = loadOlder }, [loadOlder])
+    useEffect(() => { loadNewerRef.current = loadNewer }, [loadNewer])
+
+    // Per-render flags to prevent concurrent pagination requests from the
+    // chart callbacks.  Separate from the hook-level guard so ChartWidget
+    // can control UI-level feedback (e.g. loading indicator) independently.
+    const isPaginatingRef = useRef(false)
 
     const [tool, setTool] = useState<ChartTool>('none')
     const [isEditorOpen, setIsEditorOpen] = useState(false)
     const [activeScript, setActiveScript] = useState<string | null>(null)
 
-    // Initialize Canvas Chart
+    // ── Track the previous bars array to determine what changed (prepend vs reset)
+    const prevBarsRef = useRef<Bar[]>([])
+
+    // ── Initialize CandleChart (once, on mount) ───────────────────────────────
     useEffect(() => {
         if (!containerRef.current) return
 
         const chart = new CandleChart(containerRef.current, {
-            bg: '#111417',
-            grid: '#1c2126',
-            text: '#7d848c',
-            up: '#26a65b',
-            down: '#e0524b',
+            bg:       '#111417',
+            grid:     '#1c2126',
+            text:     '#7d848c',
+            up:       '#26a65b',
+            down:     '#e0524b',
             interval: interval as ChartInterval,
+
+            // Left-edge pagination: user scrolled past the oldest loaded bar.
+            onReachLeft: () => {
+                if (isPaginatingRef.current) return
+                isPaginatingRef.current = true
+
+                loadOlderRef.current().then((addedBars) => {
+                    // chart.prepend() keeps the current scroll position intact.
+                    if (addedBars.length > 0 && chartRef.current) {
+                        chartRef.current.prepend(addedBars)
+                    }
+                }).finally(() => {
+                    isPaginatingRef.current = false
+                })
+            },
+
+            // Right-edge pagination: user scrolled past the newest loaded bar.
+            onReachRight: () => {
+                if (isPaginatingRef.current) return
+                isPaginatingRef.current = true
+
+                loadNewerRef.current().then((addedBars) => {
+                    // Append bars one-by-one via chart.update() so the right
+                    // edge advances naturally without a full viewport reset.
+                    if (addedBars.length > 0 && chartRef.current) {
+                        // Sort ascending and update sequentially
+                        const sorted = [...addedBars].sort((a, b) => a.time - b.time)
+                        for (const bar of sorted) {
+                            chartRef.current.update(bar)
+                        }
+                    }
+                }).finally(() => {
+                    isPaginatingRef.current = false
+                })
+            },
         })
+
         chartRef.current = chart
 
         return () => {
             chart.destroy()
             chartRef.current = null
+            prevBarsRef.current = []
         }
-    }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])   // Chart engine is created once; callbacks read from refs
 
-    // Sync interval changes to chart (X-axis re-formats immediately)
+    // ── Sync interval label to chart X-axis (no data reload) ─────────────────
     useEffect(() => {
         if (chartRef.current) {
             chartRef.current.setInterval(interval as ChartInterval)
         }
     }, [interval])
 
-    // Update data when bars change
+    // ── Sync data changes to chart ────────────────────────────────────────────
+    // Strategy:
+    //   - If bars[0] is OLDER than prevBars[0] → older bars were prepended.
+    //     Use chart.prepend() to keep the viewport stable.
+    //     (This path is a fallback; normally ChartWidget calls prepend() directly
+    //      in the onReachLeft callback above.  It handles the case where the state
+    //      updated before the callback returned.)
+    //   - Otherwise (fresh load, interval change, newer append) → setData().
     useEffect(() => {
-        if (chartRef.current && bars.length > 0) {
+        if (!chartRef.current || bars.length === 0) {
+            prevBarsRef.current = []
+            return
+        }
+
+        const prev = prevBarsRef.current
+        prevBarsRef.current = bars
+
+        if (
+            prev.length > 0 &&
+            bars[0]?.time < (prev[0]?.time ?? Infinity)
+        ) {
+            // Older bars were prepended — use prepend() to preserve scroll position.
+            const newOlder = bars.filter(
+                (b) => b.time < (prev[0]?.time ?? Infinity)
+            )
+            if (newOlder.length > 0) {
+                chartRef.current.prepend(newOlder)
+            }
+        } else {
+            // Fresh load or right-side append — reset data (fitContent).
             chartRef.current.setData(bars)
             if (activeScript) {
                 applyPineScript(activeScript)
             }
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [bars])
 
-    // Update drawing tool
+    // ── Drawing tool sync ─────────────────────────────────────────────────────
     useEffect(() => {
         if (chartRef.current) {
             chartRef.current.setTool(tool)
         }
     }, [tool])
 
-    const applyPineScript = (script: string) => {
+    // ── Pine Script application ───────────────────────────────────────────────
+    const applyPineScript = useCallback((script: string) => {
         setActiveScript(script)
         if (!chartRef.current || !bars.length) return
         try {
             const res = runPine(script, bars as any)
             const overlays: any[] = []
-            const panes: any[] = []
-            const shapes: any[] = []
+            const panes:   any[] = []
+            const shapes:  any[] = []
 
             for (const plot of res.plots) {
                 if (plot.kind === 'line') {
@@ -96,10 +179,11 @@ export default function ChartWidget() {
             }
             chartRef.current.setIndicators(overlays, panes, shapes)
         } catch {
-            // Pine error handled in editor
+            // Pine errors handled in IndicatorEditor
         }
-    }
+    }, [bars])
 
+    // ── Render ────────────────────────────────────────────────────────────────
     return (
         <div
             data-lenis-prevent

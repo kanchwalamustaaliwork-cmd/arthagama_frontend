@@ -1,5 +1,5 @@
 import { apiGet } from '@/src/api/axios'
-import { Instrument, Quote } from '@/src/types/terminal'
+import { Instrument, Quote, WatchlistResponse } from '@/src/types/terminal'
 
 export async function getQuote(instrument: Instrument): Promise<Quote> {
     const params: Record<string, any> = {
@@ -13,9 +13,10 @@ export async function getQuote(instrument: Instrument): Promise<Quote> {
     return res.data
 }
 
-export async function getWatchlist(symbols?: string): Promise<Quote[]> {
-    const res = await apiGet<{ quotes: Quote[] }>('/terminal/market/watchlist', {
+export async function getWatchlist(symbols?: string): Promise<WatchlistResponse> {
+    const res = await apiGet<WatchlistResponse>('/terminal/market/watchlist', {
         params: symbols ? { symbols } : undefined,
     })
-    return res.data.quotes
+    return res.data
 }
+

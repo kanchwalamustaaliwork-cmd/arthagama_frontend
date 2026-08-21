@@ -39,9 +39,10 @@ export interface CandleChartOptions {
   crosshair?: string;
   interval?: ChartInterval;   // active timeframe — drives X-axis label granularity
   onReachLeft?: () => void;   // fired when the user scrolls near the oldest bar
+  onReachRight?: () => void;  // fired when the user scrolls near the newest bar
 }
 
-const DEFAULTS: Required<Omit<CandleChartOptions, "onReachLeft">> = {
+const DEFAULTS: Required<Omit<CandleChartOptions, "onReachLeft" | "onReachRight">> = {
   bg: "#111417", grid: "#1c2126", text: "#7d848c",
   up: "#26a65b", down: "#e0524b",
   volUp: "rgba(38,166,91,0.35)", volDown: "rgba(224,82,75,0.35)",
@@ -58,7 +59,7 @@ export class CandleChart {
   private overlay: HTMLCanvasElement;
   private bctx: CanvasRenderingContext2D;
   private octx: CanvasRenderingContext2D;
-  private opt: Required<Omit<CandleChartOptions, "onReachLeft">> & Pick<CandleChartOptions, "onReachLeft">;
+  private opt: Required<Omit<CandleChartOptions, "onReachLeft" | "onReachRight">> & Pick<CandleChartOptions, "onReachLeft" | "onReachRight">;
 
   private data: Bar[] = [];
   private overlays: OverlayLine[] = [];   // indicator lines on the price pane
@@ -298,8 +299,9 @@ export class CandleChart {
 
     this.drawTimeAxis(ctx, a, b);
 
-    // fire pagination hook near the oldest loaded bar
+    // fire pagination hooks near oldest / newest loaded bars
     if (a <= 2 && this.opt.onReachLeft) this.opt.onReachLeft();
+    if (b >= this.data.length - 2 && this.opt.onReachRight) this.opt.onReachRight();
 
     if (this.mouse) this.drawOverlay();
     else this.octx.clearRect(0, 0, this.cssW, this.cssH);

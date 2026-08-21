@@ -13,4 +13,18 @@ export interface Quote {
     volume?: number | null
     vwap?: number | null
     source: string
+    // Instrument master / registry fields
+    instrument_type?: 'equity' | 'index' | 'future' | 'option' | 'futures' | 'options'
+    token?: string
+}
+
+export interface WatchlistCategory {
+    category: string
+    instrument_type: string
+    items: Quote[]
+}
+
+export interface WatchlistResponse {
+    quotes: Quote[]
+    categorized?: WatchlistCategory[]
 }

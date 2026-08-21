@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useInstrument } from '@/src/context/InstrumentContext'
 import { marketSdk } from '@/src/lib/terminal-sdk'
-import { Quote } from '@/src/types/terminal'
+import { Quote, WatchlistCategory } from '@/src/types/terminal'
 import { Skeleton } from './Skeleton'
 
 function WatchlistSkeleton() {
@@ -39,6 +39,7 @@ function WatchlistSkeleton() {
 export default function WatchlistWidget() {
     const { instrument, selectBySymbol } = useInstrument()
     const [quotes, setQuotes] = useState<Quote[]>([])
+    const [categories, setCategories] = useState<WatchlistCategory[]>([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -49,7 +50,10 @@ export default function WatchlistWidget() {
                 .getWatchlist()
                 .then((data) => {
                     if (isMounted) {
-                        setQuotes(data)
+                        if (data.categorized && data.categorized.length > 0) {
+                            setCategories(data.categorized)
+                        }
+                        setQuotes(data.quotes || (Array.isArray(data) ? data : []))
                         setLoading(false)
                     }
                 })
@@ -72,6 +76,67 @@ export default function WatchlistWidget() {
             ? '—'
             : n.toLocaleString('en-IN', { maximumFractionDigits: 2 })
 
+    const mapInstrumentType = (itype?: string): 'equity' | 'index' | 'futures' | 'options' => {
+        if (itype === 'index') return 'index'
+        if (itype === 'future' || itype === 'futures') return 'futures'
+        if (itype === 'option' || itype === 'options') return 'options'
+        return 'equity'
+    }
+
+    const renderRow = (q: Quote) => {
+        const isSelected = q.symbol === instrument.symbol
+        const isUnavailable = (q as any).available === false
+        const isBull = (q.change ?? 0) >= 0
+        const changeCol = isBull ? 'var(--db-gain, #26a65b)' : 'var(--db-loss, #e0524b)'
+
+        return (
+            <div
+                key={q.symbol}
+                onClick={() =>
+                    selectBySymbol(
+                        q.symbol,
+                        mapInstrumentType(q.instrument_type),
+                        q.name || undefined,
+                    )
+                }
+                style={{
+                    padding: '8px 10px',
+                    borderRadius: '6px',
+                    background: isSelected ? 'rgba(168,85,247,0.18)' : 'rgba(255,255,255,0.02)',
+                    border: '1px solid ' + (isSelected ? 'rgba(168,85,247,0.4)' : 'rgba(255,255,255,0.04)'),
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    opacity: isUnavailable ? 0.5 : 1,
+                }}
+            >
+                <div>
+                    <span style={{ fontWeight: 600, color: isSelected ? '#a855f7' : '#fff' }}>
+                        {q.symbol}
+                    </span>
+                    <span style={{ fontSize: '10px', color: '#7d848c', marginLeft: '6px' }}>
+                        {q.exchange}
+                    </span>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                    {isUnavailable ? (
+                        <div style={{ fontSize: '10px', color: '#444', fontStyle: 'italic' }}>—</div>
+                    ) : (
+                        <>
+                            <div style={{ fontWeight: 600, color: '#fff' }}>₹{fmt(q.last)}</div>
+                            <div style={{ fontSize: '10px', color: changeCol }}>
+                                {q.change != null ? (isBull ? '+' : '') : ''}
+                                {fmt(q.change_pct)}%
+                            </div>
+                        </>
+                    )}
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div
             style={{
@@ -93,60 +158,19 @@ export default function WatchlistWidget() {
             {loading ? (
                 <WatchlistSkeleton />
             ) : (
-                <div style={{ maxHeight: '300px', overflowY: 'auto', paddingRight: '4px', display: 'flex', flexDirection: 'column', gap: '4px', fontFamily: 'Consolas, monospace', fontSize: '11.5px' }}>
-                    {quotes.map((q) => {
-                        const isSelected = q.symbol === instrument.symbol
-                        const isUnavailable = (q as any).available === false
-                        const isBull = (q.change ?? 0) >= 0
-                        const changeCol = isBull ? 'var(--db-gain, #26a65b)' : 'var(--db-loss, #e0524b)'
-
-                        return (
-                            <div
-                                key={q.symbol}
-                                onClick={() =>
-                                    selectBySymbol(
-                                        q.symbol,
-                                        q.symbol.includes('NIFTY') || q.symbol === 'SENSEX' ? 'index' : 'equity',
-                                        (q as any).name || undefined,
-                                    )
-                                }
-                                style={{
-                                    padding: '8px 10px',
-                                    borderRadius: '6px',
-                                    background: isSelected ? 'rgba(168,85,247,0.18)' : 'rgba(255,255,255,0.02)',
-                                    border: '1px solid ' + (isSelected ? 'rgba(168,85,247,0.4)' : 'rgba(255,255,255,0.04)'),
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.15s ease',
-                                    opacity: isUnavailable ? 0.5 : 1,
-                                }}
-                            >
-                                <div>
-                                    <span style={{ fontWeight: 600, color: isSelected ? '#a855f7' : '#fff' }}>
-                                        {q.symbol}
-                                    </span>
-                                    <span style={{ fontSize: '10px', color: '#7d848c', marginLeft: '6px' }}>
-                                        {q.exchange}
-                                    </span>
+                <div style={{ maxHeight: '300px', overflowY: 'auto', paddingRight: '4px', display: 'flex', flexDirection: 'column', gap: '6px', fontFamily: 'Consolas, monospace', fontSize: '11.5px' }}>
+                    {categories.length > 0 ? (
+                        categories.map((cat) => (
+                            <div key={cat.instrument_type} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <div style={{ fontSize: '10px', color: '#7d848c', padding: '4px 8px 2px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                    {cat.category}
                                 </div>
-                                <div style={{ textAlign: 'right' }}>
-                                    {isUnavailable ? (
-                                        <div style={{ fontSize: '10px', color: '#444', fontStyle: 'italic' }}>—</div>
-                                    ) : (
-                                        <>
-                                            <div style={{ fontWeight: 600, color: '#fff' }}>₹{fmt(q.last)}</div>
-                                            <div style={{ fontSize: '10px', color: changeCol }}>
-                                                {q.change != null ? (isBull ? '+' : '') : ''}
-                                                {fmt(q.change_pct)}%
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
+                                {cat.items.map(renderRow)}
                             </div>
-                        )
-                    })}
+                        ))
+                    ) : (
+                        quotes.map(renderRow)
+                    )}
                 </div>
             )}
         </div>
