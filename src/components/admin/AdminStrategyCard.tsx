@@ -1,11 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import type { AdminStrategy, AdminStrategyStatus } from '@/src/types/admin'
+import type { AdminStrategy, AdminStrategyStatus, StrategyType } from '@/src/types/admin'
 import Badge from '@/src/components/dashboard/ui/Badge'
 import ConfirmDialog from '@/src/components/admin/ConfirmDialog'
 import { Play, Pause, Edit2, Trash2, Eye, Server, Globe, RefreshCcw } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+
+const STRATEGY_TYPE_LABEL: Record<StrategyType, string> = {
+    INDEX_EQUITY: 'Equity',
+    FUTURES: 'Futures',
+    OPTIONS: 'Options',
+}
 
 const STATUS_VARIANT: Record<AdminStrategyStatus, 'success' | 'warning' | 'neutral' | 'error'> = {
     running: 'success',
@@ -116,7 +122,9 @@ export default function AdminStrategyCard({ strategy, onStatusChange, onToggleAc
                         {strategy.name}
                     </h3>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                        <span className="db-badge db-badge-teal" style={{ fontSize: '10px', padding: '2px 8px', fontWeight: 600, maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{strategy.category}</span>
+                        <span className="db-badge db-badge-teal" style={{ fontSize: '10px', padding: '2px 8px', fontWeight: 600, maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {strategy.strategyType ? STRATEGY_TYPE_LABEL[strategy.strategyType] : strategy.category}
+                        </span>
                     </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', flexShrink: 0 }}>

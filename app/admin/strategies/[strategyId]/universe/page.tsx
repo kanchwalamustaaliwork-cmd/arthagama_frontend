@@ -1,7 +1,13 @@
 'use client'
 
-import StrategyUniverseTab from '@/src/views/admin/StrategyUniverseTab'
+import { use } from 'react'
+import StrategyLiveUniverseTab from '@/src/views/admin/StrategyLiveUniverseTab'
 
-export default function StrategyUniversePage() {
-    return <StrategyUniverseTab />
+interface Props {
+    params: Promise<{ strategyId: string }>
+}
+
+export default function StrategyUniversePage({ params }: Props) {
+    const { strategyId } = use(params)
+    return <StrategyLiveUniverseTab strategyId={strategyId} />
 }

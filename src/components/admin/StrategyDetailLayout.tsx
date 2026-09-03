@@ -108,7 +108,9 @@ export default function StrategyDetailLayout({
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px', flexWrap: 'wrap' }}>
                             <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--db-text)', letterSpacing: '-0.01em' }}>{strategy.name}</h1>
                             <Badge variant={STATUS_VARIANT[strategy.status]} dot>{STATUS_LABEL[strategy.status]}</Badge>
-                            <span className="db-badge db-badge-teal">{strategy.category}</span>
+                            <span className="db-badge db-badge-teal">
+                                {strategy.strategyType === 'INDEX_EQUITY' ? 'Equity' : strategy.strategyType === 'FUTURES' ? 'Futures' : strategy.strategyType === 'OPTIONS' ? 'Options' : strategy.category}
+                            </span>
                         </div>
                         <p style={{ fontSize: '13px', color: 'var(--db-text-2)', lineHeight: 1.6, marginBottom: '14px', maxWidth: '600px' }}>
                             {strategy.description}

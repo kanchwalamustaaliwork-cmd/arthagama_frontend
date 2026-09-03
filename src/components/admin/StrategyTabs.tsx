@@ -21,7 +21,6 @@ export default function StrategyTabs({ strategyId }: StrategyTabsProps) {
         { label: 'Trades',               href: `/admin/strategies/${strategyId}/trades` },
         { label: 'Logs',                 href: `/admin/strategies/${strategyId}/logs` },
         { label: 'Universe',             href: `/admin/strategies/${strategyId}/universe` },
-        { label: 'LTP',                  href: `/admin/strategies/${strategyId}/ltp` },
         { label: 'Performance Analysis', href: `/admin/strategies/${strategyId}/analysis` },
         { label: 'Settings',             href: `/admin/strategies/${strategyId}/settings` },
     ]
@@ -30,11 +29,14 @@ export default function StrategyTabs({ strategyId }: StrategyTabsProps) {
         <div style={{ display: 'flex', gap: '4px', borderBottom: '1px solid var(--db-border)', paddingBottom: '0' }}>
             {tabs.map(tab => {
                 const isSettingsTab = tab.href.endsWith('/settings')
+                const isUniverseTab = tab.href.endsWith('/universe')
                 const isActive = tab.href === `/admin/strategies/${strategyId}`
                     ? pathname === tab.href
                     : isSettingsTab
                         ? (pathname.startsWith(tab.href) || pathname.startsWith(`/admin/strategies/${strategyId}/edit`))
-                        : pathname.startsWith(tab.href)
+                        : isUniverseTab
+                            ? (pathname.startsWith(tab.href) || pathname.startsWith(`/admin/strategies/${strategyId}/ltp`))
+                            : pathname.startsWith(tab.href)
 
                 return (
                     <Link

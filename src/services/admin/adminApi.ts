@@ -1,16 +1,14 @@
 /**
  * src/services/admin/adminApi.ts
  *
- * Admin API service — currently returns mock data.
- * When backend endpoints are ready, replace each function body with the
- * corresponding apiGet / apiPost / apiPut / apiDelete call.
+ * Admin API service layer.
+ * All function signatures are typed against src/types/admin.ts.
+ * No component-level field mapping or legacy-key fallbacks live here.
  *
- * All function signatures are already designed for real API responses:
- *   - async / await pattern
- *   - typed return values matching src/types/admin.ts
- *   - params objects for filtering / pagination
- *
- * NO CHANGES TO HOOKS OR VIEWS ARE REQUIRED after connecting real APIs.
+ * Backend conventions (enforced by backend serialisation_alias):
+ *   - All responses use camelCase keys
+ *   - Metrics response uses camelCase (totalPnL, winRate, etc.)
+ *   - Strategy response includes strategyType (canonical enum) and category
  */
 
 import type {
@@ -27,8 +25,10 @@ import type {
     AdminStrategyStatus,
     AdminTrade,
     UniverseResponse,
+    LiveUniverseResponse,
     TradeQueryParams,
     StrategyMetrics,
+    StrategyCapabilitiesResponse,
 } from '@/src/types/admin'
 
 import {
@@ -212,6 +212,26 @@ export async function fetchStrategyUniverse(strategyId: string): Promise<Univers
     return response.data
 }
 
+export async function fetchStrategyLiveUniverse(strategyId: string): Promise<LiveUniverseResponse> {
+    const response = await apiGet<LiveUniverseResponse>(`/admin/strategies/${strategyId}/live-universe`)
+    return response.data
+}
+
+// ─── Capabilities ─────────────────────────────────────────────────────────────
+
+/**
+ * Fetch the canonical feature capabilities for a strategy.
+ *
+ * Returns which feature tabs (logs, holdings, ltp, trades, metrics, universe)
+ * are available for the strategy based on actual collection presence in its
+ * dedicated database.  Use this to decide whether to show, disable, or hide
+ * feature tabs — do not guess based on strategyType or category.
+ */
+export async function fetchStrategyCapabilities(strategyId: string): Promise<StrategyCapabilitiesResponse> {
+    const response = await apiGet<StrategyCapabilitiesResponse>(`/admin/strategies/${strategyId}/capabilities`)
+    return response.data
+}
+
 // ─── Holdings ─────────────────────────────────────────────────────────────────
 
 export async function fetchStrategyHoldings(strategyId: string): Promise<AdminHolding[]> {
@@ -284,31 +304,38 @@ export async function fetchStrategyAnalysis(strategyId: string): Promise<Strateg
 
 // ─── Metrics ──────────────────────────────────────────────────────────────────
 
+/**
+ * Fetch strategy metrics.
+ *
+ * The backend serialises all fields with camelCase aliases (totalPnL, winRate,
+ * etc.) — no snake_case fallback mapping is needed here.  The metrics schema
+ * version is enforced at the backend serialisation boundary.
+ */
 export async function fetchStrategyMetrics(strategyId: string): Promise<StrategyMetrics> {
-    const response = await apiGet<Record<string, any>>(`/admin/strategies/${strategyId}/metrics`)
-    const raw = response.data || {}
+    const response = await apiGet<StrategyMetrics>(`/admin/strategies/${strategyId}/metrics`)
+    const raw = response.data
     return {
         id: raw.id,
-        strategyId: raw.strategy_id ?? raw.strategyId ?? strategyId,
-        createdAt: raw.created_at ?? raw.createdAt,
-        updatedAt: raw.updated_at ?? raw.updatedAt,
+        strategyId: raw.strategyId ?? strategyId,
+        createdAt: raw.createdAt,
+        updatedAt: raw.updatedAt,
 
         // Static Metrics
-        totalPnL: Number(raw.total_pnl ?? raw.totalPnL ?? 0),
-        todayPnLRealized: Number(raw.today_pnl_realized ?? raw.todayPnLRealized ?? 0),
-        winRate: Number(raw.win_rate ?? raw.winRate ?? 0),
-        sharpeRatio: Number(raw.sharpe_ratio ?? raw.sharpeRatio ?? 0),
-        averageHoldingTime: Number(raw.average_holding_time ?? raw.averageHoldingTime ?? 0),
-        lastTradeTimestamp: raw.last_trade_timestamp ?? raw.lastTradeTimestamp ?? null,
-        totalTrades: Number(raw.total_trades ?? raw.totalTrades ?? 0),
-        winningTrades: Number(raw.winning_trades ?? raw.winningTrades ?? 0),
-        losingTrades: Number(raw.losing_trades ?? raw.losingTrades ?? 0),
+        totalPnL: Number(raw.totalPnL ?? 0),
+        todayPnLRealized: Number(raw.todayPnLRealized ?? 0),
+        winRate: Number(raw.winRate ?? 0),
+        sharpeRatio: Number(raw.sharpeRatio ?? 0),
+        averageHoldingTime: Number(raw.averageHoldingTime ?? 0),
+        lastTradeTimestamp: raw.lastTradeTimestamp ?? null,
+        totalTrades: Number(raw.totalTrades ?? 0),
+        winningTrades: Number(raw.winningTrades ?? 0),
+        losingTrades: Number(raw.losingTrades ?? 0),
 
         // Dynamic Metrics
-        portfolioValue: Number(raw.portfolio_value ?? raw.portfolioValue ?? 0),
-        unrealizedPnL: Number(raw.unrealized_pnl ?? raw.unrealizedPnL ?? 0),
-        activeHoldings: Number(raw.active_holdings ?? raw.activeHoldings ?? 0),
-        totalReturn: Number(raw.total_return ?? raw.totalReturn ?? 0),
+        portfolioValue: Number(raw.portfolioValue ?? 0),
+        unrealizedPnL: Number(raw.unrealizedPnL ?? 0),
+        activeHoldings: Number(raw.activeHoldings ?? 0),
+        totalReturn: Number(raw.totalReturn ?? 0),
     }
 }
 
@@ -331,4 +358,3 @@ export async function fetchStrategyWSTicket(strategyId: string): Promise<string>
     const response = await apiPost<{ ticket: string }>(`/admin/strategies/${strategyId}/ltp/ws-ticket`)
     return response.data.ticket
 }
-

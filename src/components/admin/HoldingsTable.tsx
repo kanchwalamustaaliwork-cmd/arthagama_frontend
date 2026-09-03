@@ -6,12 +6,14 @@ import type { LTPRecord } from '@/src/types/admin'
 export interface RawHolding {
     symbol: string
     quantity: number
-    avg_buy_price: number
-    // STOPLOSS_TYPE: string | null
-    // first_exit: boolean
-    initial_quantity: number
-    buying_date: string
-    strategy_id: string
+    avg_buy_price?: number
+    avgPrice?: number
+    initial_quantity?: number
+    initialQuantity?: number
+    buying_date?: string
+    entryDate?: string | null
+    strategy_id?: string
+    strategyId?: string
 }
 
 interface HoldingsTableProps {
@@ -22,7 +24,10 @@ interface HoldingsTableProps {
 }
 
 function daysHeld(buyingDate: string): number {
-    const days = Math.floor((Date.now() - new Date(buyingDate).getTime()) / 86400000)
+    if (!buyingDate) return 0
+    const ts = new Date(buyingDate).getTime()
+    if (isNaN(ts)) return 0
+    const days = Math.floor((Date.now() - ts) / 86400000)
     return Math.max(days, 0)
 }
 
@@ -73,14 +78,23 @@ export default function HoldingsTable({ holdings, ltpMap = {}, emptyMessage = 'N
                         const latestPrice = ltp?.latestPrice
                         const pnl = ltp?.pnl
 
+                        const qty = h.quantity ?? 0
+                        const initQty = h.initial_quantity ?? h.initialQuantity ?? qty
+                        const avgBuy = h.avg_buy_price ?? h.avgPrice ?? 0
+                        const dateStr = h.buying_date || h.entryDate || ''
+                        const formattedDate = dateStr && !isNaN(new Date(dateStr).getTime())
+                            ? new Date(dateStr).toLocaleDateString('en-IN')
+                            : '—'
+                        const duration = dateStr ? `${daysHeld(dateStr)}d` : '—'
+
                         return (
-                            <tr key={`${h.symbol}-${h.buying_date}-${i}`}>
+                            <tr key={`${h.symbol}-${dateStr}-${i}`}>
                                 <td style={{ fontWeight: 600, color: 'var(--db-text)', fontSize: '13px' }}>
                                     {h.symbol}
                                 </td>
-                                <td style={{ fontWeight: 500 }}>{h.quantity.toLocaleString('en-IN')}</td>
-                                <td>{h.initial_quantity.toLocaleString('en-IN')}</td>
-                                <td>₹{h.avg_buy_price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                                <td style={{ fontWeight: 500 }}>{qty.toLocaleString('en-IN')}</td>
+                                <td>{initQty.toLocaleString('en-IN')}</td>
+                                <td>₹{avgBuy.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
 
                                 {/* LTP — live from WebSocket */}
                                 <td style={{ fontWeight: 600, color: 'var(--db-mint)', fontSize: '13px', fontFamily: 'monospace' }}>
@@ -103,18 +117,10 @@ export default function HoldingsTable({ holdings, ltpMap = {}, emptyMessage = 'N
                                     }
                                 </td>
 
-                                {/* <td>
-                                    {h.STOPLOSS_TYPE ? h.STOPLOSS_TYPE : <span style={{ color: 'var(--db-text-muted)' }}>—</span>}
-                                </td>
-                                <td>
-                                    <Badge variant={h.first_exit ? 'success' : 'neutral'} dot>
-                                        {h.first_exit ? 'Yes' : 'No'}
-                                    </Badge>
-                                </td> */}
                                 <td style={{ whiteSpace: 'nowrap' }}>
-                                    {new Date(h.buying_date).toLocaleDateString('en-IN')}
+                                    {formattedDate}
                                 </td>
-                                <td>{daysHeld(h.buying_date)}d</td>
+                                <td>{duration}</td>
                             </tr>
                         )
                     })}

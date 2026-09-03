@@ -11,11 +11,10 @@ import StrategyDetailLayout from '@/src/components/admin/StrategyDetailLayout'
 import StrategyOverviewTab from './StrategyOverviewTab'
 import StrategyHoldingsTab from './StrategyHoldingsTab'
 import StrategyTradesTab from './StrategyTradesTab'
-import StrategyUniverseTab from './StrategyUniverseTab'
+import StrategyLiveUniverseTab from './StrategyLiveUniverseTab'
 import StrategyAnalysisTab from './StrategyAnalysisTab'
 import StrategySettingsTab from './StrategySettingsTab'
 import StrategyLogsTab from './StrategyLogsTab'
-import StrategyLtpTab from './StrategyLtpTab'
 import { StrategyProvider } from '@/src/context/StrategyContext'
 
 export type StrategyTab = 'overview' | 'holdings' | 'trades' | 'logs' | 'universe' | 'ltp' | 'analysis' | 'settings'
@@ -32,8 +31,7 @@ export default function StrategyDetailPage({ strategyId, tab }: Props) {
                 {tab === 'overview' && <StrategyOverviewTab />}
                 {tab === 'holdings' && <StrategyHoldingsTab strategyId={strategyId} />}
                 {tab === 'trades' && <StrategyTradesTab strategyId={strategyId} />}
-                {tab === 'universe' && <StrategyUniverseTab />}
-                {tab === 'ltp' && <StrategyLtpTab strategyId={strategyId} />}
+                {(tab === 'universe' || tab === 'ltp') && <StrategyLiveUniverseTab strategyId={strategyId} />}
                 {tab === 'analysis' && <StrategyAnalysisTab strategyId={strategyId} />}
                 {tab === 'settings' && <StrategySettingsTab />}
                 {tab === 'logs' && <StrategyLogsTab strategyId={strategyId} />}

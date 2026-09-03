@@ -7,7 +7,7 @@ import type { AdminStrategy } from '@/src/types/admin'
 import { useStrategyContext } from '@/src/context/StrategyContext'
 import { useStrategyMetrics } from '@/src/hooks/admin/useStrategyMetrics'
 import MetricsGrid from '@/src/components/admin/metrics/MetricsGrid'
-import { Database, Globe, Percent, Calendar, Coins, ShieldCheck } from 'lucide-react'
+import { Tag, Globe, Percent, Calendar, Coins, ShieldCheck } from 'lucide-react'
 import { formatCurrency, formatPercentage, formatTimestamp } from '@/src/utils/metrics'
 
 interface Props {
@@ -73,10 +73,10 @@ export default function StrategyOverviewTab({ strategy: propStrategy }: Props = 
                     >
                         {[
                             {
-                                icon: Database,
-                                label: 'Execution Database',
-                                value: strategy.databaseName,
-                                desc: 'TimescaleDB deployment container',
+                                icon: Tag,
+                                label: 'Strategy Type',
+                                value: strategy.strategyType?.replace('_', ' / ') ?? strategy.category,
+                                desc: 'Canonical trading modality classification',
                             },
                             {
                                 icon: Globe,
