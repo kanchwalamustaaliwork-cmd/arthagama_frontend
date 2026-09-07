@@ -8,9 +8,10 @@ export interface Candle {
     volume: number
 }
 
+// NOTE: Tick-count intervals have been removed.
+// The minimum supported chart interval is 1 second ("1s").
+// Range-bar intervals are also not exposed in the chart UI.
 export type Interval =
-    // TICKS
-    | '1t' | '10t' | '100t' | '1000t'
     // SECONDS
     | '1s' | '5s' | '10s' | '15s' | '30s' | '45s'
     // MINUTES
@@ -19,8 +20,6 @@ export type Interval =
     | '1h' | '2h' | '3h' | '4h'
     // DAYS / MONTHS
     | '1d' | '1w' | '1M' | '3M' | '6M' | '12M'
-    // RANGES
-    | '1r' | '10r' | '100r' | '1000r'
 
 export interface IntervalGroup {
     category: string
@@ -28,15 +27,6 @@ export interface IntervalGroup {
 }
 
 export const INTERVAL_GROUPS: IntervalGroup[] = [
-    {
-        category: 'TICKS',
-        options: [
-            { value: '1t', label: '1 Tick' },
-            { value: '10t', label: '10 Ticks' },
-            { value: '100t', label: '100 Ticks' },
-            { value: '1000t', label: '1000 Ticks' },
-        ],
-    },
     {
         category: 'SECONDS',
         options: [
@@ -81,15 +71,6 @@ export const INTERVAL_GROUPS: IntervalGroup[] = [
             { value: '12M', label: '12 Months' },
         ],
     },
-    {
-        category: 'RANGES',
-        options: [
-            { value: '1r', label: '1 Range' },
-            { value: '10r', label: '10 Ranges' },
-            { value: '100r', label: '100 Ranges' },
-            { value: '1000r', label: '1000 Ranges' },
-        ],
-    },
 ]
 
 export const INTERVALS: Interval[] = INTERVAL_GROUPS.flatMap((g) => g.options.map((o) => o.value))
@@ -97,6 +78,27 @@ export const INTERVALS: Interval[] = INTERVAL_GROUPS.flatMap((g) => g.options.ma
 export const INTERVAL_LABELS: Record<Interval, string> = Object.fromEntries(
     INTERVAL_GROUPS.flatMap((g) => g.options.map((o) => [o.value, o.label]))
 ) as Record<Interval, string>
+
+/** Minimum supported chart interval — 1 second */
+export const MIN_CHART_INTERVAL: Interval = '1s'
+
+/** Default chart interval used when none is stored or when an invalid/tick interval is loaded */
+export const DEFAULT_CHART_INTERVAL: Interval = '1d'
+
+/**
+ * Validate an interval string and return a safe chart interval.
+ * Tick intervals ("1t", "10t", etc.) are mapped to the default interval.
+ * Unknown intervals are also mapped to the default interval.
+ */
+export function toSafeInterval(raw: string | null | undefined): Interval {
+    if (!raw) return DEFAULT_CHART_INTERVAL
+    // If it looks like a tick interval, reject and return default
+    if (/^\d+t$/i.test(raw.trim())) return DEFAULT_CHART_INTERVAL
+    // If it is in the valid set, return it
+    const valid = INTERVALS as readonly string[]
+    if (valid.includes(raw.trim())) return raw.trim() as Interval
+    return DEFAULT_CHART_INTERVAL
+}
 
 export interface OHLCVResponse {
     symbol: string

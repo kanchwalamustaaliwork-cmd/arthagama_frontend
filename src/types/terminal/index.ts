@@ -7,7 +7,7 @@ export {
     type SearchQueryResponse,
 } from './search'
 export { type Quote, type WatchlistCategory, type WatchlistResponse } from './quote'
-export { type Candle, type Interval, type IntervalGroup, type OHLCVResponse, INTERVALS, INTERVAL_LABELS, INTERVAL_GROUPS } from './ohlcv'
+export { type Candle, type Interval, type IntervalGroup, type OHLCVResponse, INTERVALS, INTERVAL_LABELS, INTERVAL_GROUPS, MIN_CHART_INTERVAL, DEFAULT_CHART_INTERVAL, toSafeInterval } from './ohlcv'
 export {
     type Greeks, type OptionLeg, type ChainRow, type OptionChain,
     type PayoffPoint, type PayoffResponse, type StrategyLeg,
