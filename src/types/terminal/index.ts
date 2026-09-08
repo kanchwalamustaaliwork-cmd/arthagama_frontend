@@ -11,6 +11,7 @@ export { type Candle, type Interval, type IntervalGroup, type OHLCVResponse, INT
 export {
     type Greeks, type OptionLeg, type ChainRow, type OptionChain,
     type PayoffPoint, type PayoffResponse, type StrategyLeg,
+    type LiveOptionChainResponse, type LiveOptionRow, type LiveOptionLeg, type ExpiryItem,
 } from './options'
 export {
     type FutureContract, type FuturesResponse,

@@ -193,7 +193,7 @@ export default function SearchResultList({
                                                     transition: 'all 0.15s',
                                                 }}
                                             >
-                                                Open Option Chain →
+                                                Strike Selection →
                                             </button>
                                         ) : (
                                             <>

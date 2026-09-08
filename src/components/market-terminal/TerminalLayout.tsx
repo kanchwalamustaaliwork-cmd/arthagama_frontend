@@ -7,23 +7,24 @@ import InstrumentSearch from './InstrumentSearch'
 import QuoteHeader from './QuoteHeader'
 import ChartWidget from './ChartWidget'
 import OptionChainModal from './OptionChainModal'
+import OptionChainPage from './OptionChainPage'
 import FundamentalsWidget from './FundamentalsWidget'
 import FuturesInfoWidget from './FuturesInfoWidget'
 import NewsWidget from './NewsWidget'
 import MacroWidget from './MacroWidget'
 import WatchlistWidget from './WatchlistWidget'
 
-function OptionChainButton() {
+function StrikeSelectionButton() {
     const { instrument } = useInstrument()
-    const { openChain } = useOptionChainContext()
+    const { openStrikeSelection } = useOptionChainContext()
 
     const supportsOptions = ['equity', 'index'].includes(instrument.type)
     if (!supportsOptions) return null
 
     return (
         <button
-            id="terminal-open-option-chain"
-            onClick={() => openChain()}
+            id="terminal-open-strike-selection"
+            onClick={() => openStrikeSelection()}
             style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -32,15 +33,51 @@ function OptionChainButton() {
                 fontSize: '12px',
                 fontWeight: 600,
                 borderRadius: '6px',
-                background: 'rgba(168,85,247,0.18)',
-                color: '#a855f7',
-                border: '1px solid rgba(168,85,247,0.35)',
+                background: 'rgba(168,85,247,0.14)',
+                color: '#c084fc',
+                border: '1px solid rgba(168,85,247,0.3)',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
             }}
+            title="Open Strike Selection to choose option contract"
         >
-            <span style={{ fontSize: '10px', background: 'rgba(168,85,247,0.3)', padding: '1px 5px', borderRadius: '3px' }}>
+            <span style={{ fontSize: '10px', background: 'rgba(168,85,247,0.25)', padding: '1px 5px', borderRadius: '3px' }}>
                 OMON
+            </span>
+            Strike Selection
+        </button>
+    )
+}
+
+function OptionChainButton() {
+    const { instrument } = useInstrument()
+    const { openOptionChain } = useOptionChainContext()
+
+    const supportsOptions = ['equity', 'index', 'options'].includes(instrument.type)
+    if (!supportsOptions) return null
+
+    return (
+        <button
+            id="terminal-open-option-chain"
+            onClick={() => openOptionChain()}
+            style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                fontSize: '12px',
+                fontWeight: 600,
+                borderRadius: '6px',
+                background: 'rgba(59, 130, 246, 0.18)',
+                color: '#60a5fa',
+                border: '1px solid rgba(59, 130, 246, 0.4)',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+            }}
+            title="Open full-page live Option Chain (FYERS)"
+        >
+            <span style={{ fontSize: '10px', background: 'rgba(59, 130, 246, 0.3)', padding: '1px 5px', borderRadius: '3px' }}>
+                CHAIN
             </span>
             Option Chain
         </button>
@@ -85,6 +122,7 @@ function TerminalLayoutContent() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexShrink: 0 }}>
                 <InstrumentSearch />
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <StrikeSelectionButton />
                     <OptionChainButton />
                     <GoLiveButton />
                 </div>
@@ -124,8 +162,11 @@ function TerminalLayoutContent() {
                 </div>
             </div>
 
-            {/* Global Option Chain Popup/Modal */}
+            {/* Global Strike Selection Modal (renamed existing component) */}
             <OptionChainModal />
+
+            {/* Full-Page Live Option Chain (FYERS) */}
+            <OptionChainPage />
         </div>
     )
 }

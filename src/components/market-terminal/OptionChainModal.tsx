@@ -198,7 +198,7 @@ export default function OptionChainModal() {
                                 letterSpacing: '0.04em',
                             }}
                         >
-                            OPTION CHAIN
+                            STRIKE SELECTION
                         </span>
                         <div style={{ fontSize: '16px', fontWeight: 700, color: '#fff' }}>
                             {underlyingSymbol}

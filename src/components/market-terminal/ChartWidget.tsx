@@ -15,7 +15,7 @@ import { Skeleton } from './Skeleton'
 
 export default function ChartWidget() {
     const { instrument } = useInstrument()
-    const { openChain } = useOptionChainContext()
+    const { openStrikeSelection, openOptionChain } = useOptionChainContext()
     const [interval, setInterval] = useState<Interval>('1d')
     const { bars, loading, error, loadOlder, loadNewer } = useOHLCV(instrument, interval)
 
@@ -226,29 +226,54 @@ export default function ChartWidget() {
                     >
                         + Pine Indicator
                     </button>
-                    {/* Option Chain button — only when viewing an option contract */}
+                    {/* Strike Selection & Option Chain buttons — when viewing an option contract */}
                     {instrument.type === 'options' && (
-                        <button
-                            id="chart-open-option-chain"
-                            onClick={openChain}
-                            style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '5px',
-                                padding: '4px 10px',
-                                fontSize: '11px',
-                                borderRadius: '4px',
-                                border: '1px solid rgba(168,85,247,0.4)',
-                                background: 'rgba(168,85,247,0.18)',
-                                color: '#a855f7',
-                                fontWeight: 600,
-                                cursor: 'pointer',
-                                transition: 'all 0.15s',
-                            }}
-                        >
-                            <span style={{ fontSize: '10px' }}>⛓</span>
-                            Option Chain
-                        </button>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <button
+                                id="chart-open-strike-selection"
+                                onClick={openStrikeSelection}
+                                title="Open Strike Selection modal"
+                                style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '5px',
+                                    padding: '4px 10px',
+                                    fontSize: '11px',
+                                    borderRadius: '4px',
+                                    border: '1px solid rgba(168,85,247,0.4)',
+                                    background: 'rgba(168,85,247,0.18)',
+                                    color: '#a855f7',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    transition: 'all 0.15s',
+                                }}
+                            >
+                                <span style={{ fontSize: '10px' }}>🎯</span>
+                                Strike Selection
+                            </button>
+                            <button
+                                id="chart-open-option-chain"
+                                onClick={openOptionChain}
+                                title="Open full-page live Option Chain (FYERS)"
+                                style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '5px',
+                                    padding: '4px 10px',
+                                    fontSize: '11px',
+                                    borderRadius: '4px',
+                                    border: '1px solid rgba(59,130,246,0.4)',
+                                    background: 'rgba(59,130,246,0.18)',
+                                    color: '#60a5fa',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    transition: 'all 0.15s',
+                                }}
+                            >
+                                <span style={{ fontSize: '10px' }}>⛓</span>
+                                Option Chain
+                            </button>
+                        </div>
                     )}
                 </div>
 

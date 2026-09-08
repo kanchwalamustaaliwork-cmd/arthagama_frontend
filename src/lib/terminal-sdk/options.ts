@@ -34,3 +34,26 @@ export async function calculatePayoff(
     })
     return res.data
 }
+
+export async function getLiveOptionChain(
+    symbol: string,
+    expiry?: string,
+    exchange = 'NSE',
+    strikeCount = 50,
+    signal?: AbortSignal,
+): Promise<import('@/src/types/terminal').LiveOptionChainResponse> {
+    const res = await apiGet<import('@/src/types/terminal').LiveOptionChainResponse>(
+        '/terminal/options/chain-live',
+        {
+            params: {
+                symbol,
+                expiry: expiry || undefined,
+                exchange,
+                strike_count: strikeCount,
+            },
+            signal,
+        }
+    )
+    return res.data
+}
+
