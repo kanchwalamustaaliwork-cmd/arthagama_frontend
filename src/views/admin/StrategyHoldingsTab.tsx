@@ -4,14 +4,15 @@ import HoldingsTable from '@/src/components/admin/HoldingsTable'
 import LoadingState from '@/src/components/dashboard/ui/LoadingState'
 import EmptyState from '@/src/components/dashboard/ui/EmptyState'
 import { useStrategyHoldings } from '@/src/hooks/admin/useStrategyHoldings'
-import { useStrategyLTP } from '@/src/hooks/admin/useStrategyLTP'
+import { useStrategyContext } from '@/src/context/StrategyContext'
 import { Briefcase } from 'lucide-react'
 
 interface Props { strategyId: string }
 
 export default function StrategyHoldingsTab({ strategyId }: Props) {
     const { holdings, status } = useStrategyHoldings(strategyId)
-    const { ltpRecords } = useStrategyLTP(strategyId)
+    // ltpRecords come from the single shared WebSocket in StrategyContext
+    const { ltpRecords } = useStrategyContext()
 
     if (status === 'loading') return <LoadingState variant="skeleton-table" />
 

@@ -7,7 +7,6 @@ type Status = 'loading' | 'ready' | 'error'
 const DEFAULT_CAPABILITIES: StrategyCapabilities = {
     logs: false,
     holdings: false,
-    ltp: false,
     trades: false,
     metrics: true,
     universe: true,
@@ -50,7 +49,6 @@ export function useStrategyCapabilities(strategyId: string) {
                         ...DEFAULT_CAPABILITIES,
                         logs: true,
                         holdings: true,
-                        ltp: true,
                         trades: true,
                     })
                     setStatus('error')

@@ -1,6 +1,7 @@
 'use client'
 
 import Button from '@/src/components/dashboard/ui/Button'
+import BackButton from '@/src/components/dashboard/ui/BackButton'
 import PageHeader from '@/src/components/admin/PageHeader'
 import StrategyFormFields from '@/src/components/admin/stratergy/forms/StrategyFormFields'
 import { useStrategyForm, buildStrategyPayload } from '@/src/hooks/admin/useStrategyForm'
@@ -58,7 +59,10 @@ export default function StrategyCreatePage() {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '800px' }}>
-            <PageHeader title="Create Strategy" subtitle="Configure and deploy a new trading strategy engine" icon={Plus} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <BackButton onClick={() => router.push('/admin/strategies')} title="Back to Strategies" />
+                <PageHeader title="Create Strategy" subtitle="Configure and deploy a new trading strategy engine" icon={Plus} />
+            </div>
 
             <form onSubmit={handleSubmit} className="db-card" style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>

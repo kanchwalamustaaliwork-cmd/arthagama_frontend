@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useStrategyLiveUniverse } from '@/src/hooks/admin/useStrategyLiveUniverse'
 import { useStrategyContext } from '@/src/context/StrategyContext'
 import LoadingState from '@/src/components/dashboard/ui/LoadingState'
 import EmptyState from '@/src/components/dashboard/ui/EmptyState'
@@ -22,17 +21,17 @@ function formatPnL(pnl: number): string {
     return `${sign}₹${Math.abs(pnl).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 }
 
-export default function StrategyLiveUniverseTab({ strategyId }: Props) {
-    const { strategy } = useStrategyContext()
+export default function StrategyLiveUniverseTab({ strategyId: _strategyId }: Props) {
     const {
-        universe,
-        items,
-        status,
-        isConnected,
+        strategy,
+        liveItems: items,
+        liveUniverse: universe,
+        liveUniverseStatus: status,
         totalConstituents,
         activeHoldingsCount,
         watchingCount,
-    } = useStrategyLiveUniverse(strategyId)
+    } = useStrategyContext()
+    const isConnected = status === 'connected'
 
     const [search, setSearch] = useState('')
     const [filterMode, setFilterMode] = useState<FilterMode>('all')

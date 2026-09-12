@@ -58,7 +58,6 @@ export type StrategyType = 'INDEX_EQUITY' | 'FUTURES' | 'OPTIONS'
 export interface StrategyCapabilities {
     logs: boolean
     holdings: boolean
-    ltp: boolean
     trades: boolean
     metrics: boolean    // always true — stored centrally
     universe: boolean   // true when strategy DB has a Universe/universe collection
@@ -242,9 +241,11 @@ export interface LTPRecord {
     timestamp: string
     isHolding: boolean
     pnl?: number | null
+    pnlPercent?: number | null
     quantity?: number
     avgPrice?: number
 }
+
 
 
 export interface TradeQueryParams {

@@ -1,11 +1,15 @@
 /**
  * src/hooks/admin/useStrategyLiveUniverse.ts
  *
- * Consolidated hook for strategy Universe and real-time market data.
+ * Single consolidated hook for strategy Universe and real-time market data.
  *
  * Fetches the universe snapshot (universe name, constituents, active holdings,
  * initial LTP quotes) and maintains a live WebSocket connection to receive
  * tick-by-tick updates.
+ *
+ * This hook is the ONLY WebSocket connection for live pricing — it fully
+ * replaces the former useStrategyLTP. All consumers (Holdings tab, LTP tab,
+ * Overview gainer/loser cards) use this via StrategyContext — one WS per page.
  */
 
 import { useEffect, useState, useRef, useCallback } from 'react'
@@ -185,6 +189,49 @@ export function useStrategyLiveUniverse(strategyId: string) {
         return a.ticker.localeCompare(b.ticker)
     })
 
+    /** ltpRecords — LTPRecord-keyed map for HoldingsTable / LTP tab compatibility */
+    const ltpRecords: Record<string, LTPRecord> = {}
+    for (const item of items) {
+        ltpRecords[item.ticker] = {
+            ticker: item.ticker,
+            latestPrice: item.latestPrice,
+            timestamp: item.timestamp,
+            isHolding: item.isHolding,
+            pnl: item.unrealizedPnl ?? null,
+            pnlPercent:
+                item.isHolding && item.avgPrice > 0
+                    ? Math.round(((item.latestPrice - item.avgPrice) / item.avgPrice) * 10000) / 100
+                    : null,
+            quantity: item.quantity,
+            avgPrice: item.avgPrice,
+        }
+    }
+
+    /** maxGainer / maxLoser — best and worst performing active holding by PnL */
+    let maxGainer: LTPRecord | null = null
+    let maxLoser: LTPRecord | null = null
+    const holdingRecords = items.filter(it => it.isHolding)
+    if (holdingRecords.length > 0) {
+        const sorted = [...holdingRecords].sort(
+            (a, b) => (b.unrealizedPnl ?? 0) - (a.unrealizedPnl ?? 0)
+        )
+        const toRecord = (it: LiveInstrumentItem): LTPRecord => ({
+            ticker: it.ticker,
+            latestPrice: it.latestPrice,
+            timestamp: it.timestamp,
+            isHolding: true,
+            pnl: it.unrealizedPnl ?? null,
+            pnlPercent:
+                it.avgPrice > 0
+                    ? Math.round(((it.latestPrice - it.avgPrice) / it.avgPrice) * 10000) / 100
+                    : 0,
+            quantity: it.quantity,
+            avgPrice: it.avgPrice,
+        })
+        maxGainer = toRecord(sorted[0])
+        maxLoser = toRecord(sorted[sorted.length - 1])
+    }
+
     const totalConstituents = data?.totalConstituents || items.length
     const activeHoldingsCount = items.filter(it => it.isHolding).length
     const watchingCount = items.length - activeHoldingsCount
@@ -197,6 +244,9 @@ export function useStrategyLiveUniverse(strategyId: string) {
         totalConstituents,
         activeHoldingsCount,
         watchingCount,
+        ltpRecords,
+        maxGainer,
+        maxLoser,
         retry: () => setReconnectCount(c => c + 1),
     }
 }
@@ -205,5 +255,3 @@ function roundPnl(val: number): number {
     return Math.round(val * 100) / 100
 }
 
-// Re-export useStrategyLTP for full backwards compatibility
-export { useStrategyLTP } from './useStrategyLTP'

@@ -1,6 +1,6 @@
 'use client'
 
-import { useStrategyLTP } from '@/src/hooks/admin/useStrategyLTP'
+import { useStrategyContext } from '@/src/context/StrategyContext'
 import type { LTPRecord } from '@/src/types/admin'
 import LoadingState from '@/src/components/dashboard/ui/LoadingState'
 import EmptyState from '@/src/components/dashboard/ui/EmptyState'
@@ -10,8 +10,9 @@ interface Props {
     strategyId: string
 }
 
-export default function StrategyLtpTab({ strategyId }: Props) {
-    const { ltpRecords, status } = useStrategyLTP(strategyId)
+export default function StrategyLtpTab({ strategyId: _strategyId }: Props) {
+    // ltpRecords and status come from the single shared WebSocket in StrategyContext
+    const { ltpRecords, liveUniverseStatus: status } = useStrategyContext()
 
     if (status === 'loading') {
         return <LoadingState variant="skeleton-table" />
@@ -29,7 +30,7 @@ export default function StrategyLtpTab({ strategyId }: Props) {
         return (
             <EmptyState
                 icon={Activity}
-                title="No Live LTP Data Available"
+                title="No Live Data Available"
                 description="This strategy does not maintain or configure live market prices at this moment."
             />
         )
@@ -40,7 +41,7 @@ export default function StrategyLtpTab({ strategyId }: Props) {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyBetween: 'space-between' } as any}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <h2 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--db-text)' }}>Last Traded Prices</h2>
                     <span
@@ -115,7 +116,7 @@ export default function StrategyLtpTab({ strategyId }: Props) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', background: 'rgba(95, 175, 215, 0.05)', border: '1px solid rgba(95, 175, 215, 0.15)', borderRadius: 'var(--db-radius-md)', marginTop: '8px' }}>
                 <Info size={14} color="var(--db-info)" />
                 <span style={{ fontSize: '12.5px', color: 'var(--db-text-2)' }}>
-                    Prices stream directly from MongoDB and update in real-time. No derived calculations are done client-side.
+                    Prices stream directly from MongoDB and update in real-time via the Live Universe WebSocket.
                 </span>
             </div>
         </div>

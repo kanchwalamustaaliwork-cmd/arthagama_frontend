@@ -19,6 +19,7 @@ import type { AdminStrategy } from '@/src/types/admin'
 import type { AdminStrategyStatus } from '@/src/types/admin'
 import Badge from '@/src/components/dashboard/ui/Badge'
 import Button from '@/src/components/dashboard/ui/Button'
+import BackButton from '@/src/components/dashboard/ui/BackButton'
 import StrategyTabs from './StrategyTabs'
 import LoadingState from '@/src/components/dashboard/ui/LoadingState'
 import EmptyState from '@/src/components/dashboard/ui/EmptyState'
@@ -104,28 +105,31 @@ export default function StrategyDetailLayout({
             <div className="db-card" style={{ padding: '24px 28px' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
                     {/* Left: identity */}
-                    <div style={{ flex: 1, minWidth: '260px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px', flexWrap: 'wrap' }}>
-                            <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--db-text)', letterSpacing: '-0.01em' }}>{strategy.name}</h1>
-                            <Badge variant={STATUS_VARIANT[strategy.status]} dot>{STATUS_LABEL[strategy.status]}</Badge>
-                            <span className="db-badge db-badge-teal">
-                                {strategy.strategyType === 'INDEX_EQUITY' ? 'Equity' : strategy.strategyType === 'FUTURES' ? 'Futures' : strategy.strategyType === 'OPTIONS' ? 'Options' : strategy.category}
-                            </span>
-                        </div>
-                        <p style={{ fontSize: '13px', color: 'var(--db-text-2)', lineHeight: 1.6, marginBottom: '14px', maxWidth: '600px' }}>
-                            {strategy.description}
-                        </p>
-                        <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-                            {[
-                                { icon: User, label: strategy.ownerAdminName || 'Unassigned Admin' },
-                                { icon: Calendar, label: `Created ${fmtDate(strategy.createdAt)}` },
-                                { icon: Tag, label: `Updated ${fmtDate(strategy.updatedAt)}` },
-                            ].map(({ icon: Icon, label }) => (
-                                <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <Icon size={13} color="var(--db-text-muted)" />
-                                    <span style={{ fontSize: '12px', color: 'var(--db-text-muted)' }}>{label}</span>
-                                </div>
-                            ))}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', flex: 1, minWidth: '260px' }}>
+                        <BackButton onClick={() => router.push('/admin/strategies')} title="Back to Strategies" />
+                        <div style={{ flex: 1 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px', flexWrap: 'wrap' }}>
+                                <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--db-text)', letterSpacing: '-0.01em' }}>{strategy.name}</h1>
+                                <Badge variant={STATUS_VARIANT[strategy.status]} dot>{STATUS_LABEL[strategy.status]}</Badge>
+                                <span className="db-badge db-badge-teal">
+                                    {strategy.strategyType === 'INDEX_EQUITY' ? 'Equity' : strategy.strategyType === 'FUTURES' ? 'Futures' : strategy.strategyType === 'OPTIONS' ? 'Options' : strategy.category}
+                                </span>
+                            </div>
+                            <p style={{ fontSize: '13px', color: 'var(--db-text-2)', lineHeight: 1.6, marginBottom: '14px', maxWidth: '600px' }}>
+                                {strategy.description}
+                            </p>
+                            <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+                                {[
+                                    { icon: User, label: strategy.ownerAdminName || 'Unassigned Admin' },
+                                    { icon: Calendar, label: `Created ${fmtDate(strategy.createdAt)}` },
+                                    { icon: Tag, label: `Updated ${fmtDate(strategy.updatedAt)}` },
+                                ].map(({ icon: Icon, label }) => (
+                                    <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <Icon size={13} color="var(--db-text-muted)" />
+                                        <span style={{ fontSize: '12px', color: 'var(--db-text-muted)' }}>{label}</span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
 
