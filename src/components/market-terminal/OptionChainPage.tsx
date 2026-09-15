@@ -613,6 +613,7 @@ export default function OptionChainPage() {
                             >
                                 {/* CALLS Columns */}
                                 <th style={{ padding: '6px 8px', textAlign: 'right', width: '50px' }}>Delta</th>
+                                <th style={{ padding: '6px 8px', textAlign: 'right', width: '50px' }}>Gamma</th>
                                 <th style={{ padding: '6px 8px', textAlign: 'right', width: '50px' }}>Theta</th>
                                 <th style={{ padding: '6px 8px', textAlign: 'right', width: '50px' }}>Vega</th>
                                 <th style={{ padding: '6px 8px', textAlign: 'right', width: '45px' }}>IV%</th>
@@ -671,6 +672,7 @@ export default function OptionChainPage() {
                                 <th style={{ padding: '6px 8px', textAlign: 'left', width: '45px' }}>IV%</th>
                                 <th style={{ padding: '6px 8px', textAlign: 'left', width: '50px' }}>Vega</th>
                                 <th style={{ padding: '6px 8px', textAlign: 'left', width: '50px' }}>Theta</th>
+                                <th style={{ padding: '6px 8px', textAlign: 'left', width: '50px' }}>Gamma</th>
                                 <th style={{ padding: '6px 8px', textAlign: 'left', width: '50px' }}>Delta</th>
                             </tr>
                         </thead>
@@ -690,14 +692,14 @@ export default function OptionChainPage() {
                                     ce?.moneyness === 'ITM'
                                         ? 'rgba(245, 158, 11, 0.08)'
                                         : isAtm
-                                        ? 'rgba(168, 85, 247, 0.12)'
-                                        : 'transparent'
+                                            ? 'rgba(168, 85, 247, 0.12)'
+                                            : 'transparent'
                                 const peBg =
                                     pe?.moneyness === 'ITM'
                                         ? 'rgba(245, 158, 11, 0.08)'
                                         : isAtm
-                                        ? 'rgba(168, 85, 247, 0.12)'
-                                        : 'transparent'
+                                            ? 'rgba(168, 85, 247, 0.12)'
+                                            : 'transparent'
 
                                 const ceOiPct = ce?.oi ? Math.min(100, Math.round((ce.oi / maxOI) * 100)) : 0
                                 const peOiPct = pe?.oi ? Math.min(100, Math.round((pe.oi / maxOI) * 100)) : 0
@@ -727,6 +729,9 @@ export default function OptionChainPage() {
                                         {/* ── CALLS (CE) ── */}
                                         <td style={{ padding: '5px 8px', backgroundColor: ceBg, color: '#9ba1a6' }}>
                                             {fmtGreek(ce?.delta, 2)}
+                                        </td>
+                                        <td style={{ padding: '5px 8px', backgroundColor: ceBg, color: '#9ba1a6' }}>
+                                            {fmtGreek(ce?.gamma, 2)}
                                         </td>
                                         <td style={{ padding: '5px 8px', backgroundColor: ceBg, color: '#9ba1a6' }}>
                                             {fmtGreek(ce?.theta, 1)}
@@ -922,6 +927,9 @@ export default function OptionChainPage() {
                                         </td>
                                         <td style={{ padding: '5px 8px', backgroundColor: peBg, textAlign: 'left', color: '#9ba1a6' }}>
                                             {fmtGreek(pe?.theta, 1)}
+                                        </td>
+                                        <td style={{ padding: '5px 8px', backgroundColor: peBg, textAlign: 'left', color: '#9ba1a6' }}>
+                                            {fmtGreek(pe?.gamma, 2)}
                                         </td>
                                         <td style={{ padding: '5px 8px', backgroundColor: peBg, textAlign: 'left', color: '#9ba1a6' }}>
                                             {fmtGreek(pe?.delta, 2)}
