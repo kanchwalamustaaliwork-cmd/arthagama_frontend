@@ -311,6 +311,9 @@ export async function fetchStrategyAnalysis(strategyId: string): Promise<Strateg
  * etc.) — no snake_case fallback mapping is needed here.  The metrics schema
  * version is enforced at the backend serialisation boundary.
  */
+const nullableNumber = (value: number | null | undefined): number | null =>
+    value == null ? null : Number(value)
+
 export async function fetchStrategyMetrics(strategyId: string): Promise<StrategyMetrics> {
     const response = await apiGet<StrategyMetrics>(`/admin/strategies/${strategyId}/metrics`)
     const raw = response.data
@@ -324,7 +327,7 @@ export async function fetchStrategyMetrics(strategyId: string): Promise<Strategy
         totalPnL: Number(raw.totalPnL ?? 0),
         todayPnLRealized: Number(raw.todayPnLRealized ?? 0),
         winRate: Number(raw.winRate ?? 0),
-        sharpeRatio: Number(raw.sharpeRatio ?? 0),
+        sharpeRatio: nullableNumber(raw.sharpeRatio),
         averageHoldingTime: Number(raw.averageHoldingTime ?? 0),
         lastTradeTimestamp: raw.lastTradeTimestamp ?? null,
         totalTrades: Number(raw.totalTrades ?? 0),
@@ -332,10 +335,11 @@ export async function fetchStrategyMetrics(strategyId: string): Promise<Strategy
         losingTrades: Number(raw.losingTrades ?? 0),
 
         // Dynamic Metrics
-        portfolioValue: Number(raw.portfolioValue ?? 0),
-        unrealizedPnL: Number(raw.unrealizedPnL ?? 0),
+        // null = not computable (unpriced positions / no capital) — shown as "--"
+        portfolioValue: nullableNumber(raw.portfolioValue),
+        unrealizedPnL: nullableNumber(raw.unrealizedPnL),
         activeHoldings: Number(raw.activeHoldings ?? 0),
-        totalReturn: Number(raw.totalReturn ?? 0),
+        totalReturn: nullableNumber(raw.totalReturn),
     }
 }
 

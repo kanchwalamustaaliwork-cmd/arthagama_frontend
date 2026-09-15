@@ -31,11 +31,16 @@ export function formatPercentage(val: number | null | undefined, decimals: numbe
 }
 
 /**
- * Formats duration in minutes (e.g. 125 mins or 125.5 mins).
+ * Formats a duration given in days (e.g. 38.2 Days); sub-day durations — typical
+ * for intraday option strategies — are shown in hours or minutes.
  */
 export function formatDays(val: number | null | undefined): string {
     if (val === null || val === undefined || isNaN(Number(val))) return '0 Days'
     const num = Number(val)
+    if (num > 0 && num < 1) {
+        const minutes = num * 24 * 60
+        return minutes < 60 ? `${Math.max(Math.round(minutes), 1)} mins` : `${(minutes / 60).toFixed(1)} hrs`
+    }
     const formatted = Number.isInteger(num) ? num.toString() : num.toFixed(1)
     return `${formatted} Days`
 }

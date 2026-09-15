@@ -25,7 +25,7 @@ export default function StrategyAnalysisTab({ strategyId }: Props) {
                 <h3 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--db-text)', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Performance Metrics</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
                     <AnalysisCard label="Win Rate" value={`${analysis.winRate.toFixed(1)}%`} icon={Target} color="#38D996" sublabel="of closed trades profitable" />
-                    <AnalysisCard label="Sharpe Ratio" value={analysis.sharpeRatio.toFixed(2)} icon={BarChart2} color="#5FAFD7" sublabel="risk-adjusted return" />
+                    <AnalysisCard label="Sharpe Ratio" value={analysis.sharpeRatio != null ? analysis.sharpeRatio.toFixed(2) : '--'} icon={BarChart2} color="#5FAFD7" sublabel="risk-adjusted return" />
                     <AnalysisCard label="Max Drawdown" value={`${analysis.maxDrawdown.toFixed(1)}%`} icon={AlertTriangle} color="#E35D6A" sublabel="peak to trough" />
                     <AnalysisCard label="Avg Hold Period" value={`${analysis.avgHoldingPeriodDays}d`} icon={Clock} color="#F3B84D" sublabel="per trade" />
                 </div>

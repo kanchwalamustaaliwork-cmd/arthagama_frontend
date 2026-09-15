@@ -180,10 +180,10 @@ export default function AdminStrategyCard({ strategy, onStatusChange, onToggleAc
             >
                 {[
                     { label: 'Total Realized P&L', value: fmtCurrency(netPnl), color: isProfit ? 'var(--db-profit)' : 'var(--db-loss)' },
-                    { label: 'Total Return (%)', value: `${metrics.totalReturn?.toFixed(1)}%`, color: metrics.totalReturn >= 0 ? 'var(--db-profit)' : 'var(--db-loss)' },
+                    { label: 'Total Return (%)', value: metrics.totalReturn != null ? `${metrics.totalReturn.toFixed(1)}%` : '--', color: (metrics.totalReturn ?? 0) >= 0 ? 'var(--db-profit)' : 'var(--db-loss)' },
                     { label: 'Win Rate', value: `${metrics.winRate?.toFixed(1)}%`, color: 'var(--db-text)' },
                     { label: 'Active Holdings', value: String(metrics.activeHoldings), color: 'var(--db-text)' },
-                    { label: 'Sharpe Ratio', value: metrics.sharpeRatio?.toFixed(2), color: 'var(--db-text)' },
+                    { label: 'Sharpe Ratio', value: metrics.sharpeRatio != null ? metrics.sharpeRatio.toFixed(2) : '--', color: 'var(--db-text)' },
                     { label: "Today's Realized P&L", value: fmtCurrency(metrics.todayPnLRealized ?? 0), color: (metrics.todayPnLRealized ?? 0) >= 0 ? 'var(--db-profit)' : 'var(--db-loss)' }
                 ].map(m => (
                     <div

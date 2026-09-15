@@ -14,7 +14,7 @@ export function useStrategyTrades(strategyId: string) {
     const debouncedSearch = useDebounce(search, 400)
     const activeSearch = search === '' ? '' : debouncedSearch
 
-    const [action, setAction] = useState<'all' | 'BUY' | 'SELL'>('all')
+    const [action, setAction] = useState<'all' | 'BUY' | 'SELL' | 'ENTRY' | 'EXIT'>('all')
     const [tradeStatus, setTradeStatus] = useState<'all' | 'completed' | 'cancelled' | 'rejected'>('all')
 
     const requestVersionRef = useRef(0)

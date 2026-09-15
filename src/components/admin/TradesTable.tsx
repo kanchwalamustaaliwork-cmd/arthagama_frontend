@@ -5,7 +5,8 @@ import Badge from '@/src/components/dashboard/ui/Badge'
 import SearchBar from '@/src/components/dashboard/ui/SearchBar'
 import FilterBar from '@/src/components/dashboard/ui/FilterBar'
 import Button from '@/src/components/dashboard/ui/Button'
-import { ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownLeft, LogIn, LogOut } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownLeft } from 'lucide-react'
+import type { AdminTrade } from '@/src/types/admin'
 
 const ACTION_FILTERS = [
     { label: 'All Actions', value: 'all' },
@@ -21,36 +22,23 @@ const STATUS_VARIANT: Record<string, 'success' | 'neutral' | 'error'> = {
     rejected: 'error',
 }
 
-// One place to define look & feel per action type.
-// BUY/ENTRY = going into a position -> green (profit color)
-// SELL/EXIT = coming out of a position -> red (loss color)
+// One place to define look & feel per direction.
+// BUY = green (profit color), SELL = red (loss color).
+// Whether a trade opened or closed exposure is shown separately (Entry / Exit).
 const ACTION_STYLE: Record<string, { color: string; bg: string; icon: React.ComponentType<{ size?: number }> }> = {
     BUY: { color: 'var(--db-profit)', bg: 'var(--db-profit-bg)', icon: ArrowDownLeft },
-    ENTRY: { color: 'var(--db-profit)', bg: 'var(--db-profit-bg)', icon: LogIn },
     SELL: { color: 'var(--db-loss)', bg: 'var(--db-loss-bg)', icon: ArrowUpRight },
-    EXIT: { color: 'var(--db-loss)', bg: 'var(--db-loss-bg)', icon: LogOut },
 }
 
 const DEFAULT_ACTION_STYLE = { color: 'var(--db-text-muted)', bg: 'var(--db-hover)', icon: ArrowUpRight }
 
-// Matches your current raw API response exactly.
-// status/pnl are optional since this endpoint doesn't return them yet.
-export interface RawTrade {
-    id: string
-    strategyId: string
-    stockSymbol: string
-    action: 'BUY' | 'SELL' | 'ENTRY' | 'EXIT'
-    quantity: number
-    price: number
-    totalValue: number
-    timestamp: string          // "2026-07-13 09:15:00"
-    status?: string            // not present in current payload
-    pnl?: number | null        // not present in current payload
-    stockName?: string         // not present in current payload
-}
+const EFFECT_LABEL: Record<string, string> = { OPEN: 'Entry', CLOSE: 'Exit' }
+
+const fmtMoney = (value: number) => `₹${value.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+const dash = <span style={{ color: 'var(--db-text-muted)' }}>—</span>
 
 interface TradesTableProps {
-    trades: RawTrade[]
+    trades: AdminTrade[]
     total: number
     page: number
     pageSize?: number
@@ -99,19 +87,22 @@ export default function TradesTable({
                                 </td>
                             </tr>
                         ) : trades.map(trade => {
-                            const style = ACTION_STYLE[trade.action] ?? DEFAULT_ACTION_STYLE
+                            const style = (trade.action && ACTION_STYLE[trade.action]) || DEFAULT_ACTION_STYLE
                             const Icon = style.icon
+                            const legPrices = (trade.legs?.length ?? 0) > 1
+                                ? trade.legs!.map(l => (l.price != null ? l.price.toFixed(2) : '—')).join(' / ')
+                                : null
                             return (
                                 <tr key={trade.id}>
                                     <td>
                                         <div>
                                             <div style={{ fontWeight: 600, color: 'var(--db-text)', fontSize: '13px' }}>{trade.stockSymbol}</div>
-                                            {trade.stockName && (
-                                                <div style={{ fontSize: '11px', color: 'var(--db-text-muted)' }}>{trade.stockName}</div>
+                                            {(trade.stockName || trade.reason) && (
+                                                <div style={{ fontSize: '11px', color: 'var(--db-text-muted)' }}>{trade.stockName || trade.reason}</div>
                                             )}
                                         </div>
                                     </td>
-                                    <td>
+                                    <td style={{ whiteSpace: 'nowrap' }}>
                                         <span style={{
                                             display: 'inline-flex',
                                             alignItems: 'center',
@@ -124,26 +115,31 @@ export default function TradesTable({
                                             borderRadius: '4px'
                                         }}>
                                             <Icon size={10} />
-                                            {trade.action}
+                                            {trade.action ?? 'MIXED'}
                                         </span>
+                                        {trade.effect && (
+                                            <span style={{ marginLeft: '6px', fontSize: '11px', color: 'var(--db-text-muted)' }}>
+                                                {EFFECT_LABEL[trade.effect]}
+                                            </span>
+                                        )}
                                     </td>
-                                    <td style={{ fontWeight: 500 }}>{trade.quantity.toLocaleString('en-IN')}</td>
-                                    <td>₹{trade.price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                                    <td style={{ fontWeight: 500 }}>₹{trade.totalValue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                                    <td style={{ fontWeight: 500 }}>{trade.quantity != null ? trade.quantity.toLocaleString('en-IN') : dash}</td>
+                                    <td>{trade.price != null ? fmtMoney(trade.price) : legPrices ?? dash}</td>
+                                    <td style={{ fontWeight: 500 }}>{trade.totalValue != null ? fmtMoney(trade.totalValue) : dash}</td>
                                     <td style={{
                                         fontWeight: 600,
                                         color: trade.pnl != null ? (trade.pnl >= 0 ? 'var(--db-profit)' : 'var(--db-loss)') : 'inherit'
                                     }}>
                                         {trade.pnl != null ? (
-                                            `${trade.pnl >= 0 ? '+' : ''}₹${trade.pnl.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
-                                        ) : <span style={{ color: 'var(--db-text-muted)' }}>—</span>}
+                                            `${trade.pnl >= 0 ? '+' : '-'}${fmtMoney(Math.abs(trade.pnl))}`
+                                        ) : dash}
                                     </td>
                                     <td>
                                         {trade.status ? (
                                             <Badge variant={STATUS_VARIANT[trade.status] ?? 'neutral'} dot>
                                                 {trade.status.charAt(0).toUpperCase() + trade.status.slice(1)}
                                             </Badge>
-                                        ) : <span style={{ color: 'var(--db-text-muted)' }}>—</span>}
+                                        ) : dash}
                                     </td>
                                     <td style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>{fmtTime(trade.timestamp)}</td>
                                 </tr>

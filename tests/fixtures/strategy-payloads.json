@@ -1,0 +1,1076 @@
+{
+ "demarker": {
+  "holdings": [
+   {
+    "id": "BSE-EQ:LONG",
+    "strategyId": "sid",
+    "instrument": {
+     "kind": "EQUITY",
+     "symbol": "BSE-EQ",
+     "key": "BSE-EQ",
+     "displayName": "BSE-EQ",
+     "strike": null,
+     "right": null,
+     "expiry": null
+    },
+    "side": "LONG",
+    "quantity": 1.0,
+    "initialQuantity": 1.0,
+    "avgPrice": 3687.9,
+    "entryDate": "2026-07-07T00:00:00",
+    "holdingDays": 70,
+    "priceKey": "BSE-EQ",
+    "warnings": []
+   },
+   {
+    "id": "ASIANPAINT-EQ:LONG",
+    "strategyId": "sid",
+    "instrument": {
+     "kind": "EQUITY",
+     "symbol": "ASIANPAINT-EQ",
+     "key": "ASIANPAINT-EQ",
+     "displayName": "ASIANPAINT-EQ",
+     "strike": null,
+     "right": null,
+     "expiry": null
+    },
+    "side": "LONG",
+    "quantity": 1.0,
+    "initialQuantity": 1.0,
+    "avgPrice": 2614.0,
+    "entryDate": "2026-08-19T00:00:00",
+    "holdingDays": 27,
+    "priceKey": "ASIANPAINT-EQ",
+    "warnings": []
+   }
+  ],
+  "trades": [
+   {
+    "id": "6aa8c1368ab327d925855802",
+    "strategyId": "sid",
+    "stockSymbol": "NETWEB-EQ",
+    "instrument": {
+     "kind": "EQUITY",
+     "symbol": "NETWEB-EQ",
+     "key": "NETWEB-EQ",
+     "displayName": "NETWEB-EQ",
+     "strike": null,
+     "right": null,
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "EQUITY",
+       "symbol": "NETWEB-EQ",
+       "key": "NETWEB-EQ",
+       "displayName": "NETWEB-EQ",
+       "strike": null,
+       "right": null,
+       "expiry": null
+      },
+      "side": "BUY",
+      "quantity": 1.0,
+      "price": 4862.0
+     }
+    ],
+    "action": "BUY",
+    "effect": "OPEN",
+    "quantity": 1.0,
+    "price": 4862.0,
+    "totalValue": 4862.0,
+    "pnl": null,
+    "reason": null,
+    "status": null,
+    "timestamp": "2026-09-15T09:23:26"
+   },
+   {
+    "id": "6aa8c1338ab327d925855801",
+    "strategyId": "sid",
+    "stockSymbol": "NATIONALUM-EQ",
+    "instrument": {
+     "kind": "EQUITY",
+     "symbol": "NATIONALUM-EQ",
+     "key": "NATIONALUM-EQ",
+     "displayName": "NATIONALUM-EQ",
+     "strike": null,
+     "right": null,
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "EQUITY",
+       "symbol": "NATIONALUM-EQ",
+       "key": "NATIONALUM-EQ",
+       "displayName": "NATIONALUM-EQ",
+       "strike": null,
+       "right": null,
+       "expiry": null
+      },
+      "side": "BUY",
+      "quantity": 13.0,
+      "price": 359.5
+     }
+    ],
+    "action": "BUY",
+    "effect": "OPEN",
+    "quantity": 13.0,
+    "price": 359.5,
+    "totalValue": 4673.5,
+    "pnl": null,
+    "reason": null,
+    "status": null,
+    "timestamp": "2026-09-15T09:23:23"
+   },
+   {
+    "id": "6aa8c12f8ab327d925855800",
+    "strategyId": "sid",
+    "stockSymbol": "HINDALCO-EQ",
+    "instrument": {
+     "kind": "EQUITY",
+     "symbol": "HINDALCO-EQ",
+     "key": "HINDALCO-EQ",
+     "displayName": "HINDALCO-EQ",
+     "strike": null,
+     "right": null,
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "EQUITY",
+       "symbol": "HINDALCO-EQ",
+       "key": "HINDALCO-EQ",
+       "displayName": "HINDALCO-EQ",
+       "strike": null,
+       "right": null,
+       "expiry": null
+      },
+      "side": "BUY",
+      "quantity": 5.0,
+      "price": 973.4
+     }
+    ],
+    "action": "BUY",
+    "effect": "OPEN",
+    "quantity": 5.0,
+    "price": 973.4,
+    "totalValue": 4867.0,
+    "pnl": null,
+    "reason": null,
+    "status": null,
+    "timestamp": "2026-09-15T09:23:19"
+   },
+   {
+    "id": "6aa0d69eb5bd0d4b4bc670a4",
+    "strategyId": "sid",
+    "stockSymbol": "HBLENGINE-EQ",
+    "instrument": {
+     "kind": "EQUITY",
+     "symbol": "HBLENGINE-EQ",
+     "key": "HBLENGINE-EQ",
+     "displayName": "HBLENGINE-EQ",
+     "strike": null,
+     "right": null,
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "EQUITY",
+       "symbol": "HBLENGINE-EQ",
+       "key": "HBLENGINE-EQ",
+       "displayName": "HBLENGINE-EQ",
+       "strike": null,
+       "right": null,
+       "expiry": null
+      },
+      "side": "SELL",
+      "quantity": 6.0,
+      "price": 737.35
+     }
+    ],
+    "action": "SELL",
+    "effect": "CLOSE",
+    "quantity": 6.0,
+    "price": 737.35,
+    "totalValue": 4424.1,
+    "pnl": -162.0,
+    "reason": null,
+    "status": null,
+    "timestamp": "2026-09-09T09:16:38"
+   },
+   {
+    "id": "6aa0d69bb5bd0d4b4bc670a3",
+    "strategyId": "sid",
+    "stockSymbol": "GVT&D-EQ",
+    "instrument": {
+     "kind": "EQUITY",
+     "symbol": "GVT&D-EQ",
+     "key": "GVT&D-EQ",
+     "displayName": "GVT&D-EQ",
+     "strike": null,
+     "right": null,
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "EQUITY",
+       "symbol": "GVT&D-EQ",
+       "key": "GVT&D-EQ",
+       "displayName": "GVT&D-EQ",
+       "strike": null,
+       "right": null,
+       "expiry": null
+      },
+      "side": "SELL",
+      "quantity": 1.0,
+      "price": 4775.0
+     }
+    ],
+    "action": "SELL",
+    "effect": "CLOSE",
+    "quantity": 1.0,
+    "price": 4775.0,
+    "totalValue": 4775.0,
+    "pnl": 203.2,
+    "reason": null,
+    "status": null,
+    "timestamp": "2026-09-09T09:16:35"
+   }
+  ]
+ },
+ "VixStraddle": {
+  "holdings": [
+   {
+    "id": "NIFTY|OPTION|23900|CALL|2026-09-15:SHORT",
+    "strategyId": "sid",
+    "instrument": {
+     "kind": "OPTION",
+     "symbol": "NIFTY",
+     "key": "NIFTY|OPTION|23900|CALL|2026-09-15",
+     "displayName": "NIFTY 23900 CE",
+     "strike": 23900.0,
+     "right": "CALL",
+     "expiry": "2026-09-15"
+    },
+    "side": "SHORT",
+    "quantity": 130.0,
+    "initialQuantity": null,
+    "avgPrice": 4.5,
+    "entryDate": "2026-09-11T12:31:03.384000",
+    "holdingDays": 3,
+    "priceKey": null,
+    "warnings": []
+   },
+   {
+    "id": "NIFTY|OPTION|22800|PUT|2026-09-15:SHORT",
+    "strategyId": "sid",
+    "instrument": {
+     "kind": "OPTION",
+     "symbol": "NIFTY",
+     "key": "NIFTY|OPTION|22800|PUT|2026-09-15",
+     "displayName": "NIFTY 22800 PE",
+     "strike": 22800.0,
+     "right": "PUT",
+     "expiry": "2026-09-15"
+    },
+    "side": "SHORT",
+    "quantity": 65.0,
+    "initialQuantity": null,
+    "avgPrice": 8.35,
+    "entryDate": "2026-09-11T12:31:09.954000",
+    "holdingDays": 3,
+    "priceKey": null,
+    "warnings": [
+     "quantity_differs_from_fill"
+    ]
+   }
+  ],
+  "trades": [
+   {
+    "id": "6aa3a7352f64b7c144307788",
+    "strategyId": "sid",
+    "stockSymbol": "NIFTY 22800 PE",
+    "instrument": {
+     "kind": "OPTION",
+     "symbol": "NIFTY",
+     "key": "NIFTY|OPTION|22800|PUT|?",
+     "displayName": "NIFTY 22800 PE",
+     "strike": 22800.0,
+     "right": "PUT",
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "OPTION",
+       "symbol": "NIFTY",
+       "key": "NIFTY|OPTION|22800|PUT|?",
+       "displayName": "NIFTY 22800 PE",
+       "strike": 22800.0,
+       "right": "PUT",
+       "expiry": null
+      },
+      "side": "SELL",
+      "quantity": 130.0,
+      "price": 8.35
+     }
+    ],
+    "action": "SELL",
+    "effect": "OPEN",
+    "quantity": 130.0,
+    "price": 8.35,
+    "totalValue": 1085.5,
+    "pnl": null,
+    "reason": null,
+    "status": null,
+    "timestamp": "2026-09-11T12:31:09.954000"
+   },
+   {
+    "id": "6aa3a72f2f64b7c144307786",
+    "strategyId": "sid",
+    "stockSymbol": "NIFTY 23900 CE",
+    "instrument": {
+     "kind": "OPTION",
+     "symbol": "NIFTY",
+     "key": "NIFTY|OPTION|23900|CALL|?",
+     "displayName": "NIFTY 23900 CE",
+     "strike": 23900.0,
+     "right": "CALL",
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "OPTION",
+       "symbol": "NIFTY",
+       "key": "NIFTY|OPTION|23900|CALL|?",
+       "displayName": "NIFTY 23900 CE",
+       "strike": 23900.0,
+       "right": "CALL",
+       "expiry": null
+      },
+      "side": "SELL",
+      "quantity": 130.0,
+      "price": 4.5
+     }
+    ],
+    "action": "SELL",
+    "effect": "OPEN",
+    "quantity": 130.0,
+    "price": 4.5,
+    "totalValue": 585.0,
+    "pnl": null,
+    "reason": null,
+    "status": null,
+    "timestamp": "2026-09-11T12:31:03.384000"
+   },
+   {
+    "id": "6aa27eaf82a7f3b4f06215b0",
+    "strategyId": "sid",
+    "stockSymbol": "BSESEN 74600 PE",
+    "instrument": {
+     "kind": "OPTION",
+     "symbol": "BSESEN",
+     "key": "BSESEN|OPTION|74600|PUT|?",
+     "displayName": "BSESEN 74600 PE",
+     "strike": 74600.0,
+     "right": "PUT",
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "OPTION",
+       "symbol": "BSESEN",
+       "key": "BSESEN|OPTION|74600|PUT|?",
+       "displayName": "BSESEN 74600 PE",
+       "strike": 74600.0,
+       "right": "PUT",
+       "expiry": null
+      },
+      "side": "BUY",
+      "quantity": 20.0,
+      "price": 0.0
+     }
+    ],
+    "action": "BUY",
+    "effect": "CLOSE",
+    "quantity": 20.0,
+    "price": 0.0,
+    "totalValue": 0.0,
+    "pnl": 426.0,
+    "reason": "TIME",
+    "status": null,
+    "timestamp": "2026-09-10T15:25:59.109000"
+   },
+   {
+    "id": "6aa27e9182a7f3b4f06215a7",
+    "strategyId": "sid",
+    "stockSymbol": "BSESEN 76800 CE",
+    "instrument": {
+     "kind": "OPTION",
+     "symbol": "BSESEN",
+     "key": "BSESEN|OPTION|76800|CALL|?",
+     "displayName": "BSESEN 76800 CE",
+     "strike": 76800.0,
+     "right": "CALL",
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "OPTION",
+       "symbol": "BSESEN",
+       "key": "BSESEN|OPTION|76800|CALL|?",
+       "displayName": "BSESEN 76800 CE",
+       "strike": 76800.0,
+       "right": "CALL",
+       "expiry": null
+      },
+      "side": "BUY",
+      "quantity": 40.0,
+      "price": 0.0
+     }
+    ],
+    "action": "BUY",
+    "effect": "CLOSE",
+    "quantity": 40.0,
+    "price": 0.0,
+    "totalValue": 0.0,
+    "pnl": 2044.0,
+    "reason": "TIME",
+    "status": null,
+    "timestamp": "2026-09-10T15:25:29.734000"
+   }
+  ]
+ },
+ "DumbStraddle": {
+  "holdings": [
+   {
+    "id": "BSESEN|OPTION|78600|CALL|2026-04-30:SHORT",
+    "strategyId": "sid",
+    "instrument": {
+     "kind": "OPTION",
+     "symbol": "BSESEN",
+     "key": "BSESEN|OPTION|78600|CALL|2026-04-30",
+     "displayName": "BSESEN 78600 CE",
+     "strike": 78600.0,
+     "right": "CALL",
+     "expiry": "2026-04-30"
+    },
+    "side": "SHORT",
+    "quantity": 20.0,
+    "initialQuantity": null,
+    "avgPrice": 36.5,
+    "entryDate": "2026-04-28T12:50:58.652000",
+    "holdingDays": 139,
+    "priceKey": null,
+    "warnings": [
+     "expired_contract_still_open"
+    ]
+   },
+   {
+    "id": "BSESEN|OPTION|75200|PUT|2026-04-30:SHORT",
+    "strategyId": "sid",
+    "instrument": {
+     "kind": "OPTION",
+     "symbol": "BSESEN",
+     "key": "BSESEN|OPTION|75200|PUT|2026-04-30",
+     "displayName": "BSESEN 75200 PE",
+     "strike": 75200.0,
+     "right": "PUT",
+     "expiry": "2026-04-30"
+    },
+    "side": "SHORT",
+    "quantity": 20.0,
+    "initialQuantity": null,
+    "avgPrice": 31.6,
+    "entryDate": "2026-04-28T12:30:58.512000",
+    "holdingDays": 139,
+    "priceKey": null,
+    "warnings": [
+     "expired_contract_still_open"
+    ]
+   }
+  ],
+  "trades": [
+   {
+    "id": "69f31c79d16fd22e20806067",
+    "strategyId": "sid",
+    "stockSymbol": "BSESEN 78600 CE",
+    "instrument": {
+     "kind": "OPTION",
+     "symbol": "BSESEN",
+     "key": "BSESEN|OPTION|78600|CALL|?",
+     "displayName": "BSESEN 78600 CE",
+     "strike": 78600.0,
+     "right": "CALL",
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "OPTION",
+       "symbol": "BSESEN",
+       "key": "BSESEN|OPTION|78600|CALL|?",
+       "displayName": "BSESEN 78600 CE",
+       "strike": 78600.0,
+       "right": "CALL",
+       "expiry": null
+      },
+      "side": "BUY",
+      "quantity": 20.0,
+      "price": 0.45
+     }
+    ],
+    "action": "BUY",
+    "effect": "CLOSE",
+    "quantity": 20.0,
+    "price": 0.45,
+    "totalValue": 9.0,
+    "pnl": 721.0,
+    "reason": "TIME",
+    "status": null,
+    "timestamp": "2026-04-30T14:40:17.266000"
+   },
+   {
+    "id": "69f05fda858f203a152cd14e",
+    "strategyId": "sid",
+    "stockSymbol": "BSESEN 78600 CE",
+    "instrument": {
+     "kind": "OPTION",
+     "symbol": "BSESEN",
+     "key": "BSESEN|OPTION|78600|CALL|?",
+     "displayName": "BSESEN 78600 CE",
+     "strike": 78600.0,
+     "right": "CALL",
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "OPTION",
+       "symbol": "BSESEN",
+       "key": "BSESEN|OPTION|78600|CALL|?",
+       "displayName": "BSESEN 78600 CE",
+       "strike": 78600.0,
+       "right": "CALL",
+       "expiry": null
+      },
+      "side": "SELL",
+      "quantity": 20.0,
+      "price": 36.5
+     }
+    ],
+    "action": "SELL",
+    "effect": "OPEN",
+    "quantity": 20.0,
+    "price": 36.5,
+    "totalValue": 730.0,
+    "pnl": null,
+    "reason": "MANUAL_BROKER_SYNC",
+    "status": null,
+    "timestamp": "2026-04-28T12:50:58.652000"
+   },
+   {
+    "id": "69f05b2a1a0ddba5c5a6f154",
+    "strategyId": "sid",
+    "stockSymbol": "BSESEN 75200 PE",
+    "instrument": {
+     "kind": "OPTION",
+     "symbol": "BSESEN",
+     "key": "BSESEN|OPTION|75200|PUT|?",
+     "displayName": "BSESEN 75200 PE",
+     "strike": 75200.0,
+     "right": "PUT",
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "OPTION",
+       "symbol": "BSESEN",
+       "key": "BSESEN|OPTION|75200|PUT|?",
+       "displayName": "BSESEN 75200 PE",
+       "strike": 75200.0,
+       "right": "PUT",
+       "expiry": null
+      },
+      "side": "SELL",
+      "quantity": 20.0,
+      "price": 31.6
+     }
+    ],
+    "action": "SELL",
+    "effect": "OPEN",
+    "quantity": 20.0,
+    "price": 31.6,
+    "totalValue": 632.0,
+    "pnl": null,
+    "reason": null,
+    "status": null,
+    "timestamp": "2026-04-28T12:30:58.512000"
+   },
+   {
+    "id": "69e9ec7d1d75237f40a2aeed",
+    "strategyId": "sid",
+    "stockSymbol": "BSESEN 77600 PE",
+    "instrument": {
+     "kind": "OPTION",
+     "symbol": "BSESEN",
+     "key": "BSESEN|OPTION|77600|PUT|?",
+     "displayName": "BSESEN 77600 PE",
+     "strike": 77600.0,
+     "right": "PUT",
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "OPTION",
+       "symbol": "BSESEN",
+       "key": "BSESEN|OPTION|77600|PUT|?",
+       "displayName": "BSESEN 77600 PE",
+       "strike": 77600.0,
+       "right": "PUT",
+       "expiry": null
+      },
+      "side": "BUY",
+      "quantity": 20.0,
+      "price": 0.1
+     }
+    ],
+    "action": "BUY",
+    "effect": "CLOSE",
+    "quantity": 20.0,
+    "price": 0.1,
+    "totalValue": 2.0,
+    "pnl": 2122.0,
+    "reason": "TIME",
+    "status": null,
+    "timestamp": "2026-04-23T15:25:09.333000"
+   }
+  ]
+ },
+ "spdl": {
+  "holdings": [],
+  "trades": [
+   {
+    "id": "6a83dc7287abcfe28dbac70c",
+    "strategyId": "sid",
+    "stockSymbol": "NIFTY 24300 CE / NIFTY 24100 PE",
+    "instrument": {
+     "kind": "OPTION",
+     "symbol": "NIFTY",
+     "key": "NIFTY|OPTION|24300|CALL|?",
+     "displayName": "NIFTY 24300 CE",
+     "strike": 24300.0,
+     "right": "CALL",
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "OPTION",
+       "symbol": "NIFTY",
+       "key": "NIFTY|OPTION|24300|CALL|?",
+       "displayName": "NIFTY 24300 CE",
+       "strike": 24300.0,
+       "right": "CALL",
+       "expiry": null
+      },
+      "side": "SELL",
+      "quantity": null,
+      "price": 12.65
+     },
+     {
+      "instrument": {
+       "kind": "OPTION",
+       "symbol": "NIFTY",
+       "key": "NIFTY|OPTION|24100|PUT|?",
+       "displayName": "NIFTY 24100 PE",
+       "strike": 24100.0,
+       "right": "PUT",
+       "expiry": null
+      },
+      "side": "SELL",
+      "quantity": null,
+      "price": 5.55
+     }
+    ],
+    "action": "SELL",
+    "effect": "CLOSE",
+    "quantity": null,
+    "price": null,
+    "totalValue": null,
+    "pnl": -319.5637,
+    "reason": "STOP_LOSS",
+    "status": null,
+    "timestamp": "2026-08-18T09:45:46.129000"
+   },
+   {
+    "id": "6a83dc6187abcfe28dbac6f7",
+    "strategyId": "sid",
+    "stockSymbol": "NIFTY 24300 CE / NIFTY 24100 PE",
+    "instrument": {
+     "kind": "OPTION",
+     "symbol": "NIFTY",
+     "key": "NIFTY|OPTION|24300|CALL|?",
+     "displayName": "NIFTY 24300 CE",
+     "strike": 24300.0,
+     "right": "CALL",
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "OPTION",
+       "symbol": "NIFTY",
+       "key": "NIFTY|OPTION|24300|CALL|?",
+       "displayName": "NIFTY 24300 CE",
+       "strike": 24300.0,
+       "right": "CALL",
+       "expiry": null
+      },
+      "side": "BUY",
+      "quantity": null,
+      "price": 13.6
+     },
+     {
+      "instrument": {
+       "kind": "OPTION",
+       "symbol": "NIFTY",
+       "key": "NIFTY|OPTION|24100|PUT|?",
+       "displayName": "NIFTY 24100 PE",
+       "strike": 24100.0,
+       "right": "PUT",
+       "expiry": null
+      },
+      "side": "BUY",
+      "quantity": null,
+      "price": 5.25
+     }
+    ],
+    "action": "BUY",
+    "effect": "OPEN",
+    "quantity": null,
+    "price": null,
+    "totalValue": null,
+    "pnl": null,
+    "reason": null,
+    "status": null,
+    "timestamp": "2026-08-18T09:45:29.337000"
+   },
+   {
+    "id": "6a83da4287abcfe28dbac696",
+    "strategyId": "sid",
+    "stockSymbol": "NIFTY 24350 CE / NIFTY 24150 PE",
+    "instrument": {
+     "kind": "OPTION",
+     "symbol": "NIFTY",
+     "key": "NIFTY|OPTION|24350|CALL|?",
+     "displayName": "NIFTY 24350 CE",
+     "strike": 24350.0,
+     "right": "CALL",
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "OPTION",
+       "symbol": "NIFTY",
+       "key": "NIFTY|OPTION|24350|CALL|?",
+       "displayName": "NIFTY 24350 CE",
+       "strike": 24350.0,
+       "right": "CALL",
+       "expiry": null
+      },
+      "side": "SELL",
+      "quantity": null,
+      "price": 8.65
+     },
+     {
+      "instrument": {
+       "kind": "OPTION",
+       "symbol": "NIFTY",
+       "key": "NIFTY|OPTION|24150|PUT|?",
+       "displayName": "NIFTY 24150 PE",
+       "strike": 24150.0,
+       "right": "PUT",
+       "expiry": null
+      },
+      "side": "SELL",
+      "quantity": null,
+      "price": 8.8
+     }
+    ],
+    "action": "SELL",
+    "effect": "CLOSE",
+    "quantity": null,
+    "price": null,
+    "totalValue": null,
+    "pnl": -335.2508,
+    "reason": "STOP_LOSS",
+    "status": null,
+    "timestamp": "2026-08-18T09:36:26.691000"
+   },
+   {
+    "id": "6a83d9f387abcfe28dbac66b",
+    "strategyId": "sid",
+    "stockSymbol": "NIFTY 24350 CE / NIFTY 24150 PE",
+    "instrument": {
+     "kind": "OPTION",
+     "symbol": "NIFTY",
+     "key": "NIFTY|OPTION|24350|CALL|?",
+     "displayName": "NIFTY 24350 CE",
+     "strike": 24350.0,
+     "right": "CALL",
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "OPTION",
+       "symbol": "NIFTY",
+       "key": "NIFTY|OPTION|24350|CALL|?",
+       "displayName": "NIFTY 24350 CE",
+       "strike": 24350.0,
+       "right": "CALL",
+       "expiry": null
+      },
+      "side": "BUY",
+      "quantity": null,
+      "price": 7.75
+     },
+     {
+      "instrument": {
+       "kind": "OPTION",
+       "symbol": "NIFTY",
+       "key": "NIFTY|OPTION|24150|PUT|?",
+       "displayName": "NIFTY 24150 PE",
+       "strike": 24150.0,
+       "right": "PUT",
+       "expiry": null
+      },
+      "side": "BUY",
+      "quantity": null,
+      "price": 10.4
+     }
+    ],
+    "action": "BUY",
+    "effect": "OPEN",
+    "quantity": null,
+    "price": null,
+    "totalValue": null,
+    "pnl": null,
+    "reason": null,
+    "status": null,
+    "timestamp": "2026-08-18T09:35:07.094000"
+   }
+  ]
+ },
+ "HekinASHI": {
+  "holdings": [],
+  "trades": [
+   {
+    "id": "697850e82197809098aafbfb",
+    "strategyId": "sid",
+    "stockSymbol": "NIFTY FUT",
+    "instrument": {
+     "kind": "FUTURE",
+     "symbol": "NIFTY",
+     "key": "NIFTY|FUTURE|?",
+     "displayName": "NIFTY FUT",
+     "strike": null,
+     "right": null,
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "FUTURE",
+       "symbol": "NIFTY",
+       "key": "NIFTY|FUTURE|?",
+       "displayName": "NIFTY FUT",
+       "strike": null,
+       "right": null,
+       "expiry": null
+      },
+      "side": "SELL",
+      "quantity": 65.0,
+      "price": 25191.1
+     }
+    ],
+    "action": "SELL",
+    "effect": "OPEN",
+    "quantity": 65.0,
+    "price": 25191.1,
+    "totalValue": 1637421.5,
+    "pnl": null,
+    "reason": null,
+    "status": null,
+    "timestamp": "2026-01-27T11:15:12.211000"
+   },
+   {
+    "id": "694e04d8c5c774d7eea7f440",
+    "strategyId": "sid",
+    "stockSymbol": "NIFTY FUT",
+    "instrument": {
+     "kind": "FUTURE",
+     "symbol": "NIFTY",
+     "key": "NIFTY|FUTURE|?",
+     "displayName": "NIFTY FUT",
+     "strike": null,
+     "right": null,
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "FUTURE",
+       "symbol": "NIFTY",
+       "key": "NIFTY|FUTURE|?",
+       "displayName": "NIFTY FUT",
+       "strike": null,
+       "right": null,
+       "expiry": null
+      },
+      "side": "SELL",
+      "quantity": 75.0,
+      "price": 26114.0
+     }
+    ],
+    "action": "SELL",
+    "effect": "OPEN",
+    "quantity": 75.0,
+    "price": 26114.0,
+    "totalValue": 1958550.0,
+    "pnl": null,
+    "reason": null,
+    "status": null,
+    "timestamp": "2025-12-26T09:15:28.894000"
+   },
+   {
+    "id": "6948dae58875cb1a57c32457",
+    "strategyId": "sid",
+    "stockSymbol": "NIFTY FUT",
+    "instrument": {
+     "kind": "FUTURE",
+     "symbol": "NIFTY",
+     "key": "NIFTY|FUTURE|?",
+     "displayName": "NIFTY FUT",
+     "strike": null,
+     "right": null,
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "FUTURE",
+       "symbol": "NIFTY",
+       "key": "NIFTY|FUTURE|?",
+       "displayName": "NIFTY FUT",
+       "strike": null,
+       "right": null,
+       "expiry": null
+      },
+      "side": "BUY",
+      "quantity": 75.0,
+      "price": 26184.9
+     }
+    ],
+    "action": "BUY",
+    "effect": "CLOSE",
+    "quantity": 75.0,
+    "price": 26184.9,
+    "totalValue": 1963867.5,
+    "pnl": -14325.0,
+    "reason": null,
+    "status": null,
+    "timestamp": "2025-12-22T11:15:09.569000"
+   },
+   {
+    "id": "693fa06b72f92e267ab0adbe",
+    "strategyId": "sid",
+    "stockSymbol": "NIFTY FUT",
+    "instrument": {
+     "kind": "FUTURE",
+     "symbol": "NIFTY",
+     "key": "NIFTY|FUTURE|?",
+     "displayName": "NIFTY FUT",
+     "strike": null,
+     "right": null,
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "FUTURE",
+       "symbol": "NIFTY",
+       "key": "NIFTY|FUTURE|?",
+       "displayName": "NIFTY FUT",
+       "strike": null,
+       "right": null,
+       "expiry": null
+      },
+      "side": "SELL",
+      "quantity": 75.0,
+      "price": 26056.5
+     }
+    ],
+    "action": "SELL",
+    "effect": "OPEN",
+    "quantity": 75.0,
+    "price": 26056.5,
+    "totalValue": 1954237.5,
+    "pnl": null,
+    "reason": null,
+    "status": null,
+    "timestamp": "2025-12-15T11:15:15.211000"
+   },
+   {
+    "id": "693be426b0d732bef3d58f3f",
+    "strategyId": "sid",
+    "stockSymbol": "NIFTY FUT",
+    "instrument": {
+     "kind": "FUTURE",
+     "symbol": "NIFTY",
+     "key": "NIFTY|FUTURE|?",
+     "displayName": "NIFTY FUT",
+     "strike": null,
+     "right": null,
+     "expiry": null
+    },
+    "legs": [
+     {
+      "instrument": {
+       "kind": "FUTURE",
+       "symbol": "NIFTY",
+       "key": "NIFTY|FUTURE|?",
+       "displayName": "NIFTY FUT",
+       "strike": null,
+       "right": null,
+       "expiry": null
+      },
+      "side": "BUY",
+      "quantity": 75.0,
+      "price": 26148.9
+     }
+    ],
+    "action": "BUY",
+    "effect": "CLOSE",
+    "quantity": 75.0,
+    "price": 26148.9,
+    "totalValue": 1961167.5,
+    "pnl": 2257.5,
+    "reason": null,
+    "status": null,
+    "timestamp": "2025-12-12T15:15:10.017000"
+   }
+  ]
+ }
+}

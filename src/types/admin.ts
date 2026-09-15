@@ -83,15 +83,17 @@ export interface StrategyMetrics {
     winningTrades: number
     losingTrades: number
     winRate: number
-    sharpeRatio: number
+    /** null when undefined: no initial capital, < 2 P&L days, or zero variance */
+    sharpeRatio: number | null
     averageHoldingTime: number
     lastTradeTimestamp: string | null
 
-    // Dynamic Metrics (live)
-    portfolioValue: number
-    unrealizedPnL: number
+    // Dynamic Metrics (live) — null when an open position has no live price
+    // (e.g. option legs), or capital is unknown for totalReturn
+    portfolioValue: number | null
+    unrealizedPnL: number | null
     activeHoldings: number
-    totalReturn: number
+    totalReturn: number | null
 }
 
 // ─── Strategy (Admin view) ────────────────────────────────────────────────────
@@ -162,39 +164,74 @@ export interface AdminStrategy {
     storageConfig?: Record<string, unknown>
 }
 
+// ─── Instrument ───────────────────────────────────────────────────────────────
+
+export type InstrumentKind = 'EQUITY' | 'FUTURE' | 'OPTION'
+
+/** Contract identity — identical in holdings and trades. */
+export interface Instrument {
+    kind: InstrumentKind
+    symbol: string              // ticker or underlying as stored by the strategy
+    key: string                 // stable contract id
+    displayName: string         // e.g. "BSE-EQ", "NIFTY FUT", "NIFTY 23900 CE"
+    strike: number | null
+    right: 'CALL' | 'PUT' | null
+    expiry: string | null       // YYYY-MM-DD; null when the source does not record it
+}
+
 // ─── Holding ──────────────────────────────────────────────────────────────────
 
-/**
- * Canonical holding shape returned by the normalisation layer.
- * Field names are canonical camelCase regardless of how the strategy DB stores them.
- */
+/** One open position of any instrument kind (GET /{id}/holdings). */
 export interface AdminHolding {
-    symbol: string
-    quantity: number
-    avgPrice: number
-    lastPrice: number
-    marketValue: number
-    unrealizedPnl: number
-    side: 'LONG' | 'SHORT' | string
-    entryDate: string | null
+    id: string
     strategyId: string
-    _extra?: Record<string, unknown>   // strategy-specific fields not in the canonical schema
+    instrument: Instrument
+    side: 'LONG' | 'SHORT'
+    quantity: number
+    initialQuantity: number | null
+    avgPrice: number
+    entryDate: string | null
+    holdingDays: number | null
+    /**
+     * Ticker of the live LTP record that prices this position.
+     * null when the strategy's feed does not quote the instrument (derivatives).
+     */
+    priceKey: string | null
+    /** Data-quality flags, e.g. "expired_contract_still_open" */
+    warnings: string[]
 }
 
 // ─── Trade ────────────────────────────────────────────────────────────────────
 
+export type TradeSide = 'BUY' | 'SELL'
+
+export interface AdminTradeLeg {
+    instrument: Instrument
+    side: TradeSide
+    quantity: number | null
+    price: number | null
+}
+
 export interface AdminTrade {
     id: string
     strategyId: string
+    /** Display name(s) of the traded instrument(s) */
     stockSymbol: string
-    stockName: string
-    action: 'BUY' | 'SELL'
-    quantity: number
-    price: number
-    totalValue: number
+    stockName?: string
+    instrument?: Instrument | null
+    legs?: AdminTradeLeg[]
+    /** True direction shared by all legs (an option ENTRY that wrote premium is SELL) */
+    action: TradeSide | null
+    effect?: 'OPEN' | 'CLOSE'
+    /** Single-leg trades only; null for multi-leg or when the source omits it */
+    quantity: number | null
+    price: number | null
+    totalValue: number | null
     timestamp: string // ISO date
-    pnl?: number // only for SELL trades
-    status: 'completed' | 'cancelled' | 'rejected'
+    /** Realized P&L of closing trades */
+    pnl?: number | null
+    reason?: string | null
+    status?: string | null
 }
 
 // ─── Live Universe & Market Data ──────────────────────────────────────────────
@@ -252,7 +289,7 @@ export interface TradeQueryParams {
     page?: number
     pageSize?: number
     search?: string
-    action?: 'all' | 'BUY' | 'SELL'
+    action?: 'all' | 'BUY' | 'SELL' | 'ENTRY' | 'EXIT'
     status?: 'all' | 'completed' | 'cancelled' | 'rejected'
 }
 
@@ -294,7 +331,7 @@ export interface StrategyAnalysis {
     worstPerformingStock: string
     mostTradedStock: string
     maxDrawdown: number        // percentage
-    sharpeRatio: number
+    sharpeRatio: number | null
 }
 
 // ─── Dashboard Stats ──────────────────────────────────────────────────────────

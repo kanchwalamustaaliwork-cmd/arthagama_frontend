@@ -242,7 +242,7 @@ export default function StrategyOverviewTab({ strategy: propStrategy }: Props = 
 
     if (!strategy) return null
 
-    const totalReturn = metrics?.totalReturn ?? 0
+    const totalReturn = metrics?.totalReturn ?? null
     const initialCapital = strategy.initialCapital ?? 0
     const riskFreeRate = strategy.riskFreeRate ?? 0.06
 
@@ -323,9 +323,9 @@ export default function StrategyOverviewTab({ strategy: propStrategy }: Props = 
                             {
                                 icon: Percent,
                                 label: 'Cumulative ROI',
-                                value: formatPercentage(totalReturn),
+                                value: totalReturn != null ? formatPercentage(totalReturn) : '--',
                                 desc: 'Overall portfolio gain factor',
-                                color: totalReturn >= 0 ? 'var(--db-profit)' : 'var(--db-loss)',
+                                color: totalReturn == null ? undefined : totalReturn >= 0 ? 'var(--db-profit)' : 'var(--db-loss)',
                             },
                             {
                                 icon: Calendar,
