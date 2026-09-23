@@ -42,7 +42,10 @@ export default function StrategyLiveUniverseTab({ strategyId: _strategyId }: Pro
 
     // Filter items based on search and selected segment
     const filteredItems = items.filter(item => {
-        const matchesSearch = !search.trim() || item.ticker.toLowerCase().includes(search.trim().toLowerCase())
+        const query = search.trim().toLowerCase()
+        const matchesSearch = !query
+            || item.displayName.toLowerCase().includes(query)
+            || item.ticker.toLowerCase().includes(query)
         if (!matchesSearch) return false
 
         if (filterMode === 'holdings') return item.isHolding
@@ -52,6 +55,9 @@ export default function StrategyLiveUniverseTab({ strategyId: _strategyId }: Pro
 
     const universeName = universe?.universeName || strategy?.universeName || 'Unconfigured'
     const universeType = universe?.universeType || strategy?.universeType || 'default'
+    // Derivative strategies have no universe — the view lists their open legs instead
+    const byPositions = universe?.source === 'POSITIONS'
+    const title = byPositions ? 'Open Positions' : `Universe: ${universeName}`
 
     if (status === 'empty' && items.length === 0) {
         return (
@@ -59,7 +65,7 @@ export default function StrategyLiveUniverseTab({ strategyId: _strategyId }: Pro
                 <div style={{ padding: '20px 24px', background: 'var(--db-elevated)', border: '1px solid var(--db-border)', borderRadius: 'var(--db-radius-md)' }}>
                     <h3 style={{ fontSize: '15px', fontWeight: 650, color: 'var(--db-text)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <Globe size={16} color="var(--db-mint)" />
-                        Universe: {universeName}
+                        {title}
                     </h3>
                     <span style={{ fontSize: '12px', color: 'var(--db-text-muted)' }}>
                         Type: <strong style={{ textTransform: 'capitalize', color: 'var(--db-text-2)' }}>{universeType}</strong>
@@ -67,8 +73,10 @@ export default function StrategyLiveUniverseTab({ strategyId: _strategyId }: Pro
                 </div>
                 <EmptyState
                     icon={Globe}
-                    title="No Universe Instruments Available"
-                    description="This strategy does not have active instruments or quotes configured in its universe database."
+                    title={byPositions ? 'No Open Positions' : 'No Universe Instruments Available'}
+                    description={byPositions
+                        ? 'This strategy has no open legs right now. Positions appear here with live prices as soon as the strategy enters.'
+                        : 'This strategy does not have active instruments or quotes configured in its universe database.'}
                 />
             </div>
         )
@@ -93,7 +101,7 @@ export default function StrategyLiveUniverseTab({ strategyId: _strategyId }: Pro
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                             <Globe size={17} color="var(--db-mint)" />
                             <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--db-text)' }}>
-                                Universe: {universeName}
+                                {title}
                             </h2>
                             <span
                                 style={{
@@ -143,7 +151,7 @@ export default function StrategyLiveUniverseTab({ strategyId: _strategyId }: Pro
                         >
                             <Layers size={14} color="var(--db-text-muted)" />
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <span style={{ fontSize: '10.5px', color: 'var(--db-text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Constituents</span>
+                                <span style={{ fontSize: '10.5px', color: 'var(--db-text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{byPositions ? 'Positions' : 'Constituents'}</span>
                                 <span style={{ fontSize: '14px', fontWeight: 650, color: 'var(--db-text)' }}>{totalConstituents}</span>
                             </div>
                         </div>
@@ -269,7 +277,7 @@ export default function StrategyLiveUniverseTab({ strategyId: _strategyId }: Pro
                             <th>Instrument</th>
                             <th>Status</th>
                             <th>Held Qty</th>
-                            <th>Avg Buy Price</th>
+                            <th>Avg Price</th>
                             <th>Unrealized PnL</th>
                             <th>Latest Price (LTP)</th>
                             <th>Last Tick</th>
@@ -288,10 +296,18 @@ export default function StrategyLiveUniverseTab({ strategyId: _strategyId }: Pro
                                 const pnl = item.unrealizedPnl
 
                                 return (
-                                    <tr key={item.ticker}>
-                                        {/* Instrument Symbol */}
-                                        <td style={{ fontWeight: 650, color: 'var(--db-text)', fontSize: '13.5px', fontFamily: 'monospace' }}>
-                                            {item.ticker}
+                                    <tr key={item.key}>
+                                        {/* Instrument (contract name for derivatives; feed ticker on hover) */}
+                                        <td
+                                            title={item.ticker !== item.displayName ? item.ticker : undefined}
+                                            style={{ fontWeight: 650, color: 'var(--db-text)', fontSize: '13.5px', fontFamily: 'monospace', whiteSpace: 'nowrap' }}
+                                        >
+                                            {item.displayName}
+                                            {item.side === 'SHORT' && (
+                                                <span style={{ marginLeft: '8px', padding: '1px 6px', borderRadius: '4px', fontSize: '10.5px', fontWeight: 600, fontFamily: 'inherit', background: 'rgba(239, 68, 68, 0.12)', color: 'var(--db-loss)' }}>
+                                                    SHORT
+                                                </span>
+                                            )}
                                         </td>
 
                                         {/* Status: Active Holding vs Watching */}
@@ -327,7 +343,7 @@ export default function StrategyLiveUniverseTab({ strategyId: _strategyId }: Pro
                                             {isHeld && item.quantity > 0 ? item.quantity.toLocaleString('en-IN') : <span style={{ color: 'var(--db-text-muted)' }}>—</span>}
                                         </td>
 
-                                        {/* Avg Buy Price */}
+                                        {/* Avg Price */}
                                         <td>
                                             {isHeld && item.avgPrice > 0 ? formatCurrency(item.avgPrice) : <span style={{ color: 'var(--db-text-muted)' }}>—</span>}
                                         </td>
@@ -365,7 +381,7 @@ export default function StrategyLiveUniverseTab({ strategyId: _strategyId }: Pro
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', background: 'rgba(95, 175, 215, 0.05)', border: '1px solid rgba(95, 175, 215, 0.15)', borderRadius: 'var(--db-radius-md)' }}>
                 <Info size={14} color="var(--db-info)" />
                 <span style={{ fontSize: '12.5px', color: 'var(--db-text-2)' }}>
-                    Universe constituents stream real-time prices directly from MongoDB Change Streams. Positions marked as <strong>Active Holding</strong> automatically track unrealized PnL against live ticks.
+                    Prices stream in real time from MongoDB Change Streams. Positions marked as <strong>Active Holding</strong> track unrealized PnL against live ticks — short legs gain as the price falls.
                 </span>
             </div>
         </div>

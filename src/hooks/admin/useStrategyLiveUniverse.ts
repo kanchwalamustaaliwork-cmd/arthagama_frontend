@@ -10,6 +10,13 @@
  * This hook is the ONLY WebSocket connection for live pricing — it fully
  * replaces the former useStrategyLTP. All consumers (Holdings tab, LTP tab,
  * Overview gainer/loser cards) use this via StrategyContext — one WS per page.
+ *
+ * Rows are keyed by `key` — the contract identity the backend joins quotes to
+ * positions on (equals AdminHolding.priceKey). Never key by `ticker`: feeds
+ * write one option contract under several ticker spellings.
+ *
+ * Price and P&L are computed by the backend, which knows each position's
+ * direction; this hook only merges ticks, it never recomputes P&L.
  */
 
 import { useEffect, useState, useRef, useCallback } from 'react'
@@ -49,7 +56,7 @@ export function useStrategyLiveUniverse(strategyId: string) {
             setData(resp)
             const initialMap: Record<string, LiveInstrumentItem> = {}
             resp.items.forEach(item => {
-                initialMap[item.ticker] = item
+                initialMap[item.key] = item
             })
             setItemsMap(initialMap)
             return resp
@@ -100,33 +107,7 @@ export function useStrategyLiveUniverse(strategyId: string) {
                                 setItemsMap(prev => {
                                     const next = { ...prev }
                                     rawRecords.forEach(rec => {
-                                        const existing = next[rec.ticker]
-                                        if (existing) {
-                                            const pnl = rec.pnl != null
-                                                ? rec.pnl
-                                                : existing.isHolding && existing.avgPrice > 0
-                                                    ? roundPnl((rec.latestPrice - existing.avgPrice) * existing.quantity)
-                                                    : existing.unrealizedPnl
-
-                                            next[rec.ticker] = {
-                                                ...existing,
-                                                latestPrice: rec.latestPrice,
-                                                timestamp: rec.timestamp || existing.timestamp,
-                                                unrealizedPnl: pnl,
-                                            }
-                                        } else {
-                                            // New ticker discovered via stream
-                                            next[rec.ticker] = {
-                                                ticker: rec.ticker,
-                                                inUniverse: true,
-                                                isHolding: Boolean(rec.isHolding),
-                                                quantity: rec.quantity || 0,
-                                                avgPrice: rec.avgPrice || 0,
-                                                unrealizedPnl: rec.pnl,
-                                                latestPrice: rec.latestPrice,
-                                                timestamp: rec.timestamp,
-                                            }
-                                        }
+                                        next[rec.key] = mergeTick(next[rec.key], rec)
                                     })
                                     return next
                                 })
@@ -186,50 +167,24 @@ export function useStrategyLiveUniverse(strategyId: string) {
         if (a.isHolding !== b.isHolding) {
             return a.isHolding ? -1 : 1
         }
-        return a.ticker.localeCompare(b.ticker)
+        return a.displayName.localeCompare(b.displayName)
     })
 
-    /** ltpRecords — LTPRecord-keyed map for HoldingsTable / LTP tab compatibility */
+    /** ltpRecords — keyed by `key`, so HoldingsTable looks rows up by holding.priceKey */
     const ltpRecords: Record<string, LTPRecord> = {}
     for (const item of items) {
-        ltpRecords[item.ticker] = {
-            ticker: item.ticker,
-            latestPrice: item.latestPrice,
-            timestamp: item.timestamp,
-            isHolding: item.isHolding,
-            pnl: item.unrealizedPnl ?? null,
-            pnlPercent:
-                item.isHolding && item.avgPrice > 0
-                    ? Math.round(((item.latestPrice - item.avgPrice) / item.avgPrice) * 10000) / 100
-                    : null,
-            quantity: item.quantity,
-            avgPrice: item.avgPrice,
-        }
+        ltpRecords[item.key] = toRecord(item)
     }
 
-    /** maxGainer / maxLoser — best and worst performing active holding by PnL */
+    /** maxGainer / maxLoser — best and worst open position by P&L; unpriced positions are not ranked */
     let maxGainer: LTPRecord | null = null
     let maxLoser: LTPRecord | null = null
-    const holdingRecords = items.filter(it => it.isHolding)
-    if (holdingRecords.length > 0) {
-        const sorted = [...holdingRecords].sort(
-            (a, b) => (b.unrealizedPnl ?? 0) - (a.unrealizedPnl ?? 0)
-        )
-        const toRecord = (it: LiveInstrumentItem): LTPRecord => ({
-            ticker: it.ticker,
-            latestPrice: it.latestPrice,
-            timestamp: it.timestamp,
-            isHolding: true,
-            pnl: it.unrealizedPnl ?? null,
-            pnlPercent:
-                it.avgPrice > 0
-                    ? Math.round(((it.latestPrice - it.avgPrice) / it.avgPrice) * 10000) / 100
-                    : 0,
-            quantity: it.quantity,
-            avgPrice: it.avgPrice,
-        })
-        maxGainer = toRecord(sorted[0])
-        maxLoser = toRecord(sorted[sorted.length - 1])
+    const priced = items
+        .filter(it => it.isHolding && it.unrealizedPnl != null)
+        .sort((a, b) => (b.unrealizedPnl as number) - (a.unrealizedPnl as number))
+    if (priced.length > 0) {
+        maxGainer = toRecord(priced[0])
+        maxLoser = toRecord(priced[priced.length - 1])
     }
 
     const totalConstituents = data?.totalConstituents || items.length
@@ -251,7 +206,48 @@ export function useStrategyLiveUniverse(strategyId: string) {
     }
 }
 
-function roundPnl(val: number): number {
-    return Math.round(val * 100) / 100
+/** Apply one backend tick to the row it prices (or add it as a new row). */
+function mergeTick(existing: LiveInstrumentItem | undefined, rec: LTPRecord): LiveInstrumentItem {
+    if (existing) {
+        return {
+            ...existing,
+            latestPrice: rec.latestPrice,
+            timestamp: rec.timestamp || existing.timestamp,
+            unrealizedPnl: existing.isHolding ? rec.pnl ?? existing.unrealizedPnl : existing.unrealizedPnl,
+            unrealizedPnlPct: existing.isHolding ? rec.pnlPercent ?? existing.unrealizedPnlPct : existing.unrealizedPnlPct,
+        }
+    }
+    return {
+        key: rec.key,
+        ticker: rec.ticker,
+        displayName: rec.displayName || rec.ticker,
+        kind: rec.kind ?? 'EQUITY',
+        side: rec.side ?? null,
+        inUniverse: true,
+        isHolding: Boolean(rec.isHolding),
+        quantity: rec.quantity || 0,
+        avgPrice: rec.avgPrice || 0,
+        unrealizedPnl: rec.pnl ?? null,
+        unrealizedPnlPct: rec.pnlPercent ?? null,
+        latestPrice: rec.latestPrice,
+        timestamp: rec.timestamp,
+    }
+}
+
+function toRecord(item: LiveInstrumentItem): LTPRecord {
+    return {
+        key: item.key,
+        ticker: item.ticker,
+        displayName: item.displayName,
+        kind: item.kind,
+        side: item.side,
+        latestPrice: item.latestPrice,
+        timestamp: item.timestamp,
+        isHolding: item.isHolding,
+        pnl: item.unrealizedPnl ?? null,
+        pnlPercent: item.unrealizedPnlPct ?? null,
+        quantity: item.quantity,
+        avgPrice: item.avgPrice,
+    }
 }
 

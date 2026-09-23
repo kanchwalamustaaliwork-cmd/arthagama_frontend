@@ -193,8 +193,9 @@ export interface AdminHolding {
     entryDate: string | null
     holdingDays: number | null
     /**
-     * Ticker of the live LTP record that prices this position.
-     * null when the strategy's feed does not quote the instrument (derivatives).
+     * Key of the live record that prices this position — the contract identity
+     * (ticker for equity, "BSESEN|OPTION|73600|PUT|2026-09-24" for an option leg).
+     * null when the record does not identify the contract completely.
      */
     priceKey: string | null
     /** Data-quality flags, e.g. "expired_contract_still_open" */
@@ -236,19 +237,34 @@ export interface AdminTrade {
 
 // ─── Live Universe & Market Data ──────────────────────────────────────────────
 
+/**
+ * One live row. `key` is the join key — it equals AdminHolding.priceKey of the
+ * position it marks (the contract identity for derivatives, the ticker for
+ * equity). `ticker` is the feed's own string, for display/search only.
+ */
 export interface LiveInstrumentItem {
+    key: string
     ticker: string
+    displayName: string
+    kind: InstrumentKind
+    side: 'LONG' | 'SHORT' | null
     inUniverse: boolean
     isHolding: boolean
     quantity: number
     avgPrice: number
     unrealizedPnl?: number | null
+    /** Direction-aware: a short leg reads positive when the price falls */
+    unrealizedPnlPct?: number | null
     latestPrice: number
     timestamp: string
 }
 
+/** UNIVERSE: constituents + positions + quotes. POSITIONS: open positions only (derivatives). */
+export type LiveSource = 'UNIVERSE' | 'POSITIONS'
+
 export interface LiveUniverseResponse {
     strategyId: string
+    source: LiveSource
     universeName: string
     universeType: 'default' | 'custom' | string
     instrumentsRaw: string
@@ -272,8 +288,13 @@ export interface UniverseResponse {
     count: number
 }
 
+/** Live tick — sent over the WebSocket and keyed by `key` (see LiveInstrumentItem). */
 export interface LTPRecord {
+    key: string
     ticker: string
+    displayName: string
+    kind?: InstrumentKind
+    side?: 'LONG' | 'SHORT' | null
     latestPrice: number
     timestamp: string
     isHolding: boolean

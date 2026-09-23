@@ -5,7 +5,7 @@ import type { AdminHolding, LTPRecord } from '@/src/types/admin'
 
 interface HoldingsTableProps {
     holdings: AdminHolding[]
-    /** Live LTP / PnL map from the WebSocket — keyed by ticker (matches holding.priceKey) */
+    /** Live LTP / PnL map from the WebSocket — keyed by contract key (matches holding.priceKey) */
     ltpMap?: Record<string, LTPRecord>
     emptyMessage?: string
 }
@@ -93,7 +93,7 @@ export default function HoldingsTable({ holdings, ltpMap = {}, emptyMessage = 'N
                                 <td>{formatPrice(h.avgPrice)}</td>
                                 <td
                                     style={{ fontWeight: 600, color: 'var(--db-mint)', fontSize: '13px', fontFamily: 'monospace' }}
-                                    title={h.priceKey ? undefined : 'No live price feed for this instrument'}
+                                    title={h.priceKey ? undefined : 'Contract not fully identified in the strategy data — cannot be priced'}
                                 >
                                     {latestPrice != null ? formatPrice(latestPrice) : muted}
                                 </td>

@@ -18,12 +18,12 @@ export default function StrategyLtpTab({ strategyId: _strategyId }: Props) {
         return <LoadingState variant="skeleton-table" />
     }
 
-    // Sort holdings first, then alphabetically by ticker within each group
+    // Sort holdings first, then alphabetically by instrument within each group
     const recordsArray = Object.values(ltpRecords).sort((a, b) => {
         if (a.isHolding !== b.isHolding) {
             return a.isHolding ? -1 : 1
         }
-        return a.ticker.localeCompare(b.ticker)
+        return a.displayName.localeCompare(b.displayName)
     })
 
     if (status === 'empty' || recordsArray.length === 0) {
@@ -70,9 +70,12 @@ export default function StrategyLtpTab({ strategyId: _strategyId }: Props) {
                     <tbody>
                         {recordsArray.map((rec) => {
                             return (
-                                <tr key={rec.ticker}>
-                                    <td style={{ fontWeight: 650, color: 'var(--db-text)', fontSize: '13.5px', fontFamily: 'monospace' }}>
-                                        {rec.ticker}
+                                <tr key={rec.key}>
+                                    <td
+                                        title={rec.ticker !== rec.displayName ? rec.ticker : undefined}
+                                        style={{ fontWeight: 650, color: 'var(--db-text)', fontSize: '13.5px', fontFamily: 'monospace' }}
+                                    >
+                                        {rec.displayName}
                                     </td>
                                     <td>
                                         <span

@@ -139,10 +139,12 @@ function GainerLoserCard({ type, record, liveUniverseStatus }: GainerLoserCardPr
                                     letterSpacing: '0.02em',
                                 }}
                             >
-                                {record.ticker}
+                                {record.displayName || record.ticker}
                             </span>
                             <span style={{ fontSize: '12px', color: 'var(--db-text-muted)', marginLeft: '8px' }}>
-                                {record.quantity ? `${record.quantity.toLocaleString('en-IN')} shares` : 'Holding'}
+                                {record.quantity
+                                    ? `${record.side === 'SHORT' ? 'Short ' : ''}${record.quantity.toLocaleString('en-IN')} ${record.kind && record.kind !== 'EQUITY' ? 'units' : 'shares'}`
+                                    : 'Holding'}
                             </span>
                         </div>
 
