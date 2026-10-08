@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useInstrument } from '@/src/context/InstrumentContext'
 import { useOptionChainContext } from '@/src/context/OptionChainContext'
 import { useLiveOptionChain } from '@/src/hooks/terminal/useLiveOptionChain'
@@ -8,8 +8,11 @@ import { LiveOptionLeg, Instrument } from '@/src/types/terminal'
 
 // ── Formatting Helpers ────────────────────────────────────────────────────────
 
+const isEmpty = (val?: number | null): val is undefined | null =>
+    val === undefined || val === null || isNaN(val as number)
+
 function fmtNumber(val?: number | null, decimals = 2): string {
-    if (val === undefined || val === null || isNaN(val)) return '—'
+    if (isEmpty(val)) return '—'
     return val.toLocaleString('en-IN', {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals,
@@ -17,12 +20,12 @@ function fmtNumber(val?: number | null, decimals = 2): string {
 }
 
 function fmtInteger(val?: number | null): string {
-    if (val === undefined || val === null || isNaN(val)) return '—'
+    if (isEmpty(val)) return '—'
     return Math.round(val).toLocaleString('en-IN')
 }
 
 function fmtCompact(val?: number | null): string {
-    if (val === undefined || val === null || isNaN(val) || val === 0) return '—'
+    if (isEmpty(val) || val === 0) return '—'
     const abs = Math.abs(val)
     if (abs >= 10000000) return `${(val / 10000000).toFixed(2)} Cr`
     if (abs >= 100000) return `${(val / 100000).toFixed(2)} L`
@@ -31,28 +34,166 @@ function fmtCompact(val?: number | null): string {
 }
 
 function fmtPercent(val?: number | null): string {
-    if (val === undefined || val === null || isNaN(val)) return '—'
+    if (isEmpty(val)) return '—'
     const sign = val > 0 ? '+' : ''
     return `${sign}${val.toFixed(2)}%`
 }
 
 function fmtGreek(val?: number | null, decimals = 3): string {
-    if (val === undefined || val === null || isNaN(val)) return '—'
+    if (isEmpty(val)) return '—'
     return val.toFixed(decimals)
 }
+
+/**
+ * 2nd / 3rd order greeks span many orders of magnitude (e.g. 0.00000312 vs 12.4),
+ * so a fixed decimal count either hides them or wastes space. This picks a format
+ * based on magnitude and falls back to scientific notation for very small values.
+ */
+function fmtSmallGreek(val?: number | null): string {
+    if (isEmpty(val)) return '—'
+    if (val === 0) return '0'
+    const abs = Math.abs(val)
+    if (abs < 0.0001) return val.toExponential(1)
+    if (abs < 0.01) return val.toFixed(5)
+    if (abs < 1) return val.toFixed(4)
+    if (abs < 100) return val.toFixed(3)
+    return val.toFixed(1)
+}
+
+// ── Column configuration ──────────────────────────────────────────────────────
+
+type GroupId = 'depth' | 'oi' | 'g1' | 'g2' | 'g3'
+type ColId =
+    | 'ltp' | 'bid' | 'ask' | 'volume'
+    | 'oi' | 'oich' | 'oichp' | 'prev_oi'
+    | 'iv'
+    | 'delta' | 'gamma' | 'theta' | 'vega' | 'rho'
+    | 'vanna' | 'charm' | 'vomma' | 'veta'
+    | 'speed' | 'zomma' | 'color' | 'ultima'
+
+interface ColDef {
+    id: ColId
+    label: string
+    width: number
+    /** undefined = always visible */
+    group?: GroupId
+}
+
+// Order is OUTER → INNER for calls (left → right). Puts are mirrored automatically.
+const COLUMNS: ColDef[] = [
+    // 1st order
+    { id: 'delta', label: 'Delta', width: 62, group: 'g1' },
+    { id: 'gamma', label: 'Gamma', width: 62, group: 'g1' },
+    { id: 'theta', label: 'Theta', width: 62, group: 'g1' },
+    { id: 'vega', label: 'Vega', width: 62, group: 'g1' },
+    { id: 'rho', label: 'Rho', width: 62, group: 'g1' },
+    // 2nd order
+    { id: 'vanna', label: 'Vanna', width: 70, group: 'g2' },
+    { id: 'charm', label: 'Charm', width: 70, group: 'g2' },
+    { id: 'vomma', label: 'Vomma', width: 70, group: 'g2' },
+    { id: 'veta', label: 'Veta', width: 70, group: 'g2' },
+    // 3rd order
+    { id: 'speed', label: 'Speed', width: 70, group: 'g3' },
+    { id: 'zomma', label: 'Zomma', width: 70, group: 'g3' },
+    { id: 'color', label: 'Color', width: 70, group: 'g3' },
+    { id: 'ultima', label: 'Ultima', width: 70, group: 'g3' },
+    // Always visible
+    { id: 'iv', label: 'IV%', width: 54 },
+    // OI detail
+    { id: 'prev_oi', label: 'Prev OI', width: 70, group: 'oi' },
+    { id: 'oichp', label: 'OI Chg%', width: 72, group: 'oi' },
+    { id: 'oich', label: 'OI Chg', width: 70, group: 'oi' },
+    { id: 'oi', label: 'OI', width: 92 },
+    // Depth
+    { id: 'volume', label: 'Volume', width: 70, group: 'depth' },
+    { id: 'bid', label: 'Bid', width: 62, group: 'depth' },
+    { id: 'ask', label: 'Ask', width: 62, group: 'depth' },
+    { id: 'ltp', label: 'LTP', width: 84 },
+]
+
+const GROUP_META: { id: GroupId; label: string; short: string }[] = [
+    { id: 'depth', label: 'Bid / Ask / Vol', short: 'Depth' },
+    { id: 'oi', label: 'OI details', short: 'OI+' },
+    { id: 'g1', label: '1st order Greeks', short: 'Greeks 1' },
+    { id: 'g2', label: '2nd order Greeks', short: 'Greeks 2' },
+    { id: 'g3', label: '3rd order Greeks', short: 'Greeks 3' },
+]
+
+const DESKTOP_GROUPS: GroupId[] = ['depth', 'oi', 'g1']
+const MOBILE_GROUPS: GroupId[] = []
 
 // ── Quick Symbol Pills ────────────────────────────────────────────────────────
 
 const QUICK_INSTRUMENTS = [
-    { symbol: 'NIFTY', name: 'NIFTY 50', exchange: 'NSE', type: 'index' as const },
-    { symbol: 'BANKNIFTY', name: 'BANK NIFTY', exchange: 'NSE', type: 'index' as const },
-    { symbol: 'FINNIFTY', name: 'FIN NIFTY', exchange: 'NSE', type: 'index' as const },
-    { symbol: 'SENSEX', name: 'SENSEX', exchange: 'BSE', type: 'index' as const },
+    { symbol: 'NIFTY', name: 'NIFTY 50', short: 'NIFTY', exchange: 'NSE', type: 'index' as const },
+    { symbol: 'BANKNIFTY', name: 'BANK NIFTY', short: 'BANKNIFTY', exchange: 'NSE', type: 'index' as const },
+    { symbol: 'FINNIFTY', name: 'FIN NIFTY', short: 'FINNIFTY', exchange: 'NSE', type: 'index' as const },
+    { symbol: 'SENSEX', name: 'SENSEX', short: 'SENSEX', exchange: 'BSE', type: 'index' as const },
 ]
+
+// ── Responsive CSS (scoped by class prefix) ───────────────────────────────────
+
+const RESPONSIVE_CSS = `
+@keyframes oc-spin { to { transform: rotate(360deg); } }
+
+#fullpage-option-chain * { box-sizing: border-box; }
+#fullpage-option-chain .oc-scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+#fullpage-option-chain .oc-scroll-x::-webkit-scrollbar { height: 4px; }
+#fullpage-option-chain .oc-scroll-x::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+
+#fullpage-option-chain .oc-table-wrap {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.18) transparent;
+    overscroll-behavior: contain;
+}
+#fullpage-option-chain .oc-table-wrap::-webkit-scrollbar { width: 8px; height: 8px; }
+#fullpage-option-chain .oc-table-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 4px; }
+#fullpage-option-chain .oc-table-wrap::-webkit-scrollbar-corner { background: transparent; }
+
+#fullpage-option-chain .oc-btn-label { display: inline; }
+#fullpage-option-chain .oc-hide-sm { display: inline; }
+#fullpage-option-chain .oc-show-sm { display: none; }
+
+/* Tablet */
+@media (max-width: 1024px) {
+    #fullpage-option-chain .oc-topbar { padding: 8px 12px !important; }
+    #fullpage-option-chain .oc-strip { padding: 8px 12px !important; }
+}
+
+/* Phone */
+@media (max-width: 767px) {
+    #fullpage-option-chain .oc-topbar { flex-direction: column; align-items: stretch !important; gap: 8px !important; }
+    #fullpage-option-chain .oc-topbar-left,
+    #fullpage-option-chain .oc-topbar-right { width: 100%; justify-content: space-between; gap: 8px !important; }
+    #fullpage-option-chain .oc-pills { margin-left: 0 !important; width: 100%; }
+    #fullpage-option-chain .oc-btn-label { display: none; }
+    #fullpage-option-chain .oc-hide-sm { display: none !important; }
+    #fullpage-option-chain .oc-show-sm { display: inline !important; }
+    #fullpage-option-chain .oc-strip { gap: 8px !important; }
+    #fullpage-option-chain .oc-strip-block { width: 100%; justify-content: space-between; }
+    #fullpage-option-chain .oc-spot-price { font-size: 16px !important; }
+}
+`
+
+// ── Component ─────────────────────────────────────────────────────────────────
 
 export default function OptionChainPage() {
     const { isOptionChainOpen, closeOptionChain } = useOptionChainContext()
     const { instrument, setInstrument } = useInstrument()
+
+    // Column group visibility (user-toggleable)
+    const [visibleGroups, setVisibleGroups] = useState<GroupId[]>(DESKTOP_GROUPS)
+
+    // On first mount, pick a lean default on phones so the chain stays readable
+    useEffect(() => {
+        if (typeof window === 'undefined') return
+        if (window.matchMedia('(max-width: 767px)').matches) {
+            setVisibleGroups(MOBILE_GROUPS)
+        }
+    }, [])
+
+    const toggleGroup = (id: GroupId) =>
+        setVisibleGroups((prev) => (prev.includes(id) ? prev.filter((g) => g !== id) : [...prev, id]))
 
     // Active symbol: use the current instrument symbol or default to NIFTY
     const activeSymbol = instrument.symbol || 'NIFTY'
@@ -77,7 +218,7 @@ export default function OptionChainPage() {
         defaultStrikeCount: 50,
     })
 
-    // Calculate maximum OI across both sides for relative visual distribution bars
+    // Maximum OI across both sides for relative distribution bars
     const maxOI = useMemo(() => {
         if (!data?.rows || data.rows.length === 0) return 1
         let maxVal = 1
@@ -87,6 +228,99 @@ export default function OptionChainPage() {
         }
         return maxVal
     }, [data])
+
+    // Visible columns: calls = outer → inner, puts = mirrored
+    const ceColumns = useMemo(
+        () => COLUMNS.filter((c) => !c.group || visibleGroups.includes(c.group)),
+        [visibleGroups],
+    )
+    const peColumns = useMemo(() => [...ceColumns].reverse(), [ceColumns])
+
+    const tableMinWidth = useMemo(() => {
+        const side = ceColumns.reduce((sum, c) => sum + c.width, 0)
+        return side * 2 + 92
+    }, [ceColumns])
+
+    // ── Auto-center on the ATM strike ────────────────────────────────────────
+    const scrollRef = useRef<HTMLDivElement | null>(null)
+    const theadRef = useRef<HTMLTableSectionElement | null>(null)
+    const centeredKeyRef = useRef<string | null>(null)
+
+    // Row to center: ATM from the API, else the strike closest to spot, else the middle row
+    const centerStrike = useMemo(() => {
+        const rows = data?.rows
+        if (!rows || rows.length === 0) return null
+        const flagged = rows.find((r) => r.is_atm)
+        if (flagged) return flagged.strike
+        if (!isEmpty(data?.atm_strike)) return data!.atm_strike as number
+        if (!isEmpty(data?.underlying_price)) {
+            const spot = data!.underlying_price as number
+            return rows.reduce((best, r) => (Math.abs(r.strike - spot) < Math.abs(best - spot) ? r.strike : best), rows[0].strike)
+        }
+        return rows[Math.floor(rows.length / 2)].strike
+    }, [data])
+
+    const centerOnStrike = useCallback(
+        (smooth = false) => {
+            const box = scrollRef.current
+            if (!box) return
+            const behavior: ScrollBehavior = smooth ? 'smooth' : 'auto'
+
+            // Horizontal: the strike column is the middle of the (mirrored) table
+            const left = Math.max(0, (box.scrollWidth - box.clientWidth) / 2)
+
+            // Vertical: put the ATM row in the middle of the area below the sticky header
+            let top = box.scrollTop
+            if (centerStrike !== null) {
+                const row = box.querySelector<HTMLElement>(`#strike-row-${centerStrike}`)
+                if (row) {
+                    const boxRect = box.getBoundingClientRect()
+                    const rowRect = row.getBoundingClientRect()
+                    const rowTop = rowRect.top - boxRect.top + box.scrollTop
+                    const headerH = theadRef.current?.offsetHeight ?? 0
+                    top = rowTop + rowRect.height / 2 - headerH - (box.clientHeight - headerH) / 2
+                }
+            }
+            box.scrollTo({ left, top: Math.max(0, top), behavior })
+        },
+        [centerStrike],
+    )
+
+    // Forget the "already centered" flag whenever the page is closed
+    useEffect(() => {
+        if (!isOptionChainOpen) centeredKeyRef.current = null
+    }, [isOptionChainOpen])
+
+    // Center once per open / symbol / expiry — NOT on every 1s live refresh,
+    // otherwise the chain would jump while the user is scrolling.
+    useEffect(() => {
+        if (!isOptionChainOpen || !data?.rows?.length) return
+        const key = `${activeSymbol}|${activeExpiry ?? data.active_expiry ?? ''}`
+        if (centeredKeyRef.current === key) return
+        centeredKeyRef.current = key
+        const id = requestAnimationFrame(() => centerOnStrike(false))
+        return () => cancelAnimationFrame(id)
+    }, [isOptionChainOpen, data, activeSymbol, activeExpiry, centerOnStrike])
+
+    // Column set / viewport size changes the table width, so re-center horizontally
+    useEffect(() => {
+        if (!isOptionChainOpen) return
+        const id = requestAnimationFrame(() => {
+            const box = scrollRef.current
+            if (box) box.scrollLeft = Math.max(0, (box.scrollWidth - box.clientWidth) / 2)
+        })
+        return () => cancelAnimationFrame(id)
+    }, [isOptionChainOpen, visibleGroups])
+
+    useEffect(() => {
+        if (!isOptionChainOpen) return
+        const onResize = () => {
+            const box = scrollRef.current
+            if (box) box.scrollLeft = Math.max(0, (box.scrollWidth - box.clientWidth) / 2)
+        }
+        window.addEventListener('resize', onResize)
+        return () => window.removeEventListener('resize', onResize)
+    }, [isOptionChainOpen])
 
     if (!isOptionChainOpen) return null
 
@@ -114,6 +348,171 @@ export default function OptionChainPage() {
     const priceChangePct = data?.underlying_change_pct
     const isUp = (priceChange ?? 0) >= 0
 
+    // ── Cell renderer ─────────────────────────────────────────────────────────
+    const renderCell = (
+        col: ColDef,
+        leg: LiveOptionLeg | null | undefined,
+        side: 'CE' | 'PE',
+        strike: number,
+        bg: string,
+    ) => {
+        const isCE = side === 'CE'
+        const align: 'left' | 'right' = isCE ? 'right' : 'left'
+        const base: React.CSSProperties = {
+            padding: '5px 8px',
+            backgroundColor: bg,
+            textAlign: align,
+            color: '#9ba1a6',
+            whiteSpace: 'nowrap',
+        }
+        const key = `${side}-${col.id}`
+        const oiUp = (leg?.oich ?? 0) >= 0
+
+        switch (col.id) {
+            case 'ltp': {
+                const up = (leg?.ltpch ?? 0) >= 0
+                return (
+                    <td
+                        key={key}
+                        onClick={() => handleSelectContract(leg, strike, side)}
+                        title={`Click to select ${side} contract for chart`}
+                        style={{
+                            ...base,
+                            padding: '5px 10px',
+                            fontWeight: 700,
+                            color: up ? '#26a65b' : '#ef5350',
+                            cursor: leg ? 'pointer' : 'default',
+                            borderRight: isCE ? '1px solid rgba(255, 255, 255, 0.12)' : undefined,
+                        }}
+                    >
+                        <div>{fmtNumber(leg?.ltp, 2)}</div>
+                        {!isEmpty(leg?.ltpchp) && (
+                            <div style={{ fontSize: '9px', fontWeight: 500, opacity: 0.85 }}>
+                                {fmtPercent(leg?.ltpchp)}
+                            </div>
+                        )}
+                    </td>
+                )
+            }
+            case 'oi': {
+                const pct = leg?.oi ? Math.min(100, Math.round((leg.oi / maxOI) * 100)) : 0
+                return (
+                    <td key={key} style={{ ...base, position: 'relative', fontWeight: 600, color: '#ffffff' }}>
+                        <div
+                            style={{
+                                position: 'absolute',
+                                [isCE ? 'right' : 'left']: 0,
+                                top: 0,
+                                bottom: 0,
+                                width: `${pct}%`,
+                                backgroundColor: isCE ? 'rgba(38, 166, 91, 0.2)' : 'rgba(239, 83, 80, 0.2)',
+                                pointerEvents: 'none',
+                            }}
+                        />
+                        <span style={{ position: 'relative', zIndex: 1 }}>{fmtCompact(leg?.oi)}</span>
+                    </td>
+                )
+            }
+            case 'oich':
+                return (
+                    <td key={key} style={{ ...base, color: oiUp ? '#26a65b' : '#ef5350' }}>
+                        {fmtCompact(leg?.oich)}
+                    </td>
+                )
+            case 'oichp':
+                return (
+                    <td key={key} style={{ ...base, color: oiUp ? '#26a65b' : '#ef5350', fontWeight: 600 }}>
+                        {fmtPercent(leg?.oichp)}
+                    </td>
+                )
+            case 'prev_oi':
+                return (
+                    <td key={key} style={{ ...base, color: '#7d848c' }}>
+                        {fmtCompact(leg?.prev_oi)}
+                    </td>
+                )
+            case 'volume':
+                return (
+                    <td key={key} style={base}>
+                        {fmtCompact(leg?.volume)}
+                    </td>
+                )
+            case 'bid':
+                return (
+                    <td key={key} style={base}>
+                        {fmtNumber(leg?.bid, 2)}
+                    </td>
+                )
+            case 'ask':
+                return (
+                    <td key={key} style={base}>
+                        {fmtNumber(leg?.ask, 2)}
+                    </td>
+                )
+            case 'iv':
+                return (
+                    <td key={key} style={{ ...base, color: '#e5e7eb' }}>
+                        {fmtNumber(leg?.iv, 1)}
+                    </td>
+                )
+            case 'delta':
+                return (
+                    <td
+                        key={key}
+                        style={base}
+                        title={leg?.greeks_source ? `Greeks source: ${leg.greeks_source}` : undefined}
+                    >
+                        {fmtGreek(leg?.delta, 2)}
+                    </td>
+                )
+            case 'gamma':
+                return <td key={key} style={base}>{fmtGreek(leg?.gamma, 4)}</td>
+            case 'theta':
+                return <td key={key} style={base}>{fmtGreek(leg?.theta, 2)}</td>
+            case 'vega':
+                return <td key={key} style={base}>{fmtGreek(leg?.vega, 2)}</td>
+            case 'rho':
+                return <td key={key} style={base}>{fmtGreek(leg?.rho, 3)}</td>
+            // 2nd order
+            case 'vanna':
+                return <td key={key} style={{ ...base, color: '#a5b4fc' }}>{fmtSmallGreek(leg?.vanna)}</td>
+            case 'charm':
+                return <td key={key} style={{ ...base, color: '#a5b4fc' }}>{fmtSmallGreek(leg?.charm)}</td>
+            case 'vomma':
+                return <td key={key} style={{ ...base, color: '#a5b4fc' }}>{fmtSmallGreek(leg?.vomma)}</td>
+            case 'veta':
+                return <td key={key} style={{ ...base, color: '#a5b4fc' }}>{fmtSmallGreek(leg?.veta)}</td>
+            // 3rd order
+            case 'speed':
+                return <td key={key} style={{ ...base, color: '#fdba74' }}>{fmtSmallGreek(leg?.speed)}</td>
+            case 'zomma':
+                return <td key={key} style={{ ...base, color: '#fdba74' }}>{fmtSmallGreek(leg?.zomma)}</td>
+            case 'color':
+                return <td key={key} style={{ ...base, color: '#fdba74' }}>{fmtSmallGreek(leg?.color)}</td>
+            case 'ultima':
+                return <td key={key} style={{ ...base, color: '#fdba74' }}>{fmtSmallGreek(leg?.ultima)}</td>
+            default:
+                return <td key={key} style={base}>—</td>
+        }
+    }
+
+    // ── Header cell style helper ──────────────────────────────────────────────
+    const headStyle = (col: ColDef, side: 'CE' | 'PE'): React.CSSProperties => {
+        const isCE = side === 'CE'
+        const isLtp = col.id === 'ltp'
+        const tint =
+            col.group === 'g2' ? '#a5b4fc' : col.group === 'g3' ? '#fdba74' : isLtp ? (isCE ? '#26a65b' : '#ef5350') : undefined
+        return {
+            padding: isLtp ? '6px 10px' : '6px 8px',
+            textAlign: isCE ? 'right' : 'left',
+            minWidth: `${col.width}px`,
+            whiteSpace: 'nowrap',
+            color: tint,
+            borderRight: isCE && isLtp ? '1px solid rgba(255, 255, 255, 0.12)' : undefined,
+        }
+    }
+
+    // ── Render ────────────────────────────────────────────────────────────────
     return (
         <div
             id="fullpage-option-chain"
@@ -129,8 +528,11 @@ export default function OptionChainPage() {
                 overflow: 'hidden',
             }}
         >
+            <style>{RESPONSIVE_CSS}</style>
+
             {/* ── Top Header Navigation Bar ── */}
             <div
+                className="oc-topbar"
                 style={{
                     padding: '10px 16px',
                     backgroundColor: '#101419',
@@ -140,13 +542,18 @@ export default function OptionChainPage() {
                     justifyContent: 'space-between',
                     gap: '16px',
                     flexShrink: 0,
+                    flexWrap: 'wrap',
                 }}
             >
                 {/* Left: Back button + Title + Quick Switch Pills */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+                <div
+                    className="oc-topbar-left"
+                    style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap', minWidth: 0 }}
+                >
                     <button
                         id="back-to-terminal-btn"
                         onClick={closeOptionChain}
+                        aria-label="Back to Terminal"
                         style={{
                             display: 'inline-flex',
                             alignItems: 'center',
@@ -160,15 +567,18 @@ export default function OptionChainPage() {
                             fontWeight: 600,
                             cursor: 'pointer',
                             transition: 'all 0.15s ease',
+                            flexShrink: 0,
                         }}
                         onMouseEnter={(e) => (e.currentTarget.style.color = '#fff')}
                         onMouseLeave={(e) => (e.currentTarget.style.color = '#a0a6ac')}
                     >
-                        <span>←</span> Back to Terminal
+                        <span>←</span>
+                        <span className="oc-btn-label">Back to Terminal</span>
                     </button>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
                         <span
+                            className="oc-hide-sm"
                             style={{
                                 fontSize: '11px',
                                 fontWeight: 700,
@@ -178,11 +588,12 @@ export default function OptionChainPage() {
                                 color: '#a855f7',
                                 border: '1px solid rgba(168,85,247,0.4)',
                                 letterSpacing: '0.04em',
+                                whiteSpace: 'nowrap',
                             }}
                         >
                             LIVE OPTION CHAIN
                         </span>
-                        <div style={{ fontSize: '16px', fontWeight: 700, color: '#ffffff' }}>
+                        <div style={{ fontSize: '16px', fontWeight: 700, color: '#ffffff', whiteSpace: 'nowrap' }}>
                             {activeSymbol}
                             <span style={{ fontSize: '12px', color: '#7d848c', marginLeft: '6px', fontWeight: 500 }}>
                                 · {activeExchange}
@@ -191,7 +602,16 @@ export default function OptionChainPage() {
                     </div>
 
                     {/* Quick Switch Pills */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginLeft: '8px' }}>
+                    <div
+                        className="oc-pills oc-scroll-x"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            marginLeft: '8px',
+                            minWidth: 0,
+                        }}
+                    >
                         {QUICK_INSTRUMENTS.map((inst) => {
                             const isSelected = activeSymbol === inst.symbol
                             return (
@@ -215,6 +635,8 @@ export default function OptionChainPage() {
                                         color: isSelected ? '#d8b4fe' : '#8a929a',
                                         border: isSelected ? '1px solid rgba(168,85,247,0.5)' : '1px solid rgba(255,255,255,0.06)',
                                         cursor: 'pointer',
+                                        whiteSpace: 'nowrap',
+                                        flexShrink: 0,
                                     }}
                                 >
                                     {inst.name}
@@ -225,10 +647,15 @@ export default function OptionChainPage() {
                 </div>
 
                 {/* Right: Controls + Live Status Indicator + Close Button */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div
+                    className="oc-topbar-right"
+                    style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}
+                >
                     {/* Strike Count Selector */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span style={{ fontSize: '11px', color: '#7d848c', fontWeight: 500 }}>Strikes:</span>
+                        <span className="oc-hide-sm" style={{ fontSize: '11px', color: '#7d848c', fontWeight: 500 }}>
+                            Strikes:
+                        </span>
                         <select
                             id="option-chain-strike-count"
                             value={strikeCount}
@@ -261,6 +688,7 @@ export default function OptionChainPage() {
                             borderRadius: '4px',
                             backgroundColor: 'rgba(38, 166, 91, 0.12)',
                             border: '1px solid rgba(38, 166, 91, 0.25)',
+                            whiteSpace: 'nowrap',
                         }}
                     >
                         <span
@@ -277,7 +705,10 @@ export default function OptionChainPage() {
                             {isRefreshing ? 'Updating...' : 'Live (1s)'}
                         </span>
                         {lastUpdated && (
-                            <span style={{ fontSize: '10px', color: '#7d848c', marginLeft: '4px' }}>
+                            <span
+                                className="oc-hide-sm"
+                                style={{ fontSize: '10px', color: '#7d848c', marginLeft: '4px' }}
+                            >
                                 {lastUpdated.toLocaleTimeString('en-IN', { hour12: false })}
                             </span>
                         )}
@@ -305,6 +736,7 @@ export default function OptionChainPage() {
                     <button
                         id="close-option-chain-fullpage"
                         onClick={closeOptionChain}
+                        aria-label="Close option chain"
                         style={{
                             width: '28px',
                             height: '28px',
@@ -326,6 +758,7 @@ export default function OptionChainPage() {
 
             {/* ── Expiry Selection Tabs ── */}
             <div
+                className="oc-scroll-x"
                 style={{
                     padding: '8px 16px',
                     backgroundColor: '#0c0f13',
@@ -333,11 +766,10 @@ export default function OptionChainPage() {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
-                    overflowX: 'auto',
                     flexShrink: 0,
                 }}
             >
-                <span style={{ fontSize: '11px', color: '#7d848c', fontWeight: 600, flexShrink: 0 }}>
+                <span className="oc-hide-sm" style={{ fontSize: '11px', color: '#7d848c', fontWeight: 600, flexShrink: 0 }}>
                     Select Expiry:
                 </span>
                 {expiries.length > 0 ? (
@@ -358,6 +790,7 @@ export default function OptionChainPage() {
                                     border: isSelected ? '1px solid #c084fc' : '1px solid rgba(255, 255, 255, 0.08)',
                                     cursor: 'pointer',
                                     whiteSpace: 'nowrap',
+                                    flexShrink: 0,
                                     transition: 'all 0.15s',
                                 }}
                             >
@@ -374,6 +807,7 @@ export default function OptionChainPage() {
 
             {/* ── Underlying Summary Metrics Strip ── */}
             <div
+                className="oc-strip"
                 style={{
                     padding: '8px 16px',
                     backgroundColor: '#12161b',
@@ -387,17 +821,20 @@ export default function OptionChainPage() {
                 }}
             >
                 {/* Underlying Price & Net Change */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div
+                    className="oc-strip-block"
+                    style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}
+                >
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
                         <span style={{ fontSize: '11px', color: '#7d848c', fontWeight: 600, textTransform: 'uppercase' }}>
                             {activeSymbol} Spot
                         </span>
-                        <span style={{ fontSize: '18px', fontWeight: 800, color: '#ffffff' }}>
+                        <span className="oc-spot-price" style={{ fontSize: '18px', fontWeight: 800, color: '#ffffff' }}>
                             {underlyingPrice ? `₹${fmtNumber(underlyingPrice, 2)}` : '—'}
                         </span>
                     </div>
 
-                    {priceChange !== undefined && priceChange !== null && (
+                    {!isEmpty(priceChange) && (
                         <div
                             style={{
                                 display: 'flex',
@@ -426,13 +863,16 @@ export default function OptionChainPage() {
                                 fontWeight: 600,
                             }}
                         >
-                            ATM Strike: <span style={{ color: '#f59e0b' }}>{fmtInteger(data.atm_strike)}</span>
+                            ATM: <span style={{ color: '#f59e0b' }}>{fmtInteger(data.atm_strike)}</span>
                         </div>
                     )}
                 </div>
 
                 {/* Key Options Metrics: VIX, PCR, Total OI */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                <div
+                    className="oc-strip-block"
+                    style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}
+                >
                     {data?.vix && (
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
                             <span style={{ fontSize: '11px', color: '#7d848c', fontWeight: 500 }}>India VIX:</span>
@@ -473,6 +913,71 @@ export default function OptionChainPage() {
                 </div>
             </div>
 
+            {/* ── Column Group Toggles ── */}
+            <div
+                className="oc-scroll-x"
+                style={{
+                    padding: '6px 16px',
+                    backgroundColor: '#0c0f13',
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    flexShrink: 0,
+                }}
+            >
+                <span style={{ fontSize: '11px', color: '#7d848c', fontWeight: 600, flexShrink: 0 }}>Columns:</span>
+                <button
+                    id="center-atm-btn"
+                    onClick={() => centerOnStrike(true)}
+                    title="Scroll to the ATM strike"
+                    style={{
+                        padding: '3px 10px',
+                        borderRadius: '999px',
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        backgroundColor: 'rgba(245, 158, 11, 0.12)',
+                        color: '#f59e0b',
+                        border: '1px solid rgba(245, 158, 11, 0.4)',
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                        flexShrink: 0,
+                        marginLeft: 'auto',
+                        order: 99,
+                    }}
+                >
+                    ◎ Center ATM
+                </button>
+                {GROUP_META.map((g) => {
+                    const on = visibleGroups.includes(g.id)
+                    const accent = g.id === 'g2' ? '#a5b4fc' : g.id === 'g3' ? '#fdba74' : '#d8b4fe'
+                    return (
+                        <button
+                            key={g.id}
+                            id={`column-group-${g.id}`}
+                            onClick={() => toggleGroup(g.id)}
+                            aria-pressed={on}
+                            title={g.label}
+                            style={{
+                                padding: '3px 10px',
+                                borderRadius: '999px',
+                                fontSize: '11px',
+                                fontWeight: on ? 700 : 500,
+                                backgroundColor: on ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.03)',
+                                color: on ? accent : '#6b727a',
+                                border: on ? `1px solid ${accent}66` : '1px solid rgba(255,255,255,0.07)',
+                                cursor: 'pointer',
+                                whiteSpace: 'nowrap',
+                                flexShrink: 0,
+                            }}
+                        >
+                            <span className="oc-hide-sm">{g.label}</span>
+                            <span className="oc-show-sm">{g.short}</span>
+                        </button>
+                    )
+                })}
+            </div>
+
             {/* ── Error / Alert Banner ── */}
             {error && (
                 <div
@@ -485,12 +990,13 @@ export default function OptionChainPage() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
+                        gap: '8px',
                         flexShrink: 0,
                     }}
                 >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
                         <span>⚠</span>
-                        <span>{error}</span>
+                        <span style={{ overflowWrap: 'anywhere' }}>{error}</span>
                     </div>
                     <button
                         onClick={refetch}
@@ -502,6 +1008,7 @@ export default function OptionChainPage() {
                             color: '#ef5350',
                             fontWeight: 600,
                             cursor: 'pointer',
+                            flexShrink: 0,
                         }}
                     >
                         Retry
@@ -509,12 +1016,16 @@ export default function OptionChainPage() {
                 </div>
             )}
 
-            {/* ── Main Option Chain Table ── */}
+            {/* ── Main Option Chain Table (scrolls on both axes) ── */}
             <div
                 data-lenis-prevent
+                ref={scrollRef}
+                className="oc-table-wrap"
                 style={{
                     flex: 1,
-                    overflow: 'auto',
+                    minHeight: 0, // lets the flex child shrink so vertical scrolling works
+                    overflowY: 'auto',
+                    overflowX: 'auto',
                     backgroundColor: '#090b0e',
                 }}
             >
@@ -528,6 +1039,8 @@ export default function OptionChainPage() {
                             height: '100%',
                             gap: '12px',
                             color: '#7d848c',
+                            padding: '0 16px',
+                            textAlign: 'center',
                         }}
                     >
                         <div
@@ -537,7 +1050,7 @@ export default function OptionChainPage() {
                                 border: '3px solid rgba(168,85,247,0.2)',
                                 borderTopColor: '#a855f7',
                                 borderRadius: '50%',
-                                animation: 'spin 0.8s linear infinite',
+                                animation: 'oc-spin 0.8s linear infinite',
                             }}
                         />
                         <span style={{ fontSize: '13px' }}>Loading {activeSymbol} Option Chain from FYERS...</span>
@@ -546,25 +1059,28 @@ export default function OptionChainPage() {
                     <table
                         style={{
                             width: '100%',
-                            borderCollapse: 'collapse',
+                            minWidth: `${tableMinWidth}px`,
+                            borderCollapse: 'separate',
+                            borderSpacing: 0,
                             fontSize: '11px',
                             textAlign: 'right',
                         }}
                     >
                         {/* Table Header */}
-                        <thead style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#13171d' }}>
+                        <thead ref={theadRef} style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#13171d' }}>
                             {/* Super Header: CALLS | STRIKE | PUTS */}
-                            <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.12)' }}>
+                            <tr>
                                 <th
-                                    colSpan={12}
+                                    colSpan={ceColumns.length}
                                     style={{
                                         padding: '7px 12px',
-                                        backgroundColor: 'rgba(38, 166, 91, 0.12)',
+                                        backgroundColor: '#12201a',
                                         color: '#26a65b',
                                         fontWeight: 800,
                                         fontSize: '12px',
                                         letterSpacing: '0.05em',
                                         textAlign: 'center',
+                                        borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
                                         borderRight: '1px solid rgba(255, 255, 255, 0.12)',
                                     }}
                                 >
@@ -579,22 +1095,24 @@ export default function OptionChainPage() {
                                         fontSize: '12px',
                                         letterSpacing: '0.05em',
                                         textAlign: 'center',
-                                        width: '100px',
+                                        minWidth: '92px',
+                                        borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
                                         borderRight: '1px solid rgba(255, 255, 255, 0.12)',
                                     }}
                                 >
                                     STRIKE
                                 </th>
                                 <th
-                                    colSpan={12}
+                                    colSpan={peColumns.length}
                                     style={{
                                         padding: '7px 12px',
-                                        backgroundColor: 'rgba(239, 83, 80, 0.12)',
+                                        backgroundColor: '#241617',
                                         color: '#ef5350',
                                         fontWeight: 800,
                                         fontSize: '12px',
                                         letterSpacing: '0.05em',
                                         textAlign: 'center',
+                                        borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
                                     }}
                                 >
                                     PUTS (PE)
@@ -604,80 +1122,56 @@ export default function OptionChainPage() {
                             {/* Sub Header: Individual Columns */}
                             <tr
                                 style={{
-                                    borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
                                     color: '#7d848c',
                                     fontSize: '10px',
                                     fontWeight: 700,
                                     textTransform: 'uppercase',
                                 }}
                             >
-                                {/* CALLS Columns */}
-                                <th style={{ padding: '6px 8px', textAlign: 'right', width: '50px' }}>Delta</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'right', width: '50px' }}>Gamma</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'right', width: '50px' }}>Theta</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'right', width: '50px' }}>Vega</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'right', width: '45px' }}>IV%</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'right', width: '60px' }}>Prev OI</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'right', width: '60px' }}>OI Chg%</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'right', width: '60px' }}>OI Chg</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'right', width: '80px' }}>OI</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'right', width: '60px' }}>Volume</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'right', width: '55px' }}>Bid</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'right', width: '55px' }}>Ask</th>
-                                <th
-                                    style={{
-                                        padding: '6px 10px',
-                                        textAlign: 'right',
-                                        width: '75px',
-                                        color: '#26a65b',
-                                        borderRight: '1px solid rgba(255, 255, 255, 0.12)',
-                                    }}
-                                >
-                                    LTP
-                                </th>
+                                {ceColumns.map((col) => (
+                                    <th
+                                        key={`h-ce-${col.id}`}
+                                        style={{
+                                            ...headStyle(col, 'CE'),
+                                            borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
+                                            backgroundColor: '#13171d',
+                                        }}
+                                    >
+                                        {col.label}
+                                    </th>
+                                ))}
 
-                                {/* STRIKE Column */}
                                 <th
                                     style={{
                                         padding: '6px 8px',
                                         textAlign: 'center',
-                                        width: '100px',
+                                        minWidth: '92px',
                                         backgroundColor: '#1b2129',
                                         color: '#ffffff',
                                         fontWeight: 800,
+                                        borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
                                         borderRight: '1px solid rgba(255, 255, 255, 0.12)',
                                     }}
                                 >
                                     STRIKE
                                 </th>
 
-                                {/* PUTS Columns */}
-                                <th
-                                    style={{
-                                        padding: '6px 10px',
-                                        textAlign: 'left',
-                                        width: '75px',
-                                        color: '#ef5350',
-                                    }}
-                                >
-                                    LTP
-                                </th>
-                                <th style={{ padding: '6px 8px', textAlign: 'left', width: '55px' }}>Ask</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'left', width: '55px' }}>Bid</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'left', width: '60px' }}>Volume</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'left', width: '80px' }}>OI</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'left', width: '60px' }}>OI Chg</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'left', width: '60px' }}>OI Chg%</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'left', width: '60px' }}>Prev OI</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'left', width: '45px' }}>IV%</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'left', width: '50px' }}>Vega</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'left', width: '50px' }}>Theta</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'left', width: '50px' }}>Gamma</th>
-                                <th style={{ padding: '6px 8px', textAlign: 'left', width: '50px' }}>Delta</th>
+                                {peColumns.map((col) => (
+                                    <th
+                                        key={`h-pe-${col.id}`}
+                                        style={{
+                                            ...headStyle(col, 'PE'),
+                                            borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
+                                            backgroundColor: '#13171d',
+                                        }}
+                                    >
+                                        {col.label}
+                                    </th>
+                                ))}
                             </tr>
                         </thead>
 
-                        {/* Table Body: Striking rows sorted in DESCENDING ORDER */}
+                        {/* Table Body: strikes in descending order */}
                         <tbody>
                             {data.rows.map((row) => {
                                 const strike = row.strike
@@ -685,9 +1179,7 @@ export default function OptionChainPage() {
                                 const pe = row.pe
                                 const isAtm = row.is_atm
 
-                                // ITM styling:
-                                // For CE: strikes < spot are ITM (amber tint)
-                                // For PE: strikes > spot are ITM (amber tint)
+                                // ITM styling (amber tint), ATM gets a purple tint
                                 const ceBg =
                                     ce?.moneyness === 'ITM'
                                         ? 'rgba(245, 158, 11, 0.08)'
@@ -701,21 +1193,11 @@ export default function OptionChainPage() {
                                             ? 'rgba(168, 85, 247, 0.12)'
                                             : 'transparent'
 
-                                const ceOiPct = ce?.oi ? Math.min(100, Math.round((ce.oi / maxOI) * 100)) : 0
-                                const peOiPct = pe?.oi ? Math.min(100, Math.round((pe.oi / maxOI) * 100)) : 0
-
-                                const ceLtpUp = (ce?.ltpch ?? 0) >= 0
-                                const peLtpUp = (pe?.ltpch ?? 0) >= 0
-
-                                const ceOiUp = (ce?.oich ?? 0) >= 0
-                                const peOiUp = (pe?.oich ?? 0) >= 0
-
                                 return (
                                     <tr
                                         key={strike}
                                         id={`strike-row-${strike}`}
                                         style={{
-                                            borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
                                             backgroundColor: isAtm ? 'rgba(168, 85, 247, 0.06)' : 'transparent',
                                             transition: 'background-color 0.1s',
                                         }}
@@ -727,109 +1209,19 @@ export default function OptionChainPage() {
                                         }}
                                     >
                                         {/* ── CALLS (CE) ── */}
-                                        <td style={{ padding: '5px 8px', backgroundColor: ceBg, color: '#9ba1a6' }}>
-                                            {fmtGreek(ce?.delta, 2)}
-                                        </td>
-                                        <td style={{ padding: '5px 8px', backgroundColor: ceBg, color: '#9ba1a6' }}>
-                                            {fmtGreek(ce?.gamma, 2)}
-                                        </td>
-                                        <td style={{ padding: '5px 8px', backgroundColor: ceBg, color: '#9ba1a6' }}>
-                                            {fmtGreek(ce?.theta, 1)}
-                                        </td>
-                                        <td style={{ padding: '5px 8px', backgroundColor: ceBg, color: '#9ba1a6' }}>
-                                            {fmtGreek(ce?.vega, 1)}
-                                        </td>
-                                        <td style={{ padding: '5px 8px', backgroundColor: ceBg, color: '#e5e7eb' }}>
-                                            {fmtNumber(ce?.iv, 1)}
-                                        </td>
-                                        <td style={{ padding: '5px 8px', backgroundColor: ceBg, color: '#7d848c' }}>
-                                            {fmtCompact(ce?.prev_oi)}
-                                        </td>
-                                        <td
-                                            style={{
-                                                padding: '5px 8px',
-                                                backgroundColor: ceBg,
-                                                color: ceOiUp ? '#26a65b' : '#ef5350',
-                                                fontWeight: 600,
-                                            }}
-                                        >
-                                            {fmtPercent(ce?.oichp)}
-                                        </td>
-                                        <td
-                                            style={{
-                                                padding: '5px 8px',
-                                                backgroundColor: ceBg,
-                                                color: ceOiUp ? '#26a65b' : '#ef5350',
-                                            }}
-                                        >
-                                            {fmtCompact(ce?.oich)}
-                                        </td>
-
-                                        {/* CE OI with horizontal distribution bar */}
-                                        <td
-                                            style={{
-                                                padding: '5px 8px',
-                                                backgroundColor: ceBg,
-                                                position: 'relative',
-                                                fontWeight: 600,
-                                                color: '#ffffff',
-                                            }}
-                                        >
-                                            <div
-                                                style={{
-                                                    position: 'absolute',
-                                                    right: 0,
-                                                    top: 0,
-                                                    bottom: 0,
-                                                    width: `${ceOiPct}%`,
-                                                    backgroundColor: 'rgba(38, 166, 91, 0.2)',
-                                                    pointerEvents: 'none',
-                                                }}
-                                            />
-                                            <span style={{ position: 'relative', zIndex: 1 }}>{fmtCompact(ce?.oi)}</span>
-                                        </td>
-
-                                        <td style={{ padding: '5px 8px', backgroundColor: ceBg, color: '#9ba1a6' }}>
-                                            {fmtCompact(ce?.volume)}
-                                        </td>
-                                        <td style={{ padding: '5px 8px', backgroundColor: ceBg, color: '#9ba1a6' }}>
-                                            {fmtNumber(ce?.bid, 2)}
-                                        </td>
-                                        <td style={{ padding: '5px 8px', backgroundColor: ceBg, color: '#9ba1a6' }}>
-                                            {fmtNumber(ce?.ask, 2)}
-                                        </td>
-
-                                        {/* CE LTP (Clickable) */}
-                                        <td
-                                            onClick={() => handleSelectContract(ce, strike, 'CE')}
-                                            title="Click to select CE contract for chart"
-                                            style={{
-                                                padding: '5px 10px',
-                                                backgroundColor: ceBg,
-                                                fontWeight: 700,
-                                                color: ceLtpUp ? '#26a65b' : '#ef5350',
-                                                borderRight: '1px solid rgba(255, 255, 255, 0.12)',
-                                                cursor: 'pointer',
-                                            }}
-                                        >
-                                            <div>{fmtNumber(ce?.ltp, 2)}</div>
-                                            {ce?.ltpchp !== undefined && ce?.ltpchp !== null && (
-                                                <div style={{ fontSize: '9px', fontWeight: 500, opacity: 0.85 }}>
-                                                    {fmtPercent(ce.ltpchp)}
-                                                </div>
-                                            )}
-                                        </td>
+                                        {ceColumns.map((col) => renderCell(col, ce, 'CE', strike, ceBg))}
 
                                         {/* ── CENTER: STRIKE PRICE ── */}
                                         <td
                                             style={{
                                                 padding: '5px 12px',
                                                 textAlign: 'center',
-                                                backgroundColor: isAtm ? 'rgba(168, 85, 247, 0.25)' : '#14181f',
+                                                backgroundColor: isAtm ? '#2a1f3d' : '#14181f',
                                                 color: isAtm ? '#f59e0b' : '#ffffff',
                                                 fontWeight: 800,
                                                 fontSize: '12px',
                                                 borderRight: '1px solid rgba(255, 255, 255, 0.12)',
+                                                borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
                                             }}
                                         >
                                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
@@ -839,101 +1231,7 @@ export default function OptionChainPage() {
                                         </td>
 
                                         {/* ── PUTS (PE) ── */}
-                                        {/* PE LTP (Clickable) */}
-                                        <td
-                                            onClick={() => handleSelectContract(pe, strike, 'PE')}
-                                            title="Click to select PE contract for chart"
-                                            style={{
-                                                padding: '5px 10px',
-                                                backgroundColor: peBg,
-                                                textAlign: 'left',
-                                                fontWeight: 700,
-                                                color: peLtpUp ? '#26a65b' : '#ef5350',
-                                                cursor: 'pointer',
-                                            }}
-                                        >
-                                            <div>{fmtNumber(pe?.ltp, 2)}</div>
-                                            {pe?.ltpchp !== undefined && pe?.ltpchp !== null && (
-                                                <div style={{ fontSize: '9px', fontWeight: 500, opacity: 0.85 }}>
-                                                    {fmtPercent(pe.ltpchp)}
-                                                </div>
-                                            )}
-                                        </td>
-
-                                        <td style={{ padding: '5px 8px', backgroundColor: peBg, textAlign: 'left', color: '#9ba1a6' }}>
-                                            {fmtNumber(pe?.ask, 2)}
-                                        </td>
-                                        <td style={{ padding: '5px 8px', backgroundColor: peBg, textAlign: 'left', color: '#9ba1a6' }}>
-                                            {fmtNumber(pe?.bid, 2)}
-                                        </td>
-                                        <td style={{ padding: '5px 8px', backgroundColor: peBg, textAlign: 'left', color: '#9ba1a6' }}>
-                                            {fmtCompact(pe?.volume)}
-                                        </td>
-
-                                        {/* PE OI with horizontal distribution bar */}
-                                        <td
-                                            style={{
-                                                padding: '5px 8px',
-                                                backgroundColor: peBg,
-                                                textAlign: 'left',
-                                                position: 'relative',
-                                                fontWeight: 600,
-                                                color: '#ffffff',
-                                            }}
-                                        >
-                                            <div
-                                                style={{
-                                                    position: 'absolute',
-                                                    left: 0,
-                                                    top: 0,
-                                                    bottom: 0,
-                                                    width: `${peOiPct}%`,
-                                                    backgroundColor: 'rgba(239, 83, 80, 0.2)',
-                                                    pointerEvents: 'none',
-                                                }}
-                                            />
-                                            <span style={{ position: 'relative', zIndex: 1 }}>{fmtCompact(pe?.oi)}</span>
-                                        </td>
-
-                                        <td
-                                            style={{
-                                                padding: '5px 8px',
-                                                backgroundColor: peBg,
-                                                textAlign: 'left',
-                                                color: peOiUp ? '#26a65b' : '#ef5350',
-                                            }}
-                                        >
-                                            {fmtCompact(pe?.oich)}
-                                        </td>
-                                        <td
-                                            style={{
-                                                padding: '5px 8px',
-                                                backgroundColor: peBg,
-                                                textAlign: 'left',
-                                                color: peOiUp ? '#26a65b' : '#ef5350',
-                                                fontWeight: 600,
-                                            }}
-                                        >
-                                            {fmtPercent(pe?.oichp)}
-                                        </td>
-                                        <td style={{ padding: '5px 8px', backgroundColor: peBg, textAlign: 'left', color: '#7d848c' }}>
-                                            {fmtCompact(pe?.prev_oi)}
-                                        </td>
-                                        <td style={{ padding: '5px 8px', backgroundColor: peBg, textAlign: 'left', color: '#e5e7eb' }}>
-                                            {fmtNumber(pe?.iv, 1)}
-                                        </td>
-                                        <td style={{ padding: '5px 8px', backgroundColor: peBg, textAlign: 'left', color: '#9ba1a6' }}>
-                                            {fmtGreek(pe?.vega, 1)}
-                                        </td>
-                                        <td style={{ padding: '5px 8px', backgroundColor: peBg, textAlign: 'left', color: '#9ba1a6' }}>
-                                            {fmtGreek(pe?.theta, 1)}
-                                        </td>
-                                        <td style={{ padding: '5px 8px', backgroundColor: peBg, textAlign: 'left', color: '#9ba1a6' }}>
-                                            {fmtGreek(pe?.gamma, 2)}
-                                        </td>
-                                        <td style={{ padding: '5px 8px', backgroundColor: peBg, textAlign: 'left', color: '#9ba1a6' }}>
-                                            {fmtGreek(pe?.delta, 2)}
-                                        </td>
+                                        {peColumns.map((col) => renderCell(col, pe, 'PE', strike, peBg))}
                                     </tr>
                                 )
                             })}
@@ -949,6 +1247,8 @@ export default function OptionChainPage() {
                             height: '100%',
                             gap: '8px',
                             color: '#7d848c',
+                            padding: '0 16px',
+                            textAlign: 'center',
                         }}
                     >
                         <span style={{ fontSize: '14px', fontWeight: 600 }}>No Option Chain data available</span>

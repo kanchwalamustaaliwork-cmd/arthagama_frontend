@@ -1,4 +1,4 @@
-/** Option Greeks */
+﻿/** Option Greeks */
 export interface Greeks {
     delta: number
     gamma: number
@@ -62,7 +62,7 @@ export interface PayoffResponse {
     net_premium: number
 }
 
-// ── Live Option Chain (FYERS v3) Types ──────────────────────────────────────
+// -- Live Option Chain (FYERS v3) Types --------------------------------------
 
 export interface ExpiryItem {
     date: string
@@ -82,11 +82,23 @@ export interface LiveOptionLeg {
     volume?: number | null
     bid?: number | null
     ask?: number | null
+    // 1st order Greeks
     delta?: number | null
     gamma?: number | null
     theta?: number | null
     vega?: number | null
+    rho?: number | null
     iv?: number | null
+    // 2nd order Greeks
+    vanna?: number | null
+    charm?: number | null
+    vomma?: number | null
+    veta?: number | null
+    // 3rd order Greeks
+    speed?: number | null
+    zomma?: number | null
+    color?: number | null
+    ultima?: number | null
     greeks_source?: 'fyers' | 'calculated' | null
     moneyness?: 'ITM' | 'ATM' | 'OTM'
 }
