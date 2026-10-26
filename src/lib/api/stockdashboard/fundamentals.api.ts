@@ -4,8 +4,9 @@
  * Typed API functions for financial statements, ratios, and shareholding patterns.
  */
 
-import { FundamentalsData, FinancialStatementRow } from '@/src/types/stockdashboard'
+import { FundamentalsData, FinancialStatementRow, PeerComparisonResponse } from '@/src/types/stockdashboard'
 import { getMockFundamentals } from '@/src/mocks/stockdashboard/fundamentals.mock'
+import { getMockPeerComparison } from '@/src/mocks/stockdashboard/peer-comparison.mock'
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms))
 
@@ -39,3 +40,9 @@ export async function getShareholding(exchange: string, symbol: string): Promise
     const data = getMockFundamentals(symbol, exchange)
     return data.shareholdingTrends
 }
+
+export async function getPeers(exchange: string, symbol: string): Promise<PeerComparisonResponse> {
+    await delay(150)
+    return getMockPeerComparison(symbol, exchange)
+}
+

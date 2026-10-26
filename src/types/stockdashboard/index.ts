@@ -318,6 +318,7 @@ export interface PortfolioHolding {
 }
 
 export interface PortfolioSummary {
+
     totalInvested: number
     currentValue: number
     totalPnl: number
@@ -326,4 +327,48 @@ export interface PortfolioSummary {
     dayPnlPercentage: number
     totalHoldings: number
     cashBalance: number
+}
+
+// ─── Peer Comparison ──────────────────────────────────────────────────────────
+
+export interface PeerCompanyMetricData {
+    symbol: string
+    name: string
+    exchange: Exchange
+    isCurrentStock?: boolean
+    // Market & Valuation
+    cmp: number
+    marketCapCr: number
+    pe: number | null
+    pb: number | null
+    bookValue: number | null
+    divYieldPct: number | null
+    // Profitability
+    netProfitCr: number | null
+    profitGrowthPct: number | null
+    roePct: number | null
+    rocePct: number | null
+    opmPct: number | null
+    npmPct: number | null
+    // Revenue & Growth
+    salesCr: number | null
+    salesGrowthPct: number | null
+    annualRevenueGrowthPct: number | null
+    annualProfitGrowthPct: number | null
+    epsGrowthPct: number | null
+    // Financial Health
+    debtToEquity: number | null
+    currentRatio: number | null
+    interestCoverage: number | null
+    // Ownership
+    promoterHoldingPct: number | null
+    promoterPledgingPct: number | null
+}
+
+export interface PeerComparisonResponse {
+    sector: string
+    industry: string
+    currentStock: PeerCompanyMetricData
+    availablePeers: PeerCompanyMetricData[]
+    initialPeerSymbols: string[]
 }

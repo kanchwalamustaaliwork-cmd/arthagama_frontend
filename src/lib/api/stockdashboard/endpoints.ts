@@ -29,6 +29,8 @@ export const STOCK_API_ENDPOINTS = {
     STOCK_FINANCIALS: (exchange: string, symbol: string) => `/api/stocks/${exchange}/${symbol}/financials`,
     STOCK_RATIOS: (exchange: string, symbol: string) => `/api/stocks/${exchange}/${symbol}/ratios`,
     STOCK_SHAREHOLDING: (exchange: string, symbol: string) => `/api/stocks/${exchange}/${symbol}/shareholding`,
+    STOCK_PEERS: (exchange: string, symbol: string) => `/api/stocks/${exchange}/${symbol}/peers`,
+
 
     // 5. Earnings & Results
     STOCK_EARNINGS: (exchange: string, symbol: string) => `/api/stocks/${exchange}/${symbol}/earnings`,

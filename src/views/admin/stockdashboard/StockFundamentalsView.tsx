@@ -11,9 +11,11 @@ import React from 'react'
 import { useStockFundamentals } from '@/src/hooks/stockdashboard/useStockFundamentals'
 import { FinancialStatementTable } from '@/src/components/stockdashboard/fundamentals/FinancialStatementTable'
 import { ShareholdingChart } from '@/src/components/stockdashboard/fundamentals/ShareholdingChart'
+import { PeerComparison } from '@/src/components/stockdashboard/fundamentals/PeerComparison'
 import { TableSkeleton } from '@/src/components/stockdashboard/shared/Skeletons'
 
 interface Props {
+
     exchange: string
     symbol: string
 }
@@ -61,10 +63,14 @@ export default function StockFundamentalsView({ exchange, symbol }: Props) {
             : data.keyRatios
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            {/* Peer Comparison Section (Before Profit & Loss) */}
+            <PeerComparison exchange={exchange} symbol={symbol} />
+
             {/* Controls Bar: Statement Tabs & Period/Consolidated Selectors */}
             <div
                 style={{
+
                     background: 'var(--db-surface, #18282C)',
                     border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
                     borderRadius: '16px',
