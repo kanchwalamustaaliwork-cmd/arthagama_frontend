@@ -16,8 +16,11 @@ export default function AdminSidebar() {
     const { collapsed, toggle: toggleCollapsed } = useSidebar()
     const [loggingOut, setLoggingOut] = useState(false)
 
-    const isActive = (href: string) =>
-        href === '/admin' ? pathname === '/admin' : pathname.startsWith(href)
+    const isActive = (href: string) => {
+        if (href === '/admin') return pathname === '/admin'
+        if (href.startsWith('/admin/stockdashboard')) return pathname.startsWith('/admin/stockdashboard')
+        return pathname.startsWith(href)
+    }
 
     const handleLogout = async () => {
         setLoggingOut(true)

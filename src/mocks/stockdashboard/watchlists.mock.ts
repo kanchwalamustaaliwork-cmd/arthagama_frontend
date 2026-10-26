@@ -1,0 +1,145 @@
+/**
+ * src/mocks/stockdashboard/watchlists.mock.ts
+ *
+ * Mock Watchlists & Portfolio holdings service store.
+ * Holds initial lists and supports session-level mutations (add, remove, create, rename).
+ */
+
+import { WatchlistItem, PortfolioHolding, PortfolioSummary } from '@/src/types/stockdashboard'
+
+export let MOCK_WATCHLISTS: WatchlistItem[] = [
+    {
+        id: 'wl_nifty_core',
+        name: 'NIFTY Heavyweights',
+        description: 'Core benchmark bellwethers across Energy, IT and Financials',
+        isDefault: true,
+        createdAt: '2025-01-10T10:00:00Z',
+        stockSymbols: [
+            { symbol: 'RELIANCE', exchange: 'NSE' },
+            { symbol: 'TCS', exchange: 'NSE' },
+            { symbol: 'HDFCBANK', exchange: 'NSE' },
+            { symbol: 'INFY', exchange: 'NSE' },
+            { symbol: 'ICICIBANK', exchange: 'NSE' },
+        ],
+    },
+    {
+        id: 'wl_high_growth',
+        name: 'High Momentum',
+        description: 'Stocks with strong technical and earnings momentum',
+        isDefault: false,
+        createdAt: '2025-02-14T14:30:00Z',
+        stockSymbols: [
+            { symbol: 'TATAMOTORS', exchange: 'NSE' },
+            { symbol: 'BHARTIARTL', exchange: 'NSE' },
+            { symbol: 'LT', exchange: 'NSE' },
+            { symbol: 'BAJFINANCE', exchange: 'NSE' },
+        ],
+    },
+    {
+        id: 'wl_defensive_value',
+        name: 'Defensive Value & Dividends',
+        description: 'Consistent cash cows with high dividend yields and low debt',
+        isDefault: false,
+        createdAt: '2025-03-01T09:15:00Z',
+        stockSymbols: [
+            { symbol: 'ITC', exchange: 'NSE' },
+            { symbol: 'SUNPHARMA', exchange: 'NSE' },
+            { symbol: 'SBIN', exchange: 'NSE' },
+            { symbol: 'TCS', exchange: 'NSE' },
+        ],
+    },
+]
+
+export const MOCK_PORTFOLIO_HOLDINGS: PortfolioHolding[] = [
+    {
+        id: 'h01',
+        symbol: 'RELIANCE',
+        name: 'Reliance Industries Ltd.',
+        exchange: 'NSE',
+        quantity: 150,
+        averageBuyPrice: 2540.00,
+        currentPrice: 2847.45,
+        investedAmount: 381000,
+        currentValue: 427117.50,
+        pnl: 46117.50,
+        pnlPercentage: 12.10,
+        dayPnl: 6315.00,
+        dayPnlPercentage: 1.50,
+        weightPct: 32.4,
+    },
+    {
+        id: 'h02',
+        symbol: 'TCS',
+        name: 'Tata Consultancy Services',
+        exchange: 'NSE',
+        quantity: 80,
+        averageBuyPrice: 3450.00,
+        currentPrice: 3820.60,
+        investedAmount: 276000,
+        currentValue: 305648.00,
+        pnl: 29648.00,
+        pnlPercentage: 10.74,
+        dayPnl: -1984.00,
+        dayPnlPercentage: -0.64,
+        weightPct: 23.2,
+    },
+    {
+        id: 'h03',
+        symbol: 'HDFCBANK',
+        name: 'HDFC Bank Ltd.',
+        exchange: 'NSE',
+        quantity: 180,
+        averageBuyPrice: 1510.00,
+        currentPrice: 1642.80,
+        investedAmount: 271800,
+        currentValue: 295704.00,
+        pnl: 23904.00,
+        pnlPercentage: 8.79,
+        dayPnl: 3294.00,
+        dayPnlPercentage: 1.13,
+        weightPct: 22.4,
+    },
+    {
+        id: 'h04',
+        symbol: 'INFY',
+        name: 'Infosys Ltd.',
+        exchange: 'NSE',
+        quantity: 120,
+        averageBuyPrice: 1420.00,
+        currentPrice: 1548.15,
+        investedAmount: 170400,
+        currentValue: 185778.00,
+        pnl: 15378.00,
+        pnlPercentage: 9.02,
+        dayPnl: 3888.00,
+        dayPnlPercentage: 2.14,
+        weightPct: 14.1,
+    },
+    {
+        id: 'h05',
+        symbol: 'TATAMOTORS',
+        name: 'Tata Motors Ltd.',
+        exchange: 'NSE',
+        quantity: 110,
+        averageBuyPrice: 820.00,
+        currentPrice: 948.30,
+        investedAmount: 90200,
+        currentValue: 104313.00,
+        pnl: 14113.00,
+        pnlPercentage: 15.65,
+        dayPnl: 3162.50,
+        dayPnlPercentage: 3.13,
+        weightPct: 7.9,
+    },
+]
+
+export const MOCK_PORTFOLIO_SUMMARY: PortfolioSummary = {
+    totalInvested: 1189400,
+    currentValue: 1318560.50,
+    totalPnl: 129160.50,
+    totalPnlPercentage: 10.86,
+    dayPnl: 14675.50,
+    dayPnlPercentage: 1.13,
+    totalHoldings: 5,
+    cashBalance: 245000,
+}
