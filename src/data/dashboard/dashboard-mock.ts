@@ -161,6 +161,7 @@ import {
     FlaskConical,
     BarChart2,
     BookOpen,
+    TrendingUp,
 } from 'lucide-react'
 
 export const NAV_ITEMS = [
@@ -169,6 +170,7 @@ export const NAV_ITEMS = [
     { label: 'My Strategies', href: '/dashboard/my-strategies', icon: Layers },
     { label: 'Backtest', href: '/dashboard/backtest', icon: FlaskConical },
     { label: 'Compare Stocks', href: '/dashboard/compare-stocks', icon: BarChart2 },
+    { label: 'Arthagama Indices', href: '/dashboard/indices', icon: TrendingUp },
     { label: 'Research Reports', href: '/dashboard/research-reports', icon: BookOpen },
 ]
 
@@ -179,5 +181,6 @@ export const PAGE_TITLES: Record<string, string> = {
     '/dashboard/my-strategies': 'My Strategies',
     '/dashboard/backtest': 'Backtest',
     '/dashboard/compare-stocks': 'Compare Stocks',
+    '/dashboard/indices': 'Arthagama Indices',
     '/dashboard/research-reports': 'Research Reports',
 }

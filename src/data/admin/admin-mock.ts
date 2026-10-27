@@ -25,6 +25,7 @@ import {
     Settings,
     Briefcase,
     TrendingUp,
+    PieChart,
 } from 'lucide-react'
 
 // ─── Platform Stats ───────────────────────────────────────────────────────────
@@ -131,6 +132,7 @@ export const ADMIN_NAV_ITEMS = [
     { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { label: 'Customers', href: '/admin/customers', icon: Users },
     { label: 'Strategies', href: '/admin/strategies', icon: Layers },
+    { label: 'Index Management', href: '/admin/indices', icon: PieChart },
     { label: 'Market Terminal', href: '/admin/terminal', icon: BarChart2 },
     { label: 'Stock Dashboard', href: '/admin/stockdashboard/all', icon: TrendingUp },
 ]
@@ -141,6 +143,8 @@ export const ADMIN_PAGE_TITLES: Record<string, string> = {
     '/admin': 'Admin Dashboard',
     '/admin/customers': 'Customers',
     '/admin/strategies': 'Strategies',
+    '/admin/indices': 'Index Management',
+    '/admin/indices/new': 'Create Arthagama Index',
     '/admin/terminal': 'Market Data Terminal',
     '/admin/stockdashboard': 'Stock Research & Screener',
     '/admin/stockdashboard/all': 'Stock Dashboard',

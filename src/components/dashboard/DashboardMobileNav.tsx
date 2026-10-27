@@ -2,14 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Home, Layers, FlaskConical, BarChart2, BookOpen } from 'lucide-react'
+import { LayoutDashboard, Home, Layers, FlaskConical, BarChart2, BookOpen, TrendingUp } from 'lucide-react'
 
-// 6 items — all navigation destinations shown on mobile
-// (Compare Stocks accessible on mobile via this bottom nav)
+// Bottom nav items on mobile
 const MOBILE_NAV_ITEMS = [
     { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Home', href: '/dashboard/home', icon: Home },
     { label: 'Strategies', href: '/dashboard/my-strategies', icon: Layers },
+    { label: 'Indices', href: '/dashboard/indices', icon: TrendingUp },
     { label: 'Backtest', href: '/dashboard/backtest', icon: FlaskConical },
     { label: 'Compare', href: '/dashboard/compare-stocks', icon: BarChart2 },
     { label: 'Reports', href: '/dashboard/research-reports', icon: BookOpen },
