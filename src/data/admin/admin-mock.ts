@@ -26,6 +26,7 @@ import {
     Briefcase,
     TrendingUp,
     PieChart,
+    LineChart,
 } from 'lucide-react'
 
 // ─── Platform Stats ───────────────────────────────────────────────────────────
@@ -135,6 +136,7 @@ export const ADMIN_NAV_ITEMS = [
     { label: 'Index Management', href: '/admin/indices', icon: PieChart },
     { label: 'Market Terminal', href: '/admin/terminal', icon: BarChart2 },
     { label: 'Stock Dashboard', href: '/admin/stockdashboard/all', icon: TrendingUp },
+    { label: 'MTF Analytics', href: '/admin/mtf', icon: LineChart },
 ]
 
 // ─── Admin Page Titles ────────────────────────────────────────────────────────
@@ -152,6 +154,14 @@ export const ADMIN_PAGE_TITLES: Record<string, string> = {
     '/admin/stockdashboard/screener': 'Stock Screener',
     '/admin/stockdashboard/compare': 'Compare Stocks',
     '/admin/stockdashboard/watchlists': 'Watchlists & Portfolio',
+    '/admin/mtf': 'MTF Analytics',
+    '/admin/mtf/stocks': 'MTF Stock Screener',
+    '/admin/mtf/brokers': 'MTF Broker Analytics',
+    '/admin/mtf/funding': 'MTF Broker Funding',
+    '/admin/mtf/events': 'MTF Events & Flushes',
+    '/admin/mtf/reports': 'MTF Reports',
+    '/admin/mtf/freefloat': 'MTF & Free Float',
+    '/admin/mtf/methodology': 'MTF Methodology & Coverage',
 }
 
 // ─── Trades (mock) ────────────────────────────────────────────────────────────
@@ -171,6 +181,3 @@ export const MOCK_STRATEGY_TRADES: AdminTrade[] = [
     { id: 't013', strategyId: 'as003', stockSymbol: 'INFY', stockName: 'Infosys', action: 'BUY', quantity: 100, price: 1400.00, totalValue: 140000, timestamp: '2026-07-05T09:15:00Z', status: 'completed' },
     { id: 't014', strategyId: 'as003', stockSymbol: 'TCS', stockName: 'Tata Consultancy', action: 'SELL', quantity: 30, price: 3500.00, totalValue: 105000, timestamp: '2026-07-08T14:45:00Z', status: 'completed' },
 ]
-
-
-

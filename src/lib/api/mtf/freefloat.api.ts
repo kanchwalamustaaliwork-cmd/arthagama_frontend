@@ -1,0 +1,10 @@
+import axios from 'axios'
+import { MTF_ENDPOINTS } from './endpoints'
+import type { MtfDematHolding, MtfMarketCapHistory } from '@/src/types/mtf'
+
+const api = axios.create({ baseURL: process.env.NEXT_PUBLIC_API_URL ?? '' })
+
+export const freefloatApi = {
+  getSeries: () => api.get<{ items: MtfDematHolding[]; as_of: string; source: string }>(MTF_ENDPOINTS.freefloatSeries).then(r => r.data),
+  getMarketCap: (p?: { from?: string; to?: string }) => api.get<{ items: MtfMarketCapHistory[]; as_of: string; source: string }>(MTF_ENDPOINTS.freefloatMarketCap, { params: p }).then(r => r.data),
+}
