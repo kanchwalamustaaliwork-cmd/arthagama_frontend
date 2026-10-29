@@ -1,31 +1,45 @@
 // MTF formatters — display helpers for money, %, dates
 // All internal values are stored as Rs Crore (NUMERIC 20,4).
+// Backend (Python/Pydantic) serializes Decimal as strings → always coerce with toNum() before arithmetic.
 
 /**
- * Format a crore value for display.
+ * Coerce a backend Decimal (string) or number to a JS number.
+ * Returns null for null / undefined / unparseable values.
+ */
+export function toNum(value: string | number | null | undefined): number | null {
+  if (value == null) return null;
+  const n = typeof value === 'string' ? parseFloat(value) : value;
+  return isFinite(n) ? n : null;
+}
+
+/**
+ * Format a crore value for display — accepts Decimal strings from backend.
  * If value >= 100_000 cr, show as "X.XX L cr" (lakh crore).
  * Otherwise show as "X,XXX cr".
  */
-export function formatCr(value: number | null | undefined): string {
-  if (value == null) return '—';
-  if (Math.abs(value) >= 100_000) {
-    return `${(value / 100_000).toFixed(2)} L cr`;
+export function formatCr(value: string | number | null | undefined): string {
+  const n = toNum(value);
+  if (n == null) return '—';
+  if (Math.abs(n) >= 100_000) {
+    return `${(n / 100_000).toFixed(2)} L cr`;
   }
-  return `${value.toLocaleString('en-IN', { maximumFractionDigits: 2 })} cr`;
+  return `${n.toLocaleString('en-IN', { maximumFractionDigits: 2 })} cr`;
 }
 
 /** Format crore value as a short label (for chart axes etc.) */
-export function formatCrShort(value: number | null | undefined): string {
-  if (value == null) return '—';
-  if (Math.abs(value) >= 100_000) return `${(value / 100_000).toFixed(1)}L`;
-  if (Math.abs(value) >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
-  return value.toFixed(0);
+export function formatCrShort(value: string | number | null | undefined): string {
+  const n = toNum(value);
+  if (n == null) return '—';
+  if (Math.abs(n) >= 100_000) return `${(n / 100_000).toFixed(1)}L`;
+  if (Math.abs(n) >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return n.toFixed(0);
 }
 
 /** Format a percentage value: "12.34%" or "—" */
-export function formatPct(value: number | null | undefined, decimals = 2): string {
-  if (value == null) return '—';
-  return `${value.toFixed(decimals)}%`;
+export function formatPct(value: string | number | null | undefined, decimals = 2): string {
+  const n = toNum(value);
+  if (n == null) return '—';
+  return `${n.toFixed(decimals)}%`;
 }
 
 /** Format a date string "YYYY-MM-DD" as "28 Oct 2026" */
@@ -62,4 +76,3 @@ export const MTF_NOT_ADVICE =
 /** Licence line */
 export const MTF_LICENCE_LINE =
   'Compiled dataset: CC BY-SA 4.0 (ShareAlike). Underlying figures: NSE/BSE/SEBI copyright.';
-

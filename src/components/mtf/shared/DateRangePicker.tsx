@@ -1,4 +1,5 @@
 'use client'
+
 import React from 'react'
 
 interface DateRangePickerProps {
@@ -9,31 +10,68 @@ interface DateRangePickerProps {
 
 export function DateRangePicker({ from, to, onChange }: DateRangePickerProps) {
   return (
-    <div className="flex items-center gap-2 text-xs">
-      <div className="flex items-center gap-1.5">
-        <label className="text-gray-500 font-medium">From</label>
+    <div
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '8px',
+        fontSize: '12px',
+        background: 'var(--db-surface, #18282C)',
+        border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+        borderRadius: '10px',
+        padding: '4px 10px',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <label style={{ color: 'var(--db-text-muted, #708482)', fontWeight: 500 }}>From</label>
         <input
           type="date"
           value={from ?? ''}
           onChange={(e) => onChange({ from: e.target.value || undefined, to })}
-          className="h-8 rounded-md border bg-white px-2 text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-purple-600"
+          style={{
+            background: 'var(--db-surface-2, #1E3438)',
+            border: '1px solid var(--db-border, rgba(184, 206, 194, 0.16))',
+            borderRadius: '6px',
+            color: 'var(--db-text, #F7FAF9)',
+            fontSize: '12px',
+            padding: '4px 8px',
+            colorScheme: 'dark',
+            outline: 'none',
+          }}
         />
       </div>
-      <span className="text-gray-400">→</span>
-      <div className="flex items-center gap-1.5">
-        <label className="text-gray-500 font-medium">To</label>
+      <span style={{ color: 'var(--db-text-muted, #708482)' }}>→</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <label style={{ color: 'var(--db-text-muted, #708482)', fontWeight: 500 }}>To</label>
         <input
           type="date"
           value={to ?? ''}
           onChange={(e) => onChange({ from, to: e.target.value || undefined })}
-          className="h-8 rounded-md border bg-white px-2 text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-purple-600"
+          style={{
+            background: 'var(--db-surface-2, #1E3438)',
+            border: '1px solid var(--db-border, rgba(184, 206, 194, 0.16))',
+            borderRadius: '6px',
+            color: 'var(--db-text, #F7FAF9)',
+            fontSize: '12px',
+            padding: '4px 8px',
+            colorScheme: 'dark',
+            outline: 'none',
+          }}
         />
       </div>
       {(from || to) && (
         <button
           type="button"
           onClick={() => onChange({ from: undefined, to: undefined })}
-          className="h-8 px-2 text-gray-400 hover:text-gray-600 rounded"
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: 'var(--db-text-muted, #708482)',
+            cursor: 'pointer',
+            padding: '2px 6px',
+            borderRadius: '4px',
+            fontSize: '13px',
+          }}
           title="Reset date range"
         >
           ✕
@@ -42,4 +80,3 @@ export function DateRangePicker({ from, to, onChange }: DateRangePickerProps) {
     </div>
   )
 }
-

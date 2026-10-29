@@ -1,35 +1,40 @@
 // MTF Types — Brokers sub-feature
-export interface MtfBroker {
+// Aligned to backend Pydantic schemas in brokers/schemas.py
+
+export interface BrokerItem {
   id: string;
   name: string;
   slug: string;
 }
 
-export interface MtfBrokerRanking {
-  rank: number;
+export interface BrokerBookItem {
   broker_id: string;
-  broker_name: string;
-  slug: string;
-  book_cr: number | null;
-  share_pct: number | null; // share of disclosed book only
   as_of: string;
   basis: string;
   source_type: string;
-  source_ref: string | null;
+  book_cr?: string | number | null;
+  source_ref?: string | null;
+  share_of_disclosed_pct?: number | null;
 }
 
-export interface MtfBrokerHistory {
-  as_of: string;
-  book_cr: number | null;
-  basis: string;
-  source_type: string;
-}
-
-export interface MtfBrokerRankingResponse {
-  items: MtfBrokerRanking[];
-  as_of: string;
-  source: string;
-  /** Must always be shown in the UI */
+export interface BrokerRankingResponse {
+  items: BrokerBookItem[];
+  as_of?: string | null;
   caveat: string;
+  source: string;
 }
 
+export interface BrokerHistoryResponse {
+  broker_id: string;
+  items: BrokerBookItem[];
+  as_of?: string | null;
+  caveat: string;
+  source: string;
+}
+
+// Aliases for backwards compatibility
+export type MtfBroker = BrokerItem;
+export type MtfBrokerRanking = BrokerBookItem;
+export type MtfBrokerHistory = BrokerBookItem;
+export type MtfBrokerRankingResponse = BrokerRankingResponse;
+export type MtfBrokerHistoryResponse = BrokerHistoryResponse;

@@ -1,7 +1,9 @@
 'use client'
+
 import React from 'react'
 import type { MtfCpHolder } from '@/src/types/mtf'
 import { formatCr } from '@/src/utils/mtf/formatters'
+import { TableSkeleton } from '@/src/components/stockdashboard/shared/Skeletons'
 
 interface CpHoldersTableProps {
   items: MtfCpHolder[]
@@ -9,48 +11,99 @@ interface CpHoldersTableProps {
 }
 
 export function CpHoldersTable({ items, loading }: CpHoldersTableProps) {
+  if (loading) {
+    return <TableSkeleton rows={6} cols={5} />
+  }
+
   return (
-    <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
-      <div className="px-4 py-3 border-b bg-gray-50/50">
-        <h3 className="text-sm font-semibold text-gray-900">Mutual Fund Scheme Disclosed CP Holdings</h3>
-        <p className="text-xs text-gray-400">Institutional schemes holding broker commercial paper</p>
+    <div
+      style={{
+        borderRadius: '14px',
+        border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+        background: 'var(--db-surface, #18282C)',
+        overflow: 'hidden',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+      }}
+    >
+      <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--db-border, rgba(184, 206, 194, 0.1))' }}>
+        <h3 style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--db-text, #F7FAF9)', margin: 0 }}>
+          Mutual Fund Scheme Disclosed CP Holdings
+        </h3>
+        <p style={{ fontSize: '12px', color: 'var(--db-text-muted, #708482)', margin: '3px 0 0 0' }}>
+          Specific institutional schemes holding broker margin financing commercial paper
+        </p>
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50/75 border-b text-xs text-gray-500 font-medium">
-            <tr>
-              <th className="text-left px-4 py-2.5">Asset Management Company</th>
-              <th className="text-left px-4 py-2.5">Scheme Name</th>
-              <th className="text-left px-4 py-2.5">Broker Issuer</th>
-              <th className="text-left px-4 py-2.5">CP ISIN</th>
-              <th className="text-right px-4 py-2.5">Holding Amount</th>
+
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '12.5px' }}>
+          <thead>
+            <tr
+              style={{
+                background: 'var(--db-surface-2, #1E3438)',
+                borderBottom: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+                fontSize: '11px',
+                fontWeight: 600,
+                color: 'var(--db-text-muted, #708482)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+              }}
+            >
+              <th style={{ padding: '12px 16px' }}>Asset Management Company</th>
+              <th style={{ padding: '12px 16px' }}>Mutual Fund Scheme</th>
+              <th style={{ padding: '12px 16px' }}>Broker Issuer</th>
+              <th style={{ padding: '12px 16px' }}>CP ISIN</th>
+              <th style={{ padding: '12px 16px', textAlign: 'right' }}>Holding Amount</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
-            {loading ? (
-              Array.from({ length: 5 }).map((_, i) => (
-                <tr key={i} className="animate-pulse">
-                  {Array.from({ length: 5 }).map((_, j) => (
-                    <td key={j} className="px-4 py-2.5">
-                      <div className="h-4 w-24 rounded bg-gray-100" />
-                    </td>
-                  ))}
-                </tr>
-              ))
-            ) : items.length === 0 ? (
+          <tbody>
+            {items.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-gray-400">
+                <td
+                  colSpan={5}
+                  style={{
+                    padding: '36px 16px',
+                    textAlign: 'center',
+                    color: 'var(--db-text-muted, #708482)',
+                    fontSize: '13px',
+                  }}
+                >
                   No mutual fund CP holding disclosures available.
                 </td>
               </tr>
             ) : (
               items.map((r, i) => (
-                <tr key={`${r.cp_isin}-${r.scheme}-${i}`} className="hover:bg-gray-50">
-                  <td className="px-4 py-2.5 font-medium text-gray-900">{r.amc}</td>
-                  <td className="px-4 py-2.5 text-gray-600">{r.scheme}</td>
-                  <td className="px-4 py-2.5 text-gray-700 font-medium">{r.broker_id ?? '—'}</td>
-                  <td className="px-4 py-2.5 text-gray-400 font-mono text-xs">{r.cp_isin}</td>
-                  <td className="px-4 py-2.5 text-right font-bold text-gray-900">{formatCr(r.amount_cr)}</td>
+                <tr
+                  key={`${r.cp_isin}-${r.scheme}-${i}`}
+                  style={{
+                    borderBottom: '1px solid var(--db-border, rgba(184, 206, 194, 0.06))',
+                    transition: 'background 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(184, 206, 194, 0.04)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <td style={{ padding: '12px 16px', fontWeight: 600, color: 'var(--db-text, #F7FAF9)' }}>
+                    {r.amc}
+                  </td>
+                  <td style={{ padding: '12px 16px', color: 'var(--db-text-2, #A5B7B3)' }}>
+                    {r.scheme}
+                  </td>
+                  <td style={{ padding: '12px 16px', fontWeight: 500, color: 'var(--db-mint, #B8CEC2)' }}>
+                    {r.broker_id ?? '—'}
+                  </td>
+                  <td style={{ padding: '12px 16px', fontFamily: 'Consolas, monospace', fontSize: '11px', color: 'var(--db-text-muted, #708482)' }}>
+                    {r.cp_isin}
+                  </td>
+                  <td
+                    style={{
+                      padding: '12px 16px',
+                      textAlign: 'right',
+                      fontFamily: 'Consolas, monospace',
+                      fontWeight: 700,
+                      color: 'var(--db-text, #F7FAF9)',
+                    }}
+                  >
+                    {formatCr(r.amount_cr)}
+                  </td>
                 </tr>
               ))
             )}
@@ -60,4 +113,3 @@ export function CpHoldersTable({ items, loading }: CpHoldersTableProps) {
     </div>
   )
 }
-

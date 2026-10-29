@@ -1,4 +1,5 @@
 'use client'
+
 import React, { useState } from 'react'
 import { useMtfReport, useDayReport } from '@/src/hooks/mtf/useMtfData'
 import { PeriodReportCard } from '@/src/components/mtf/reports/PeriodReportCard'
@@ -6,6 +7,9 @@ import { DayReportCard } from '@/src/components/mtf/reports/DayReportCard'
 import { MoversTable } from '@/src/components/mtf/reports/MoversTable'
 import { AsOfBadge } from '@/src/components/mtf/shared/AsOfBadge'
 import { SourceAttribution } from '@/src/components/mtf/shared/SourceAttribution'
+import LazyViewport from '@/src/components/shared/LazyViewport'
+import { MetricCardsSkeleton, TableSkeleton } from '@/src/components/stockdashboard/shared/Skeletons'
+import { FileText } from 'lucide-react'
 import type { ReportPeriod } from '@/src/types/mtf'
 
 const PERIODS: { label: string; value: ReportPeriod }[] = [
@@ -27,104 +31,224 @@ export function MtfReportsView() {
   const { data: dayReport, loading: dLoading } = useDayReport(dayDate)
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-2">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+      {/* Header */}
+      <div
+        style={{
+          background: 'radial-gradient(ellipse at 50% 0%, rgba(46, 85, 96, 0.28) 0%, rgba(15, 23, 25, 0.7) 80%)',
+          borderRadius: '18px',
+          padding: '24px',
+          border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '16px',
+        }}
+      >
         <div>
-          <h1 className="text-xl font-bold text-gray-900 tracking-tight">MTF Analytical Reports</h1>
-          <p className="text-xs text-gray-500 mt-0.5">Rolling period roll-ups, growth statistics and daily snapshots</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <FileText size={18} color="var(--db-mint, #B8CEC2)" />
+            <h2
+              style={{
+                fontSize: '22px',
+                fontWeight: 700,
+                color: 'var(--db-text, #F7FAF9)',
+                margin: 0,
+                letterSpacing: '-0.02em',
+              }}
+            >
+              MTF Analytical Reports &amp; Roll-ups
+            </h2>
+          </div>
+          <p
+            style={{
+              fontSize: '13px',
+              color: 'var(--db-text-muted, #708482)',
+              margin: '4px 0 0 0',
+            }}
+          >
+            Periodic growth metrics, session-level daily drilldowns, and top security leverage shifts.
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          {/* Mode switch */}
-          <div className="inline-flex rounded-lg border bg-gray-50 p-0.5 text-xs">
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Mode Switch */}
+          <div
+            style={{
+              display: 'inline-flex',
+              background: 'var(--db-surface, #18282C)',
+              border: '1px solid var(--db-border, rgba(184, 206, 194, 0.14))',
+              borderRadius: '8px',
+              padding: '3px',
+            }}
+          >
             <button
               onClick={() => setTab('period')}
-              className={`px-3 py-1 rounded-md font-medium transition-colors ${
-                tab === 'period' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'
-              }`}
+              style={{
+                padding: '5px 12px',
+                borderRadius: '6px',
+                fontSize: '12px',
+                fontWeight: 600,
+                border: 'none',
+                cursor: 'pointer',
+                background: tab === 'period' ? 'var(--db-surface-2, #1E3438)' : 'transparent',
+                color: tab === 'period' ? 'var(--db-mint, #B8CEC2)' : 'var(--db-text-muted, #708482)',
+                transition: 'all 0.15s ease',
+              }}
             >
-              Period Reports
+              Period Roll-up
             </button>
             <button
               onClick={() => setTab('day')}
-              className={`px-3 py-1 rounded-md font-medium transition-colors ${
-                tab === 'day' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'
-              }`}
+              style={{
+                padding: '5px 12px',
+                borderRadius: '6px',
+                fontSize: '12px',
+                fontWeight: 600,
+                border: 'none',
+                cursor: 'pointer',
+                background: tab === 'day' ? 'var(--db-surface-2, #1E3438)' : 'transparent',
+                color: tab === 'day' ? 'var(--db-mint, #B8CEC2)' : 'var(--db-text-muted, #708482)',
+                transition: 'all 0.15s ease',
+              }}
             >
-              Daily Report
+              Daily Snapshot
             </button>
           </div>
+
           <AsOfBadge asOf={periodReport?.as_of} />
         </div>
       </div>
 
+      {/* Controls Bar */}
       {tab === 'period' ? (
-        <div className="space-y-5">
-          {/* Controls */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <div className="flex gap-1">
-              {PERIODS.map((p) => (
-                <button
-                  key={p.value}
-                  onClick={() => setPeriod(p.value)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${
-                    period === p.value
-                      ? 'bg-purple-600 text-white border-purple-600 shadow-sm'
-                      : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
-                  }`}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            flexWrap: 'wrap',
+            background: 'var(--db-surface, #18282C)',
+            border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+            borderRadius: '12px',
+            padding: '12px 16px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            {PERIODS.map((p) => (
+              <button
+                key={p.value}
+                onClick={() => setPeriod(p.value)}
+                style={{
+                  padding: '4px 10px',
+                  borderRadius: '6px',
+                  fontSize: '12px',
+                  fontWeight: period === p.value ? 600 : 500,
+                  border: 'none',
+                  cursor: 'pointer',
+                  background: period === p.value ? 'var(--db-surface-2, #1E3438)' : 'transparent',
+                  color: period === p.value ? 'var(--db-mint, #B8CEC2)' : 'var(--db-text-muted, #708482)',
+                }}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <label style={{ fontSize: '11px', color: 'var(--db-text-muted, #708482)' }}>Period Key:</label>
             <input
-              type="text"
               value={key}
               onChange={(e) => setKey(e.target.value)}
-              className="h-8 rounded-lg border bg-white px-2.5 text-xs font-mono text-gray-700 w-36 focus:outline-none focus:ring-1 focus:ring-purple-600"
               placeholder="e.g. 2026-10"
+              style={{
+                height: '30px',
+                padding: '0 8px',
+                borderRadius: '6px',
+                background: 'var(--db-surface-2, #1E3438)',
+                border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+                color: 'var(--db-text, #F7FAF9)',
+                fontSize: '12px',
+                fontFamily: 'Consolas, monospace',
+                outline: 'none',
+              }}
             />
           </div>
-
-          {pLoading ? (
-            <div className="h-48 rounded-xl border bg-white p-6 animate-pulse" />
-          ) : periodReport ? (
-            <>
-              <PeriodReportCard report={periodReport} />
-              <MoversTable gainers={periodReport.biggest_gainers ?? []} losers={periodReport.biggest_losers ?? []} />
-            </>
-          ) : (
-            <div className="rounded-xl border bg-white p-8 text-center text-sm text-gray-400">
-              No report computed for {period} {key}.
-            </div>
-          )}
         </div>
       ) : (
-        <div className="space-y-5">
-          <div className="flex items-center gap-2">
-            <label className="text-xs font-medium text-gray-600">Select Date:</label>
-            <input
-              type="date"
-              value={dayDate}
-              onChange={(e) => setDayDate(e.target.value)}
-              className="h-8 rounded-lg border bg-white px-2.5 text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-purple-600"
-            />
-          </div>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            background: 'var(--db-surface, #18282C)',
+            border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+            borderRadius: '12px',
+            padding: '12px 16px',
+          }}
+        >
+          <label style={{ fontSize: '11px', color: 'var(--db-text-muted, #708482)' }}>Date:</label>
+          <input
+            type="date"
+            value={dayDate}
+            onChange={(e) => setDayDate(e.target.value)}
+            style={{
+              height: '30px',
+              padding: '0 8px',
+              borderRadius: '6px',
+              background: 'var(--db-surface-2, #1E3438)',
+              border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+              color: 'var(--db-text, #F7FAF9)',
+              fontSize: '12px',
+              colorScheme: 'dark',
+              outline: 'none',
+            }}
+          />
+        </div>
+      )}
 
-          {dLoading ? (
-            <div className="h-48 rounded-xl border bg-white p-6 animate-pulse" />
-          ) : dayReport ? (
-            <>
-              <DayReportCard report={dayReport} />
-              <MoversTable
-                gainers={(dayReport.biggest_movers ?? []).filter((m) => m.direction === 'UP')}
-                losers={(dayReport.biggest_movers ?? []).filter((m) => m.direction === 'DOWN')}
-              />
-            </>
-          ) : (
-            <div className="rounded-xl border bg-white p-8 text-center text-sm text-gray-400">
-              No daily snapshot recorded for {dayDate}.
-            </div>
-          )}
+      {/* Reports Body */}
+      {tab === 'period' ? (
+        pLoading ? (
+          <MetricCardsSkeleton count={6} />
+        ) : periodReport ? (
+          <PeriodReportCard report={periodReport} />
+        ) : (
+          <div
+            style={{
+              padding: '32px',
+              textAlign: 'center',
+              borderRadius: '14px',
+              background: 'var(--db-surface, #18282C)',
+              color: 'var(--db-text-muted, #708482)',
+              fontSize: '13px',
+            }}
+          >
+            No report available for the selected period key.
+          </div>
+        )
+      ) : dLoading ? (
+        <MetricCardsSkeleton count={6} />
+      ) : dayReport ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <DayReportCard report={dayReport} />
+          <LazyViewport minHeight="240px" fallback={<TableSkeleton rows={4} cols={4} />}>
+            <MoversTable gainers={dayReport.biggest_movers?.filter(m => m.direction === 'UP') ?? []} losers={dayReport.biggest_movers?.filter(m => m.direction === 'DOWN') ?? []} />
+          </LazyViewport>
+        </div>
+      ) : (
+        <div
+          style={{
+            padding: '32px',
+            textAlign: 'center',
+            borderRadius: '14px',
+            background: 'var(--db-surface, #18282C)',
+            color: 'var(--db-text-muted, #708482)',
+            fontSize: '13px',
+          }}
+        >
+          No daily report found for the selected date.
         </div>
       )}
 

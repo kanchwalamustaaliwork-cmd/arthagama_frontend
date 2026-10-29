@@ -1,8 +1,10 @@
 'use client'
+
 import React from 'react'
 import Link from 'next/link'
 import type { MtfStockSnapshot } from '@/src/types/mtf'
 import { formatCr, formatPct } from '@/src/utils/mtf/formatters'
+import { TableSkeleton } from '@/src/components/stockdashboard/shared/Skeletons'
 
 interface MtfStocksTableProps {
   items: MtfStockSnapshot[]
@@ -10,77 +12,196 @@ interface MtfStocksTableProps {
 }
 
 export function MtfStocksTable({ items, loading }: MtfStocksTableProps) {
+  if (loading) {
+    return <TableSkeleton rows={8} cols={8} />
+  }
+
   return (
-    <div className="overflow-x-auto rounded-xl border bg-white shadow-sm">
-      <table className="w-full text-sm">
-        <thead className="bg-gray-50/75 border-b text-xs font-semibold text-gray-500">
-          <tr>
-            <th className="text-left px-4 py-3">Security</th>
-            <th className="text-left px-4 py-3">ISIN</th>
-            <th className="text-right px-4 py-3">MTF Book</th>
-            <th className="text-right px-4 py-3">Market Cap</th>
-            <th className="text-right px-4 py-3">Leverage %</th>
-            <th className="text-right px-4 py-3">30d Change</th>
-            <th className="text-center px-4 py-3">Class</th>
-            <th className="text-center px-4 py-3">Exch</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-100">
-          {loading ? (
-            Array.from({ length: 10 }).map((_, i) => (
-              <tr key={i} className="animate-pulse">
-                {Array.from({ length: 8 }).map((_, j) => (
-                  <td key={j} className="px-4 py-3">
-                    <div className="h-4 w-20 rounded bg-gray-100" />
-                  </td>
-                ))}
-              </tr>
-            ))
-          ) : items.length === 0 ? (
-            <tr>
-              <td colSpan={8} className="px-4 py-8 text-center text-gray-400">
-                No stocks match the selected screener filters.
-              </td>
+    <div
+      style={{
+        borderRadius: '14px',
+        border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+        background: 'var(--db-surface, #18282C)',
+        overflow: 'hidden',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+      }}
+    >
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '12.5px' }}>
+          <thead>
+            <tr
+              style={{
+                background: 'var(--db-surface-2, #1E3438)',
+                borderBottom: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+                fontSize: '11px',
+                fontWeight: 600,
+                color: 'var(--db-text-muted, #708482)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+              }}
+            >
+              <th style={{ padding: '12px 16px' }}>Security</th>
+              <th style={{ padding: '12px 16px' }}>ISIN</th>
+              <th style={{ padding: '12px 16px', textAlign: 'right' }}>MTF Book</th>
+              <th style={{ padding: '12px 16px', textAlign: 'right' }}>Market Cap</th>
+              <th style={{ padding: '12px 16px', textAlign: 'right' }}>Leverage %</th>
+              <th style={{ padding: '12px 16px', textAlign: 'right' }}>30d Change</th>
+              <th style={{ padding: '12px 16px', textAlign: 'center' }}>Class</th>
+              <th style={{ padding: '12px 16px', textAlign: 'center' }}>Exch</th>
             </tr>
-          ) : (
-            items.map((row) => (
-              <tr key={`${row.isin}-${row.exchange}`} className="hover:bg-purple-50/30 transition-colors">
-                <td className="px-4 py-3 font-semibold text-gray-900">
-                  <Link href={`/admin/mtf/stocks/${row.isin}`} className="hover:text-purple-600 transition-colors">
-                    {row.symbol ?? row.isin}
-                  </Link>
-                </td>
-                <td className="px-4 py-3 text-gray-400 font-mono text-xs">{row.isin}</td>
-                <td className="px-4 py-3 text-right font-medium text-gray-900">{formatCr(row.book_cr)}</td>
-                <td className="px-4 py-3 text-right text-gray-600">{formatCr(row.mcap_cr)}</td>
-                <td className="px-4 py-3 text-right font-medium text-purple-700">{formatPct(row.leverage_pct)}</td>
+          </thead>
+          <tbody>
+            {items.length === 0 ? (
+              <tr>
                 <td
-                  className={`px-4 py-3 text-right font-medium ${
-                    (row.change_30d_pct ?? 0) >= 0 ? 'text-emerald-600' : 'text-rose-600'
-                  }`}
+                  colSpan={8}
+                  style={{
+                    padding: '36px 16px',
+                    textAlign: 'center',
+                    color: 'var(--db-text-muted, #708482)',
+                    fontSize: '13px',
+                  }}
                 >
-                  {formatPct(row.change_30d_pct)}
+                  No securities matched the selected filter criteria.
                 </td>
-                <td className="px-4 py-3 text-center">
-                  <span
-                    className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-                      row.asset_class === 'FNO'
-                        ? 'bg-purple-100 text-purple-700'
-                        : row.asset_class === 'ETF'
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : 'bg-blue-100 text-blue-700'
-                    }`}
-                  >
-                    {row.asset_class ?? 'EQUITY'}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-center text-xs font-medium text-gray-500">{row.exchange}</td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              items.map((row) => {
+                const isPos30d = (row.change_30d_pct ?? 0) >= 0
+
+                return (
+                  <tr
+                    key={`${row.isin}-${row.exchange}`}
+                    style={{
+                      borderBottom: '1px solid var(--db-border, rgba(184, 206, 194, 0.06))',
+                      transition: 'background 0.15s ease',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(184, 206, 194, 0.04)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    {/* Security Symbol */}
+                    <td style={{ padding: '12px 16px' }}>
+                      <Link
+                        href={`/admin/mtf/stocks/${row.isin}`}
+                        style={{
+                          fontWeight: 600,
+                          color: 'var(--db-mint, #B8CEC2)',
+                          textDecoration: 'none',
+                        }}
+                      >
+                        {row.symbol ?? row.isin}
+                      </Link>
+                    </td>
+
+                    {/* ISIN */}
+                    <td style={{ padding: '12px 16px', fontFamily: 'Consolas, monospace', fontSize: '11px', color: 'var(--db-text-muted, #708482)' }}>
+                      {row.isin}
+                    </td>
+
+                    {/* MTF Book */}
+                    <td
+                      style={{
+                        padding: '12px 16px',
+                        textAlign: 'right',
+                        fontFamily: 'Consolas, monospace',
+                        fontWeight: 600,
+                        color: 'var(--db-text, #F7FAF9)',
+                      }}
+                    >
+                      {formatCr(row.book_cr)}
+                    </td>
+
+                    {/* Market Cap */}
+                    <td
+                      style={{
+                        padding: '12px 16px',
+                        textAlign: 'right',
+                        fontFamily: 'Consolas, monospace',
+                        color: 'var(--db-text-2, #A5B7B3)',
+                      }}
+                    >
+                      {formatCr(row.mcap_cr)}
+                    </td>
+
+                    {/* Leverage % */}
+                    <td
+                      style={{
+                        padding: '12px 16px',
+                        textAlign: 'right',
+                        fontFamily: 'Consolas, monospace',
+                        fontWeight: 600,
+                        color: (row.leverage_pct ?? 0) > 3 ? '#FBBF24' : 'var(--db-mint, #B8CEC2)',
+                      }}
+                    >
+                      {formatPct(row.leverage_pct)}
+                    </td>
+
+                    {/* 30d Change */}
+                    <td
+                      style={{
+                        padding: '12px 16px',
+                        textAlign: 'right',
+                        fontFamily: 'Consolas, monospace',
+                        fontWeight: 600,
+                        color: isPos30d ? 'var(--db-gain, #22C55E)' : 'var(--db-loss, #E35D6A)',
+                      }}
+                    >
+                      {row.change_30d_pct !== undefined ? (
+                        <>
+                          {isPos30d ? '+' : ''}
+                          {formatPct(row.change_30d_pct)}
+                        </>
+                      ) : (
+                        '—'
+                      )}
+                    </td>
+
+                    {/* Class */}
+                    <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                      <span
+                        style={{
+                          fontSize: '10.5px',
+                          fontWeight: 600,
+                          padding: '2px 8px',
+                          borderRadius: '6px',
+                          background:
+                            row.asset_class === 'FNO'
+                              ? 'rgba(184, 206, 194, 0.12)'
+                              : row.asset_class === 'ETF'
+                              ? 'rgba(251, 191, 36, 0.12)'
+                              : 'rgba(56, 189, 248, 0.12)',
+                          color:
+                            row.asset_class === 'FNO'
+                              ? 'var(--db-mint, #B8CEC2)'
+                              : row.asset_class === 'ETF'
+                              ? '#FBBF24'
+                              : '#38BDF8',
+                          border: '1px solid rgba(184, 206, 194, 0.1)',
+                        }}
+                      >
+                        {row.asset_class ?? '—'}
+                      </span>
+                    </td>
+
+                    {/* Exchange */}
+                    <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          fontFamily: 'Consolas, monospace',
+                          color: 'var(--db-text-muted, #708482)',
+                        }}
+                      >
+                        {row.exchange}
+                      </span>
+                    </td>
+                  </tr>
+                )
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }
-

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { brokersApi } from '@/src/lib/api/mtf/brokers.api'
-import type { MtfBrokerRankingResponse, MtfBrokerHistory } from '@/src/types/mtf'
+import type { BrokerRankingResponse, BrokerHistoryResponse } from '@/src/types/mtf'
 
 function useFetch<T>(fn: () => Promise<T>, deps: unknown[] = []) {
   const [data, setData] = useState<T | null>(null)
@@ -17,7 +17,8 @@ function useFetch<T>(fn: () => Promise<T>, deps: unknown[] = []) {
   return { data, loading, error }
 }
 
-export const useMtfBrokers = () => useFetch<MtfBrokerRankingResponse>(brokersApi.getBrokers)
-export const useBrokerHistory = (slug: string, p?: { from?: string; to?: string }) =>
-  useFetch<{ items: MtfBrokerHistory[]; as_of: string; source: string }>(
+export const useMtfBrokers = () => useFetch<BrokerRankingResponse>(brokersApi.getBrokers)
+
+export const useBrokerHistory = (slug: string = 'all', p?: { from?: string; to?: string }) =>
+  useFetch<BrokerHistoryResponse>(
     () => brokersApi.getBrokerHistory(slug, p), [slug, p?.from, p?.to])

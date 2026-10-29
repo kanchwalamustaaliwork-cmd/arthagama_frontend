@@ -1,7 +1,9 @@
 'use client'
+
 import React, { useMemo } from 'react'
 import type { MtfDailyTotal } from '@/src/types/mtf'
-import { formatCr, formatDate } from '@/src/utils/mtf/formatters'
+import { formatCr, formatDate, toNum } from '@/src/utils/mtf/formatters'
+import { TrendingUp } from 'lucide-react'
 
 interface BookTrendChartProps {
   data: MtfDailyTotal[]
@@ -16,58 +18,110 @@ export function BookTrendChart({ data, loading }: BookTrendChartProps) {
   }, [data])
 
   if (loading) {
-    return <div className="h-64 rounded-xl border bg-white p-4 animate-pulse" />
+    return (
+      <div
+        style={{
+          height: '260px',
+          borderRadius: '14px',
+          border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+          background: 'var(--db-surface, #18282C)',
+          padding: '20px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+          animation: 'pulse 1.8s infinite',
+        }}
+      >
+        <div style={{ height: '18px', width: '40%', background: 'var(--db-surface-2, #1E3438)', borderRadius: '6px' }} />
+        <div style={{ flex: 1, background: 'var(--db-surface-2, #1E3438)', borderRadius: '8px' }} />
+      </div>
+    )
   }
 
   if (combined.length === 0) {
     return (
-      <div className="h-64 rounded-xl border bg-white p-4 flex items-center justify-center text-sm text-gray-400">
+      <div
+        style={{
+          height: '260px',
+          borderRadius: '14px',
+          border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+          background: 'var(--db-surface, #18282C)',
+          padding: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '13px',
+          color: 'var(--db-text-muted, #708482)',
+        }}
+      >
         No MTF book trend data available
       </div>
     )
   }
 
-  const values = combined.map((d) => d.outstanding_cr ?? 0)
+  // Coerce Decimal strings → numbers for arithmetic
+  const values = combined.map((d) => toNum(d.outstanding_cr) ?? 0)
   const minVal = Math.min(...values)
   const maxVal = Math.max(...values)
   const range = maxVal - minVal || 1
 
   const width = 600
   const height = 220
-  const padL = 45
-  const padR = 15
+  const padL = 48
+  const padR = 16
   const padT = 20
   const padB = 30
   const plotW = width - padL - padR
   const plotH = height - padT - padB
 
   const points = combined.map((d, i) => {
+    const val = toNum(d.outstanding_cr) ?? 0
     const x = padL + (i / (combined.length - 1 || 1)) * plotW
-    const y = padT + plotH - (((d.outstanding_cr ?? 0) - minVal) / range) * plotH
-    return { x, y, date: d.trade_date, val: d.outstanding_cr }
+    const y = padT + plotH - ((val - minVal) / range) * plotH
+    return { x, y, date: d.trade_date, val }
   })
 
   const pathD = points.reduce((acc, p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `${acc} L ${p.x} ${p.y}`), '')
   const areaD = `${pathD} L ${points[points.length - 1].x} ${padT + plotH} L ${points[0].x} ${padT + plotH} Z`
 
   return (
-    <div className="rounded-xl border bg-white p-4 shadow-sm">
-      <div className="flex items-center justify-between mb-3">
+    <div
+      style={{
+        borderRadius: '14px',
+        border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+        background: 'var(--db-surface, #18282C)',
+        padding: '20px',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
         <div>
-          <h3 className="text-sm font-semibold text-gray-900">Total MTF Book Trend</h3>
-          <p className="text-xs text-gray-500">Combined market margin debt over time</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <TrendingUp size={15} color="var(--db-mint, #B8CEC2)" />
+            <h3 style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--db-text, #F7FAF9)', margin: 0 }}>
+              Total MTF Book Trend
+            </h3>
+          </div>
+          <p style={{ fontSize: '12px', color: 'var(--db-text-muted, #708482)', margin: '3px 0 0 0' }}>
+            Combined market margin debt over time
+          </p>
         </div>
-        <div className="text-right">
-          <span className="text-sm font-bold text-purple-700">{formatCr(values[values.length - 1])}</span>
-          <p className="text-[10px] text-gray-400">Latest Book</p>
+        <div style={{ textAlign: 'right' }}>
+          <span style={{ fontSize: '14px', fontWeight: 700, fontFamily: 'Consolas, monospace', color: 'var(--db-mint, #B8CEC2)' }}>
+            {formatCr(values[values.length - 1])}
+          </span>
+          <p style={{ fontSize: '10px', color: 'var(--db-text-muted, #708482)', margin: '2px 0 0 0' }}>
+            Latest Book
+          </p>
         </div>
       </div>
-      <div className="w-full overflow-hidden">
-        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto">
+
+      <div style={{ width: '100%', overflow: 'hidden' }}>
+        <svg viewBox={`0 0 ${width} ${height}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
           <defs>
-            <linearGradient id="bookGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#9333ea" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#9333ea" stopOpacity="0.0" />
+            <linearGradient id="bookGradMint" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#B8CEC2" stopOpacity="0.32" />
+              <stop offset="100%" stopColor="#B8CEC2" stopOpacity="0.0" />
             </linearGradient>
           </defs>
           {/* Y Axis Grid */}
@@ -76,23 +130,51 @@ export function BookTrendChart({ data, loading }: BookTrendChartProps) {
             const val = minVal + range * pct
             return (
               <g key={idx}>
-                <line x1={padL} y1={y} x2={width - padR} y2={y} stroke="#f3f4f6" strokeDasharray="3 3" />
-                <text x={padL - 6} y={y + 3} textAnchor="end" className="text-[9px] fill-gray-400">
-                  {Math.round(val / 1000)}k
+                <line
+                  x1={padL}
+                  y1={y}
+                  x2={width - padR}
+                  y2={y}
+                  stroke="rgba(184, 206, 194, 0.08)"
+                  strokeDasharray="3 3"
+                />
+                <text
+                  x={padL - 6}
+                  y={y + 3}
+                  textAnchor="end"
+                  fill="var(--db-text-muted, #708482)"
+                  fontSize="9.5"
+                  fontFamily="Consolas, monospace"
+                >
+                  {Math.round(val / 1000)}k Cr
                 </text>
               </g>
             )
           })}
           {/* Area & Line */}
-          <path d={areaD} fill="url(#bookGrad)" />
-          <path d={pathD} fill="none" stroke="#9333ea" strokeWidth="2" strokeLinecap="round" />
+          <path d={areaD} fill="url(#bookGradMint)" />
+          <path d={pathD} fill="none" stroke="#B8CEC2" strokeWidth="2.2" strokeLinecap="round" />
           {/* X Axis Labels */}
           {points.length > 1 && (
             <>
-              <text x={points[0].x} y={height - 8} textAnchor="start" className="text-[9px] fill-gray-400">
+              <text
+                x={points[0].x}
+                y={height - 8}
+                textAnchor="start"
+                fill="var(--db-text-muted, #708482)"
+                fontSize="9.5"
+                fontFamily="Consolas, monospace"
+              >
                 {formatDate(points[0].date)}
               </text>
-              <text x={points[points.length - 1].x} y={height - 8} textAnchor="end" className="text-[9px] fill-gray-400">
+              <text
+                x={points[points.length - 1].x}
+                y={height - 8}
+                textAnchor="end"
+                fill="var(--db-text-muted, #708482)"
+                fontSize="9.5"
+                fontFamily="Consolas, monospace"
+              >
                 {formatDate(points[points.length - 1].date)}
               </text>
             </>
@@ -102,4 +184,3 @@ export function BookTrendChart({ data, loading }: BookTrendChartProps) {
     </div>
   )
 }
-

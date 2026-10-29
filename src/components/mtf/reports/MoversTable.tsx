@@ -1,7 +1,9 @@
 'use client'
+
 import React from 'react'
 import type { MtfMover } from '@/src/types/mtf'
 import { formatCr, formatPct } from '@/src/utils/mtf/formatters'
+import Link from 'next/link'
 
 interface MoversTableProps {
   gainers: MtfMover[]
@@ -10,35 +12,86 @@ interface MoversTableProps {
 
 export function MoversTable({ gainers, losers }: MoversTableProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {/* Biggest Gainers */}
-      <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
-        <div className="px-4 py-3 border-b bg-emerald-50/50">
-          <h4 className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Top Book Build-Ups (Gainers)</h4>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(440px, 1fr))', gap: '20px' }}>
+      {/* Top Gainers */}
+      <div
+        style={{
+          borderRadius: '14px',
+          border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+          background: 'var(--db-surface, #18282C)',
+          overflow: 'hidden',
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+        }}
+      >
+        <div
+          style={{
+            padding: '14px 16px',
+            borderBottom: '1px solid var(--db-border, rgba(184, 206, 194, 0.1))',
+            background: 'rgba(34, 197, 94, 0.08)',
+          }}
+        >
+          <h4
+            style={{
+              fontSize: '11px',
+              fontWeight: 700,
+              color: 'var(--db-gain, #22C55E)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+              margin: 0,
+            }}
+          >
+            Top Book Build-Ups (Inflow)
+          </h4>
         </div>
-        <table className="w-full text-xs">
-          <thead className="bg-gray-50/75 border-b text-gray-500 font-medium">
-            <tr>
-              <th className="text-left px-3 py-2">Security</th>
-              <th className="text-right px-3 py-2">MTF Book</th>
-              <th className="text-right px-3 py-2">Change</th>
-              <th className="text-right px-3 py-2">% Change</th>
+        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '12px' }}>
+          <thead>
+            <tr
+              style={{
+                background: 'var(--db-surface-2, #1E3438)',
+                borderBottom: '1px solid var(--db-border, rgba(184, 206, 194, 0.08))',
+                fontSize: '10.5px',
+                color: 'var(--db-text-muted, #708482)',
+                textTransform: 'uppercase',
+              }}
+            >
+              <th style={{ padding: '10px 14px' }}>Security</th>
+              <th style={{ padding: '10px 14px', textAlign: 'right' }}>Book</th>
+              <th style={{ padding: '10px 14px', textAlign: 'right' }}>Delta</th>
+              <th style={{ padding: '10px 14px', textAlign: 'right' }}>% Delta</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody>
             {gainers.length === 0 ? (
               <tr>
-                <td colSpan={4} className="p-4 text-center text-gray-400">
-                  No gainers recorded.
+                <td colSpan={4} style={{ padding: '24px 14px', textAlign: 'center', color: 'var(--db-text-muted, #708482)' }}>
+                  No significant gainers recorded.
                 </td>
               </tr>
             ) : (
               gainers.map((m) => (
-                <tr key={m.isin} className="hover:bg-gray-50">
-                  <td className="px-3 py-2 font-semibold text-gray-800">{m.symbol ?? m.isin}</td>
-                  <td className="px-3 py-2 text-right">{formatCr(m.book_cr)}</td>
-                  <td className="px-3 py-2 text-right text-emerald-600 font-medium">+{formatCr(m.change_cr)}</td>
-                  <td className="px-3 py-2 text-right text-emerald-600 font-bold">+{formatPct(m.change_pct)}</td>
+                <tr
+                  key={m.isin}
+                  style={{ borderBottom: '1px solid var(--db-border, rgba(184, 206, 194, 0.05))' }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(184, 206, 194, 0.04)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <td style={{ padding: '10px 14px' }}>
+                    <Link
+                      href={`/admin/mtf/stocks/${m.isin}`}
+                      style={{ fontWeight: 600, color: 'var(--db-text, #F7FAF9)', textDecoration: 'none' }}
+                    >
+                      {m.symbol ?? m.isin}
+                    </Link>
+                  </td>
+                  <td style={{ padding: '10px 14px', textAlign: 'right', fontFamily: 'Consolas, monospace', color: 'var(--db-text-2, #A5B7B3)' }}>
+                    {formatCr(m.book_cr)}
+                  </td>
+                  <td style={{ padding: '10px 14px', textAlign: 'right', fontFamily: 'Consolas, monospace', fontWeight: 600, color: 'var(--db-gain, #22C55E)' }}>
+                    +{formatCr(m.change_cr)}
+                  </td>
+                  <td style={{ padding: '10px 14px', textAlign: 'right', fontFamily: 'Consolas, monospace', fontWeight: 700, color: 'var(--db-gain, #22C55E)' }}>
+                    +{formatPct(m.change_pct)}
+                  </td>
                 </tr>
               ))
             )}
@@ -46,34 +99,85 @@ export function MoversTable({ gainers, losers }: MoversTableProps) {
         </table>
       </div>
 
-      {/* Biggest Losers */}
-      <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
-        <div className="px-4 py-3 border-b bg-rose-50/50">
-          <h4 className="text-xs font-bold text-rose-800 uppercase tracking-wider">Top Liquidations (Unwinding)</h4>
+      {/* Top Losers */}
+      <div
+        style={{
+          borderRadius: '14px',
+          border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+          background: 'var(--db-surface, #18282C)',
+          overflow: 'hidden',
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+        }}
+      >
+        <div
+          style={{
+            padding: '14px 16px',
+            borderBottom: '1px solid var(--db-border, rgba(184, 206, 194, 0.1))',
+            background: 'rgba(227, 93, 106, 0.08)',
+          }}
+        >
+          <h4
+            style={{
+              fontSize: '11px',
+              fontWeight: 700,
+              color: 'var(--db-loss, #E35D6A)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+              margin: 0,
+            }}
+          >
+            Top Liquidations (Unwinding)
+          </h4>
         </div>
-        <table className="w-full text-xs">
-          <thead className="bg-gray-50/75 border-b text-gray-500 font-medium">
-            <tr>
-              <th className="text-left px-3 py-2">Security</th>
-              <th className="text-right px-3 py-2">MTF Book</th>
-              <th className="text-right px-3 py-2">Change</th>
-              <th className="text-right px-3 py-2">% Change</th>
+        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '12px' }}>
+          <thead>
+            <tr
+              style={{
+                background: 'var(--db-surface-2, #1E3438)',
+                borderBottom: '1px solid var(--db-border, rgba(184, 206, 194, 0.08))',
+                fontSize: '10.5px',
+                color: 'var(--db-text-muted, #708482)',
+                textTransform: 'uppercase',
+              }}
+            >
+              <th style={{ padding: '10px 14px' }}>Security</th>
+              <th style={{ padding: '10px 14px', textAlign: 'right' }}>Book</th>
+              <th style={{ padding: '10px 14px', textAlign: 'right' }}>Delta</th>
+              <th style={{ padding: '10px 14px', textAlign: 'right' }}>% Delta</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody>
             {losers.length === 0 ? (
               <tr>
-                <td colSpan={4} className="p-4 text-center text-gray-400">
+                <td colSpan={4} style={{ padding: '24px 14px', textAlign: 'center', color: 'var(--db-text-muted, #708482)' }}>
                   No liquidations recorded.
                 </td>
               </tr>
             ) : (
               losers.map((m) => (
-                <tr key={m.isin} className="hover:bg-gray-50">
-                  <td className="px-3 py-2 font-semibold text-gray-800">{m.symbol ?? m.isin}</td>
-                  <td className="px-3 py-2 text-right">{formatCr(m.book_cr)}</td>
-                  <td className="px-3 py-2 text-right text-rose-600 font-medium">{formatCr(m.change_cr)}</td>
-                  <td className="px-3 py-2 text-right text-rose-600 font-bold">{formatPct(m.change_pct)}</td>
+                <tr
+                  key={m.isin}
+                  style={{ borderBottom: '1px solid var(--db-border, rgba(184, 206, 194, 0.05))' }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(184, 206, 194, 0.04)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <td style={{ padding: '10px 14px' }}>
+                    <Link
+                      href={`/admin/mtf/stocks/${m.isin}`}
+                      style={{ fontWeight: 600, color: 'var(--db-text, #F7FAF9)', textDecoration: 'none' }}
+                    >
+                      {m.symbol ?? m.isin}
+                    </Link>
+                  </td>
+                  <td style={{ padding: '10px 14px', textAlign: 'right', fontFamily: 'Consolas, monospace', color: 'var(--db-text-2, #A5B7B3)' }}>
+                    {formatCr(m.book_cr)}
+                  </td>
+                  <td style={{ padding: '10px 14px', textAlign: 'right', fontFamily: 'Consolas, monospace', fontWeight: 600, color: 'var(--db-loss, #E35D6A)' }}>
+                    {formatCr(m.change_cr)}
+                  </td>
+                  <td style={{ padding: '10px 14px', textAlign: 'right', fontFamily: 'Consolas, monospace', fontWeight: 700, color: 'var(--db-loss, #E35D6A)' }}>
+                    {formatPct(m.change_pct)}
+                  </td>
                 </tr>
               ))
             )}
@@ -83,4 +187,3 @@ export function MoversTable({ gainers, losers }: MoversTableProps) {
     </div>
   )
 }
-

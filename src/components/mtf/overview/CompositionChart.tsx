@@ -1,7 +1,9 @@
 'use client'
+
 import React, { useMemo } from 'react'
 import type { MtfBookComposition } from '@/src/types/mtf'
-import { formatCr } from '@/src/utils/mtf/formatters'
+import { formatCr, toNum } from '@/src/utils/mtf/formatters'
+import { PieChart } from 'lucide-react'
 
 interface CompositionChartProps {
   data: MtfBookComposition[]
@@ -18,62 +20,165 @@ export function CompositionChart({ data, loading }: CompositionChartProps) {
     return data.filter((d) => d.trade_date === latestDate)
   }, [data, latestDate])
 
-  const total = latestItems.reduce((acc, curr) => acc + (curr.book_cr ?? 0), 0) || 1
+  // Coerce Decimal strings → numbers for arithmetic
+  const total = latestItems.reduce((acc, curr) => acc + (toNum(curr.book_cr) ?? 0), 0) || 1
 
-  const colors: Record<string, { bg: string; fill: string }> = {
-    FNO: { bg: 'bg-purple-600', fill: '#9333ea' },
-    NON_FNO: { bg: 'bg-blue-500', fill: '#3b82f6' },
-    ETF: { bg: 'bg-emerald-500', fill: '#10b981' },
+  const colors: Record<string, { bg: string; text: string; hex: string }> = {
+    FNO: { bg: 'var(--db-mint, #B8CEC2)', text: '#18282C', hex: '#B8CEC2' },
+    NON_FNO: { bg: '#38BDF8', text: '#0F191B', hex: '#38BDF8' },
+    ETF: { bg: '#FBBF24', text: '#0F191B', hex: '#FBBF24' },
   }
 
-  if (loading) return <div className="h-64 rounded-xl border bg-white p-4 animate-pulse" />
+  if (loading) {
+    return (
+      <div
+        style={{
+          height: '260px',
+          borderRadius: '14px',
+          border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+          background: 'var(--db-surface, #18282C)',
+          padding: '20px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+          animation: 'pulse 1.8s infinite',
+        }}
+      >
+        <div style={{ height: '18px', width: '40%', background: 'var(--db-surface-2, #1E3438)', borderRadius: '6px' }} />
+        <div style={{ flex: 1, background: 'var(--db-surface-2, #1E3438)', borderRadius: '8px' }} />
+      </div>
+    )
+  }
+
   if (latestItems.length === 0) {
     return (
-      <div className="h-64 rounded-xl border bg-white p-4 flex items-center justify-center text-sm text-gray-400">
+      <div
+        style={{
+          height: '260px',
+          borderRadius: '14px',
+          border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+          background: 'var(--db-surface, #18282C)',
+          padding: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '13px',
+          color: 'var(--db-text-muted, #708482)',
+        }}
+      >
         No book composition data available
       </div>
     )
   }
 
   return (
-    <div className="rounded-xl border bg-white p-4 shadow-sm">
-      <div className="flex items-center justify-between mb-3">
-        <div>
-          <h3 className="text-sm font-semibold text-gray-900">Book Composition by Asset Class</h3>
-          <p className="text-xs text-gray-500">Breakdown into F&O eligible, Non-F&O, and ETFs</p>
+    <div
+      style={{
+        borderRadius: '14px',
+        border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+        background: 'var(--db-surface, #18282C)',
+        padding: '20px',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+      }}
+    >
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <PieChart size={15} color="#FBBF24" />
+              <h3 style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--db-text, #F7FAF9)', margin: 0 }}>
+                Book Composition by Asset Class
+              </h3>
+            </div>
+            <p style={{ fontSize: '12px', color: 'var(--db-text-muted, #708482)', margin: '3px 0 0 0' }}>
+              Breakdown into F&amp;O eligible, Non-F&amp;O, and ETFs
+            </p>
+          </div>
+          <span
+            style={{
+              fontSize: '11px',
+              fontFamily: 'Consolas, monospace',
+              color: 'var(--db-text-muted, #708482)',
+              background: 'var(--db-surface-2, #1E3438)',
+              padding: '3px 8px',
+              borderRadius: '6px',
+            }}
+          >
+            {latestDate}
+          </span>
         </div>
-        <span className="text-xs text-gray-400">As of {latestDate}</span>
+
+        {/* Stacked bar */}
+        <div
+          style={{
+            height: '24px',
+            width: '100%',
+            borderRadius: '8px',
+            overflow: 'hidden',
+            display: 'flex',
+            background: 'var(--db-surface-2, #1E3438)',
+            margin: '20px 0',
+            border: '1px solid var(--db-border, rgba(184, 206, 194, 0.1))',
+          }}
+        >
+          {latestItems.map((item) => {
+            const bookNum = toNum(item.book_cr) ?? 0
+            const pct = Math.max(0, (bookNum / total) * 100)
+            const c = colors[item.asset_class] ?? { bg: 'var(--db-mint, #B8CEC2)', text: '#000', hex: '#B8CEC2' }
+            return (
+              <div
+                key={item.asset_class}
+                style={{
+                  width: `${pct}%`,
+                  background: c.hex,
+                  transition: 'all 0.3s ease',
+                }}
+                title={`${item.asset_class}: ${pct.toFixed(1)}% (${formatCr(bookNum)})`}
+              />
+            )
+          })}
+        </div>
       </div>
 
-      {/* Stacked bar */}
-      <div className="h-6 w-full rounded-lg overflow-hidden flex bg-gray-100 my-4">
+      {/* Legend / Metrics */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '12px' }}>
         {latestItems.map((item) => {
-          const pct = Math.max(0, ((item.book_cr ?? 0) / total) * 100)
-          const c = colors[item.asset_class] ?? { bg: 'bg-gray-400', fill: '#9ca3af' }
+          const bookNum = toNum(item.book_cr) ?? 0
+          const pct = Math.max(0, (bookNum / total) * 100)
+          const c = colors[item.asset_class] ?? { bg: 'var(--db-mint, #B8CEC2)', text: '#000', hex: '#B8CEC2' }
           return (
             <div
               key={item.asset_class}
-              style={{ width: `${pct}%` }}
-              className={`${c.bg} transition-all duration-300`}
-              title={`${item.asset_class}: ${pct.toFixed(1)}%`}
-            />
-          )
-        })}
-      </div>
-
-      {/* Legend list */}
-      <div className="grid grid-cols-3 gap-2 pt-2">
-        {latestItems.map((item) => {
-          const pct = ((item.book_cr ?? 0) / total) * 100
-          const c = colors[item.asset_class] ?? { bg: 'bg-gray-400', fill: '#9ca3af' }
-          return (
-            <div key={item.asset_class} className="rounded-lg border p-2.5 bg-gray-50/50">
-              <div className="flex items-center gap-1.5">
-                <span className={`w-2.5 h-2.5 rounded-full ${c.bg}`} />
-                <span className="text-xs font-semibold text-gray-700">{item.asset_class}</span>
+              style={{
+                background: 'var(--db-surface-2, #1E3438)',
+                border: '1px solid var(--db-border, rgba(184, 206, 194, 0.08))',
+                borderRadius: '8px',
+                padding: '10px 12px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                <span
+                  style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    background: c.hex,
+                    display: 'inline-block',
+                  }}
+                />
+                <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--db-text-2, #A5B7B3)' }}>
+                  {item.asset_class}
+                </span>
               </div>
-              <p className="text-sm font-bold text-gray-900 mt-1">{formatCr(item.book_cr)}</p>
-              <p className="text-[10px] text-gray-500">{pct.toFixed(1)}% of total</p>
+              <div style={{ fontSize: '14px', fontWeight: 700, fontFamily: 'Consolas, monospace', color: 'var(--db-text, #F7FAF9)' }}>
+                {pct.toFixed(1)}%
+              </div>
+              <div style={{ fontSize: '10.5px', fontFamily: 'Consolas, monospace', color: 'var(--db-text-muted, #708482)' }}>
+                {formatCr(bookNum)}
+              </div>
             </div>
           )
         })}
@@ -81,4 +186,3 @@ export function CompositionChart({ data, loading }: CompositionChartProps) {
     </div>
   )
 }
-

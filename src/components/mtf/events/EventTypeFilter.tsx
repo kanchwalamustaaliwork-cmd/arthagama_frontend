@@ -1,4 +1,5 @@
 'use client'
+
 import React from 'react'
 import type { MtfEventType } from '@/src/types/mtf'
 
@@ -19,7 +20,7 @@ interface EventTypeFilterProps {
 
 export function EventTypeFilter({ selected = 'ALL', onChange }: EventTypeFilterProps) {
   return (
-    <div className="flex flex-wrap gap-1.5">
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
       {TYPES.map((t) => {
         const active = selected === t.value || (!selected && t.value === 'ALL')
         return (
@@ -27,11 +28,19 @@ export function EventTypeFilter({ selected = 'ALL', onChange }: EventTypeFilterP
             key={t.value}
             type="button"
             onClick={() => onChange(t.value === 'ALL' ? undefined : t.value)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${
-              active
-                ? 'bg-purple-600 text-white border-purple-600 shadow-sm'
-                : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
-            }`}
+            style={{
+              padding: '6px 14px',
+              borderRadius: '8px',
+              fontSize: '12px',
+              fontWeight: active ? 600 : 500,
+              cursor: 'pointer',
+              border: active
+                ? '1px solid var(--db-mint, #B8CEC2)'
+                : '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+              background: active ? 'var(--db-surface, #18282C)' : 'transparent',
+              color: active ? 'var(--db-mint, #B8CEC2)' : 'var(--db-text-2, #A5B7B3)',
+              transition: 'all 0.15s ease',
+            }}
           >
             {t.label}
           </button>
@@ -40,4 +49,3 @@ export function EventTypeFilter({ selected = 'ALL', onChange }: EventTypeFilterP
     </div>
   )
 }
-

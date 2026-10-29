@@ -1,7 +1,9 @@
 'use client'
+
 import React from 'react'
 import type { MaturityWallBucket } from '@/src/types/mtf'
 import { formatCr } from '@/src/utils/mtf/formatters'
+import { CalendarRange } from 'lucide-react'
 
 interface MaturityWallChartProps {
   buckets: MaturityWallBucket[]
@@ -9,10 +11,37 @@ interface MaturityWallChartProps {
 }
 
 export function MaturityWallChart({ buckets, loading }: MaturityWallChartProps) {
-  if (loading) return <div className="h-60 rounded-xl border bg-white p-4 animate-pulse" />
+  if (loading) {
+    return (
+      <div
+        style={{
+          height: '180px',
+          borderRadius: '14px',
+          border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+          background: 'var(--db-surface, #18282C)',
+          padding: '20px',
+          animation: 'pulse 1.8s infinite',
+        }}
+      />
+    )
+  }
+
   if (buckets.length === 0) {
     return (
-      <div className="h-60 rounded-xl border bg-white p-4 flex items-center justify-center text-xs text-gray-400">
+      <div
+        style={{
+          height: '180px',
+          borderRadius: '14px',
+          border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+          background: 'var(--db-surface, #18282C)',
+          padding: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '12.5px',
+          color: 'var(--db-text-muted, #708482)',
+        }}
+      >
         No CP maturity wall data available
       </div>
     )
@@ -21,25 +50,83 @@ export function MaturityWallChart({ buckets, loading }: MaturityWallChartProps) 
   const maxAmt = Math.max(...buckets.map((b) => b.amount_cr), 1)
 
   return (
-    <div className="rounded-xl border bg-white p-4 shadow-sm">
-      <div className="flex items-center justify-between mb-3">
+    <div
+      style={{
+        borderRadius: '14px',
+        border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+        background: 'var(--db-surface, #18282C)',
+        padding: '20px',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
         <div>
-          <h3 className="text-sm font-semibold text-gray-900">Commercial Paper Maturity Wall</h3>
-          <p className="text-xs text-gray-500">Scheduled CP refinancing maturities by tenor bucket</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <CalendarRange size={15} color="var(--db-mint, #B8CEC2)" />
+            <h3 style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--db-text, #F7FAF9)', margin: 0 }}>
+              Commercial Paper Refinancing Maturity Wall
+            </h3>
+          </div>
+          <p style={{ fontSize: '12px', color: 'var(--db-text-muted, #708482)', margin: '3px 0 0 0' }}>
+            Scheduled CP maturities grouped by refinancing tenor window
+          </p>
         </div>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
         {buckets.map((b) => {
           const pct = Math.round((b.amount_cr / maxAmt) * 100)
           return (
-            <div key={b.bucket_label} className="rounded-lg border p-3 bg-gray-50/50 flex flex-col justify-between">
+            <div
+              key={b.bucket_label}
+              style={{
+                borderRadius: '10px',
+                border: '1px solid var(--db-border, rgba(184, 206, 194, 0.08))',
+                background: 'var(--db-surface-2, #1E3438)',
+                padding: '14px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: '10px',
+              }}
+            >
               <div>
-                <span className="text-xs font-semibold text-gray-700">{b.bucket_label}</span>
-                <p className="text-lg font-bold text-purple-700 mt-1">{formatCr(b.amount_cr)}</p>
-                <p className="text-[10px] text-gray-400">{b.count} CPs maturing</p>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--db-text-2, #A5B7B3)' }}>
+                  {b.bucket_label}
+                </span>
+                <p
+                  style={{
+                    fontSize: '18px',
+                    fontWeight: 700,
+                    fontFamily: 'Consolas, monospace',
+                    color: 'var(--db-mint, #B8CEC2)',
+                    margin: '4px 0 2px 0',
+                  }}
+                >
+                  {formatCr(b.amount_cr)}
+                </p>
+                <p style={{ fontSize: '10.5px', color: 'var(--db-text-muted, #708482)', margin: 0 }}>
+                  {b.count} CPs maturing
+                </p>
               </div>
-              <div className="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden mt-3">
-                <div className="bg-purple-600 h-full rounded-full" style={{ width: `${pct}%` }} />
+
+              <div
+                style={{
+                  width: '100%',
+                  background: 'rgba(184, 206, 194, 0.1)',
+                  height: '6px',
+                  borderRadius: '10px',
+                  overflow: 'hidden',
+                }}
+              >
+                <div
+                  style={{
+                    background: 'var(--db-mint, #B8CEC2)',
+                    height: '100%',
+                    borderRadius: '10px',
+                    width: `${pct}%`,
+                  }}
+                />
               </div>
             </div>
           )
@@ -48,4 +135,3 @@ export function MaturityWallChart({ buckets, loading }: MaturityWallChartProps) 
     </div>
   )
 }
-

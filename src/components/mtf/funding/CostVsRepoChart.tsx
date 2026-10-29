@@ -1,7 +1,9 @@
 'use client'
+
 import React from 'react'
 import type { CostVsRepoPoint } from '@/src/types/mtf'
 import { formatPct, formatDate } from '@/src/utils/mtf/formatters'
+import { Percent } from 'lucide-react'
 
 interface CostVsRepoChartProps {
   data: CostVsRepoPoint[]
@@ -11,10 +13,37 @@ interface CostVsRepoChartProps {
 export function CostVsRepoChart({ data, loading }: CostVsRepoChartProps) {
   const sorted = [...data].sort((a, b) => a.as_of.localeCompare(b.as_of))
 
-  if (loading) return <div className="h-60 rounded-xl border bg-white p-4 animate-pulse" />
+  if (loading) {
+    return (
+      <div
+        style={{
+          height: '240px',
+          borderRadius: '14px',
+          border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+          background: 'var(--db-surface, #18282C)',
+          padding: '20px',
+          animation: 'pulse 1.8s infinite',
+        }}
+      />
+    )
+  }
+
   if (sorted.length === 0) {
     return (
-      <div className="h-60 rounded-xl border bg-white p-4 flex items-center justify-center text-xs text-gray-400">
+      <div
+        style={{
+          height: '240px',
+          borderRadius: '14px',
+          border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+          background: 'var(--db-surface, #18282C)',
+          padding: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '12.5px',
+          color: 'var(--db-text-muted, #708482)',
+        }}
+      >
         No borrowing cost vs repo rate data available
       </div>
     )
@@ -28,8 +57,8 @@ export function CostVsRepoChart({ data, loading }: CostVsRepoChartProps) {
 
   const width = 550
   const height = 180
-  const padL = 35
-  const padR = 10
+  const padL = 38
+  const padR = 12
   const padT = 20
   const padB = 25
   const plotW = width - padL - padR
@@ -48,32 +77,77 @@ export function CostVsRepoChart({ data, loading }: CostVsRepoChartProps) {
     pts.reduce((acc, p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `${acc} L ${p.x} ${p.y}`), '')
 
   return (
-    <div className="rounded-xl border bg-white p-4 shadow-sm">
-      <div className="flex items-center justify-between mb-2">
+    <div
+      style={{
+        borderRadius: '14px',
+        border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+        background: 'var(--db-surface, #18282C)',
+        padding: '20px',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
         <div>
-          <h3 className="text-sm font-semibold text-gray-900">Borrowing Cost vs RBI Repo Rate</h3>
-          <p className="text-xs text-gray-500">Broker CP issuance yields vs benchmark policy rate</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Percent size={15} color="#A78BFA" />
+            <h3 style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--db-text, #F7FAF9)', margin: 0 }}>
+              Borrowing Cost vs RBI Repo Rate
+            </h3>
+          </div>
+          <p style={{ fontSize: '12px', color: 'var(--db-text-muted, #708482)', margin: '3px 0 0 0' }}>
+            Broker CP issuance yields vs policy repo rate
+          </p>
         </div>
-        <div className="flex items-center gap-3 text-xs">
-          <span className="flex items-center gap-1 text-purple-700 font-medium">
-            <span className="w-2.5 h-0.5 bg-purple-600 inline-block" /> CP Cost
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '11px' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#A78BFA' }}>
+            <span style={{ width: '10px', height: '2px', background: '#A78BFA', display: 'inline-block' }} /> CP Yield
           </span>
-          <span className="flex items-center gap-1 text-gray-500 font-medium">
-            <span className="w-2.5 h-0.5 bg-gray-400 inline-block stroke-dash" /> Repo Rate
+          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--db-text-muted, #708482)' }}>
+            <span style={{ width: '10px', height: '2px', background: 'var(--db-text-muted, #708482)', display: 'inline-block' }} /> Repo Rate
           </span>
         </div>
       </div>
-      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto">
-        <path d={toD(costPoints)} fill="none" stroke="#9333ea" strokeWidth="2" strokeLinecap="round" />
-        <path d={toD(repoPoints)} fill="none" stroke="#9ca3af" strokeWidth="1.5" strokeDasharray="3 3" />
-        <text x={padL} y={height - 5} textAnchor="start" className="text-[9px] fill-gray-400">
-          {formatDate(sorted[0].as_of)}
-        </text>
-        <text x={width - padR} y={height - 5} textAnchor="end" className="text-[9px] fill-gray-400">
-          {formatDate(sorted[sorted.length - 1].as_of)}
-        </text>
+
+      <svg viewBox={`0 0 ${width} ${height}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
+        <path d={toD(costPoints)} fill="none" stroke="#A78BFA" strokeWidth="2.2" strokeLinecap="round" />
+        <path
+          d={toD(repoPoints)}
+          fill="none"
+          stroke="var(--db-text-muted, #708482)"
+          strokeWidth="1.5"
+          strokeDasharray="3 3"
+        />
+
+        {pointsLabels(sorted, padL, width - padR, height - 6)}
       </svg>
     </div>
   )
 }
 
+function pointsLabels(sorted: CostVsRepoPoint[], startX: number, endX: number, y: number) {
+  if (sorted.length <= 1) return null
+  return (
+    <>
+      <text
+        x={startX}
+        y={y}
+        textAnchor="start"
+        fill="var(--db-text-muted, #708482)"
+        fontSize="9.5"
+        fontFamily="Consolas, monospace"
+      >
+        {formatDate(sorted[0].as_of)}
+      </text>
+      <text
+        x={endX}
+        y={y}
+        textAnchor="end"
+        fill="var(--db-text-muted, #708482)"
+        fontSize="9.5"
+        fontFamily="Consolas, monospace"
+      >
+        {formatDate(sorted[sorted.length - 1].as_of)}
+      </text>
+    </>
+  )
+}
