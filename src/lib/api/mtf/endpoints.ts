@@ -1,5 +1,5 @@
 // MTF API endpoints constants
-export const MTF_BASE = '/api/mtf';
+export const MTF_BASE = '/mtf';
 
 export const MTF_ENDPOINTS = {
   // Overview
