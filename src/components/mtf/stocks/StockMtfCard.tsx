@@ -2,14 +2,16 @@
 
 import React from 'react'
 import type { MtfStockDetail } from '@/src/types/mtf'
-import { formatCr, formatPct } from '@/src/utils/mtf/formatters'
+import { formatCr, formatPct, toNum } from '@/src/utils/mtf/formatters'
 
 interface StockMtfCardProps {
   stock: MtfStockDetail
 }
 
 export function StockMtfCard({ stock }: StockMtfCardProps) {
-  const isPos30d = (stock.change_30d_pct ?? 0) >= 0
+  const change30dNum = toNum(stock.change_30d_pct)
+  const isPos30d = (change30dNum ?? 0) >= 0
+  const leverageNum = toNum(stock.leverage_pct)
 
   const metrics = [
     {
@@ -34,7 +36,7 @@ export function StockMtfCard({ stock }: StockMtfCardProps) {
       label: 'Leverage Proportion',
       val: formatPct(stock.leverage_pct),
       sub: 'MTF / Free Float %',
-      color: (stock.leverage_pct ?? 0) > 3 ? '#FBBF24' : '#38BDF8',
+      color: (leverageNum ?? 0) > 3 ? '#FBBF24' : '#38BDF8',
     },
     {
       label: '30-Day Growth',
@@ -51,33 +53,57 @@ export function StockMtfCard({ stock }: StockMtfCardProps) {
   ]
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+        gap: '14px',
+      }}
+    >
       {metrics.map((m) => (
         <div
           key={m.label}
           style={{
-            borderRadius: '12px',
-            border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
             background: 'var(--db-surface, #18282C)',
-            padding: '14px',
+            border: '1px solid var(--db-border, rgba(184, 206, 194, 0.12))',
+            borderRadius: '14px',
+            padding: '16px 18px',
             display: 'flex',
             flexDirection: 'column',
             gap: '4px',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
           }}
         >
-          <p style={{ fontSize: '11px', color: 'var(--db-text-muted, #708482)', margin: 0 }}>{m.label}</p>
-          <p
+          <span
+            style={{
+              fontSize: '11px',
+              fontWeight: 600,
+              color: 'var(--db-text-muted, #708482)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+            }}
+          >
+            {m.label}
+          </span>
+          <span
             style={{
               fontSize: '18px',
               fontWeight: 700,
               fontFamily: 'Consolas, monospace',
               color: m.color,
-              margin: '2px 0 0 0',
+              margin: '2px 0',
             }}
           >
             {m.val}
-          </p>
-          <p style={{ fontSize: '10px', color: 'var(--db-text-muted, #708482)', margin: 0 }}>{m.sub}</p>
+          </span>
+          <span
+            style={{
+              fontSize: '11px',
+              color: 'var(--db-text-muted, #708482)',
+            }}
+          >
+            {m.sub}
+          </span>
         </div>
       ))}
     </div>

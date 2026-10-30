@@ -3,7 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import type { MtfStockSnapshot } from '@/src/types/mtf'
-import { formatCr, formatPct } from '@/src/utils/mtf/formatters'
+import { formatCr, formatPct, toNum } from '@/src/utils/mtf/formatters'
 import { TableSkeleton } from '@/src/components/stockdashboard/shared/Skeletons'
 
 interface MtfStocksTableProps {
@@ -67,7 +67,9 @@ export function MtfStocksTable({ items, loading }: MtfStocksTableProps) {
               </tr>
             ) : (
               items.map((row) => {
-                const isPos30d = (row.change_30d_pct ?? 0) >= 0
+                const change30dNum = toNum(row.change_30d_pct)
+                const isPos30d = (change30dNum ?? 0) >= 0
+                const leverageNum = toNum(row.leverage_pct)
 
                 return (
                   <tr
@@ -130,7 +132,7 @@ export function MtfStocksTable({ items, loading }: MtfStocksTableProps) {
                         textAlign: 'right',
                         fontFamily: 'Consolas, monospace',
                         fontWeight: 600,
-                        color: (row.leverage_pct ?? 0) > 3 ? '#FBBF24' : 'var(--db-mint, #B8CEC2)',
+                        color: (leverageNum ?? 0) > 3 ? '#FBBF24' : 'var(--db-mint, #B8CEC2)',
                       }}
                     >
                       {formatPct(row.leverage_pct)}

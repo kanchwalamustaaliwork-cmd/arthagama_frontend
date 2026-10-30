@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { stocksApi } from '@/src/lib/api/mtf/stocks.api'
-import type { MtfStocksPage, MtfStockDetail, MtfStockFilters, MtfStockSnapshot } from '@/src/types/mtf'
+import type { MtfStocksPage, MtfStockDetail, MtfStockFilters, StockHistoryResponse } from '@/src/types/mtf'
 
 function useFetch<T>(fn: () => Promise<T>, deps: unknown[] = []) {
   const [data, setData] = useState<T | null>(null)
@@ -19,8 +19,15 @@ function useFetch<T>(fn: () => Promise<T>, deps: unknown[] = []) {
 
 export const useMtfStocks = (f?: MtfStockFilters) =>
   useFetch<MtfStocksPage>(() => stocksApi.getStocks(f), [JSON.stringify(f)])
+
 export const useMtfStock = (isin: string) =>
-  useFetch<MtfStockDetail>(() => stocksApi.getStock(isin), [isin])
+  useFetch<MtfStockDetail>(() => {
+    if (!isin || isin.toLowerCase() === 'undefined') return Promise.resolve(null as any)
+    return stocksApi.getStock(isin)
+  }, [isin])
+
 export const useMtfStockHistory = (isin: string, p?: { from?: string; to?: string }) =>
-  useFetch<{ items: MtfStockSnapshot[]; history_since: string; as_of: string; source: string }>(
-    () => stocksApi.getStockHistory(isin, p), [isin, p?.from, p?.to])
+  useFetch<StockHistoryResponse>(() => {
+    if (!isin || isin.toLowerCase() === 'undefined') return Promise.resolve(null as any)
+    return stocksApi.getStockHistory(isin, p)
+  }, [isin, p?.from, p?.to])

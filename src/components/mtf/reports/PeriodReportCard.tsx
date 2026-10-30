@@ -2,35 +2,44 @@
 
 import React from 'react'
 import type { MtfPeriodReport } from '@/src/types/mtf'
-import { formatCr, formatPct } from '@/src/utils/mtf/formatters'
+import { formatCr, formatPct, toNum } from '@/src/utils/mtf/formatters'
 
 interface PeriodReportCardProps {
   report: MtfPeriodReport
 }
 
 export function PeriodReportCard({ report }: PeriodReportCardProps) {
+  const seqGrowth = toNum(report.seq_growth_pct)
+  const yoyGrowth = toNum(report.yoy_growth_pct)
+  const netFlow = toNum(report.net_flow_cr)
+  const fundedStocks = report.stocks_funded_avg ?? report.avg_funded_stocks
+
   const kpis = [
     { label: 'Average Book', val: formatCr(report.avg_book_cr), sub: 'Mean margin debt' },
     {
       label: 'Sequential Growth',
       val: formatPct(report.seq_growth_pct),
       sub: 'vs prior period',
-      color: (report.seq_growth_pct ?? 0) >= 0 ? 'var(--db-gain, #22C55E)' : 'var(--db-loss, #E35D6A)',
+      color: (seqGrowth ?? 0) >= 0 ? 'var(--db-gain, #22C55E)' : 'var(--db-loss, #E35D6A)',
     },
     {
       label: 'YoY Growth',
       val: formatPct(report.yoy_growth_pct),
       sub: 'Year-over-year drift',
-      color: (report.yoy_growth_pct ?? 0) >= 0 ? 'var(--db-gain, #22C55E)' : 'var(--db-loss, #E35D6A)',
+      color: (yoyGrowth ?? 0) >= 0 ? 'var(--db-gain, #22C55E)' : 'var(--db-loss, #E35D6A)',
     },
     { label: 'ADTO', val: formatCr(report.adto_cr), sub: 'Avg daily traded value' },
     {
       label: 'Net Flow',
       val: formatCr(report.net_flow_cr),
       sub: 'Fresh less liquidated',
-      color: (report.net_flow_cr ?? 0) >= 0 ? 'var(--db-gain, #22C55E)' : 'var(--db-loss, #E35D6A)',
+      color: (netFlow ?? 0) >= 0 ? 'var(--db-gain, #22C55E)' : 'var(--db-loss, #E35D6A)',
     },
-    { label: 'Funded Universe', val: `${report.avg_funded_stocks ?? '—'} stocks`, sub: 'Average breadth' },
+    {
+      label: 'Funded Universe',
+      val: fundedStocks != null ? `${Math.round(fundedStocks).toLocaleString('en-IN')} stocks` : '—',
+      sub: 'Average breadth',
+    },
   ]
 
   return (

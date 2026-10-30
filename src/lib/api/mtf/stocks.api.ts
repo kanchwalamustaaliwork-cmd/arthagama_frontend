@@ -1,6 +1,6 @@
 import { apiGet } from '@/src/api/axios'
 import { MTF_ENDPOINTS } from './endpoints'
-import type { MtfStocksPage, MtfStockDetail, MtfStockFilters, MtfStockSnapshot } from '@/src/types/mtf'
+import type { MtfStocksPage, MtfStockDetail, MtfStockFilters, StockHistoryResponse } from '@/src/types/mtf'
 import { exportStocksToCsv } from '@/src/utils/mtf/csv-export'
 
 export const stocksApi = {
@@ -9,7 +9,7 @@ export const stocksApi = {
   getStock: (isin: string) =>
     apiGet<MtfStockDetail>(MTF_ENDPOINTS.stock(isin)).then(r => r.data),
   getStockHistory: (isin: string, p?: { from?: string; to?: string }) =>
-    apiGet<{ items: MtfStockSnapshot[]; history_since: string; as_of: string; source: string }>(
+    apiGet<StockHistoryResponse>(
       MTF_ENDPOINTS.stockHistory(isin), { params: p }).then(r => r.data),
 
   /**
